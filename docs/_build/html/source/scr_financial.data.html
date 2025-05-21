@@ -1,0 +1,983 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.data package &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">scr_financial.data package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-scr_financial.data.preprocessor">scr_financial.data.preprocessor module</a><ul>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.node_data"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.node_data</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.edge_data"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.edge_data</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.system_data"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.system_data</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.__init__"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.load_bank_node_data"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.load_bank_node_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.load_interbank_exposures"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.load_interbank_exposures()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.load_system_indicators"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.load_system_indicators()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.normalize_edge_weights"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.normalize_edge_weights()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.filter_network"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.filter_network()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.align_timescales"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.align_timescales()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.preprocessor.DataPreprocessor.get_data_for_timepoint"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.get_data_for_timepoint()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-scr_financial.data.utils">scr_financial.data.utils module</a><ul>
+<li><a class="reference internal" href="#scr_financial.data.utils.normalize_matrix"><code class="docutils literal notranslate"><span class="pre">normalize_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.utils.filter_matrix"><code class="docutils literal notranslate"><span class="pre">filter_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.utils.align_time_series"><code class="docutils literal notranslate"><span class="pre">align_time_series()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.utils.compute_rolling_correlation"><code class="docutils literal notranslate"><span class="pre">compute_rolling_correlation()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.utils.compute_distance_matrix"><code class="docutils literal notranslate"><span class="pre">compute_distance_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.utils.compute_minimum_spanning_tree"><code class="docutils literal notranslate"><span class="pre">compute_minimum_spanning_tree()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-scr_financial.data">Module contents</a><ul>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.node_data"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.node_data</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.edge_data"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.edge_data</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.system_data"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.system_data</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.__init__"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.load_bank_node_data"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.load_bank_node_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.load_interbank_exposures"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.load_interbank_exposures()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.load_system_indicators"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.load_system_indicators()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.normalize_edge_weights"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.normalize_edge_weights()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.filter_network"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.filter_network()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.align_timescales"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.align_timescales()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.DataPreprocessor.get_data_for_timepoint"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor.get_data_for_timepoint()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scr_financial.data.EBACollector"><code class="docutils literal notranslate"><span class="pre">EBACollector</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.EBACollector.__init__"><code class="docutils literal notranslate"><span class="pre">EBACollector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.EBACollector.collect_transparency_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_transparency_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.EBACollector.collect_aggregated_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_aggregated_data()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scr_financial.data.ECBCollector"><code class="docutils literal notranslate"><span class="pre">ECBCollector</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.ECBCollector.__init__"><code class="docutils literal notranslate"><span class="pre">ECBCollector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.ECBCollector.collect_target2_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_target2_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.ECBCollector.collect_ciss_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_ciss_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.ECBCollector.collect_gsib_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_gsib_data()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scr_financial.data.MarketDataCollector"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.MarketDataCollector.__init__"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.MarketDataCollector.collect_cds_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_cds_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.MarketDataCollector.collect_srisk_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_srisk_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.MarketDataCollector.collect_equity_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_equity_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.MarketDataCollector.collect_funding_stress_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_funding_stress_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.MarketDataCollector.collect_bis_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_bis_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">scr_financial.data package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/scr_financial.data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scr-financial-data-package">
+<h1>scr_financial.data package<a class="headerlink" href="#scr-financial-data-package" title="Link to this heading">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="scr_financial.data.collectors.html">scr_financial.data.collectors package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scr_financial.data.collectors.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scr_financial.data.collectors.html#module-scr_financial.data.collectors.eba_collector">scr_financial.data.collectors.eba_collector module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.eba_collector.EBACollector"><code class="docutils literal notranslate"><span class="pre">EBACollector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.eba_collector.EBACollector.__init__"><code class="docutils literal notranslate"><span class="pre">EBACollector.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.eba_collector.EBACollector.collect_transparency_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_transparency_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.eba_collector.EBACollector.collect_aggregated_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_aggregated_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scr_financial.data.collectors.html#module-scr_financial.data.collectors.ecb_collector">scr_financial.data.collectors.ecb_collector module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ecb_collector.ECBCollector"><code class="docutils literal notranslate"><span class="pre">ECBCollector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ecb_collector.ECBCollector.__init__"><code class="docutils literal notranslate"><span class="pre">ECBCollector.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_target2_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_target2_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_ciss_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_ciss_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_gsib_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_gsib_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scr_financial.data.collectors.html#module-scr_financial.data.collectors.market_collector">scr_financial.data.collectors.market_collector module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.__init__"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_cds_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_cds_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_srisk_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_srisk_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_equity_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_equity_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_funding_stress_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_funding_stress_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_bis_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_bis_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scr_financial.data.collectors.html#module-scr_financial.data.collectors">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.EBACollector"><code class="docutils literal notranslate"><span class="pre">EBACollector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.EBACollector.__init__"><code class="docutils literal notranslate"><span class="pre">EBACollector.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.EBACollector.collect_transparency_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_transparency_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.EBACollector.collect_aggregated_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_aggregated_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ECBCollector"><code class="docutils literal notranslate"><span class="pre">ECBCollector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ECBCollector.__init__"><code class="docutils literal notranslate"><span class="pre">ECBCollector.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ECBCollector.collect_target2_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_target2_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ECBCollector.collect_ciss_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_ciss_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.ECBCollector.collect_gsib_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_gsib_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.MarketDataCollector"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.MarketDataCollector.__init__"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.MarketDataCollector.collect_cds_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_cds_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.MarketDataCollector.collect_srisk_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_srisk_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.MarketDataCollector.collect_equity_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_equity_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.MarketDataCollector.collect_funding_stress_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_funding_stress_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="scr_financial.data.collectors.html#scr_financial.data.collectors.MarketDataCollector.collect_bis_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_bis_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-scr_financial.data.preprocessor">
+<span id="scr-financial-data-preprocessor-module"></span><h2>scr_financial.data.preprocessor module<a class="headerlink" href="#module-scr_financial.data.preprocessor" title="Link to this heading">¶</a></h2>
+<p>Data preprocessor for financial network analysis.</p>
+<p>This module provides the DataPreprocessor class for loading, cleaning,
+and normalizing financial data from various sources.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.preprocessor.</span></span><span class="sig-name descname"><span class="pre">DataPreprocessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Handles loading, cleaning, and normalizing financial data from various sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include in the analysis</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.node_data">
+<span class="sig-name descname"><span class="pre">node_data</span></span><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.node_data" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary containing bank-specific attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.edge_data">
+<span class="sig-name descname"><span class="pre">edge_data</span></span><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.edge_data" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary containing interbank network data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.system_data">
+<span class="sig-name descname"><span class="pre">system_data</span></span><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.system_data" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary containing system-wide indicators</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the data preprocessor with date range and optional bank list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.load_bank_node_data">
+<span class="sig-name descname"><span class="pre">load_bank_node_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_sources</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.load_bank_node_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.load_bank_node_data" title="Link to this definition">¶</a></dt>
+<dd><p>Load bank-specific attributes from specified sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data_sources</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary mapping attribute categories to data sources</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of loaded bank attributes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.load_interbank_exposures">
+<span class="sig-name descname"><span class="pre">load_interbank_exposures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ECB_TARGET2'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.load_interbank_exposures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.load_interbank_exposures" title="Link to this definition">¶</a></dt>
+<dd><p>Load interbank network data from specified source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Source for interbank exposure data, by default ‘ECB_TARGET2’</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of interbank exposure data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.load_system_indicators">
+<span class="sig-name descname"><span class="pre">load_system_indicators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.load_system_indicators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.load_system_indicators" title="Link to this definition">¶</a></dt>
+<dd><p>Load system-wide financial indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of system-wide indicators</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.normalize_edge_weights">
+<span class="sig-name descname"><span class="pre">normalize_edge_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'degree'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.normalize_edge_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.normalize_edge_weights" title="Link to this definition">¶</a></dt>
+<dd><p>Apply normalization to edge weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Normalization method, by default ‘degree’</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of normalized edge weights</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.filter_network">
+<span class="sig-name descname"><span class="pre">filter_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'threshold'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.filter_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.filter_network" title="Link to this definition">¶</a></dt>
+<dd><p>Apply filtering techniques to reduce noise in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Filtering method, by default ‘threshold’</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Threshold value for filtering, by default 0.05</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of filtered edge data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.align_timescales">
+<span class="sig-name descname"><span class="pre">align_timescales</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.align_timescales"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.align_timescales" title="Link to this definition">¶</a></dt>
+<dd><p>Align data with different frequencies to a common timeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.preprocessor.DataPreprocessor.get_data_for_timepoint">
+<span class="sig-name descname"><span class="pre">get_data_for_timepoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_point</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.get_data_for_timepoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.preprocessor.DataPreprocessor.get_data_for_timepoint" title="Link to this definition">¶</a></dt>
+<dd><p>Get all data for a specific time point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_point</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>datetime</em>) – Time point for which to retrieve data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing node_data, edge_data, and system_data for the specified time point</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.data.utils">
+<span id="scr-financial-data-utils-module"></span><h2>scr_financial.data.utils module<a class="headerlink" href="#module-scr_financial.data.utils" title="Link to this heading">¶</a></h2>
+<p>Utility functions for data preprocessing and manipulation.</p>
+<p>This module provides helper functions for data preprocessing, normalization,
+and manipulation in the context of financial network analysis.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.data.utils.normalize_matrix">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.data.utils.</span></span><span class="sig-name descname"><span class="pre">normalize_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'degree'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/utils.html#normalize_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.utils.normalize_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Normalize a matrix using various methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix</strong> (<em>np.ndarray</em>) – Input matrix to normalize</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Normalization method, by default ‘degree’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Normalized matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.data.utils.filter_matrix">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.data.utils.</span></span><span class="sig-name descname"><span class="pre">filter_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'threshold'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/utils.html#filter_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.utils.filter_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Filter a matrix to reduce noise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix</strong> (<em>np.ndarray</em>) – Input matrix to filter</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Filtering method, by default ‘threshold’</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Threshold value for filtering, by default 0.05</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Filtered matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.data.utils.align_time_series">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.data.utils.</span></span><span class="sig-name descname"><span class="pre">align_time_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'D'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/utils.html#align_time_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.utils.align_time_series" title="Link to this definition">¶</a></dt>
+<dd><p>Align multiple time series to a common frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary of time series DataFrames</p></li>
+<li><p><strong>freq</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Target frequency, by default ‘D’ (daily)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of aligned time series DataFrames</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.data.utils.compute_rolling_correlation">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.data.utils.</span></span><span class="sig-name descname"><span class="pre">compute_rolling_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/utils.html#compute_rolling_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.utils.compute_rolling_correlation" title="Link to this definition">¶</a></dt>
+<dd><p>Compute rolling correlation matrix from returns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>returns</strong> (<em>pd.DataFrame</em>) – DataFrame of asset returns</p></li>
+<li><p><strong>window</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Rolling window size, by default 60</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame of rolling correlation matrices</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.data.utils.compute_distance_matrix">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.data.utils.</span></span><span class="sig-name descname"><span class="pre">compute_distance_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correlation_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/utils.html#compute_distance_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.utils.compute_distance_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Compute distance matrix from correlation matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>correlation_matrix</strong> (<em>pd.DataFrame</em>) – Correlation matrix</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Distance matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.data.utils.compute_minimum_spanning_tree">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.data.utils.</span></span><span class="sig-name descname"><span class="pre">compute_minimum_spanning_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/utils.html#compute_minimum_spanning_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.utils.compute_minimum_spanning_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Compute minimum spanning tree from distance matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>distance_matrix</strong> (<em>pd.DataFrame</em>) – Distance matrix</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Adjacency matrix of minimum spanning tree</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.data">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-scr_financial.data" title="Link to this heading">¶</a></h2>
+<p>Data preprocessing module for financial network analysis.</p>
+<p>This module provides tools for loading, cleaning, and normalizing
+financial data from various sources.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.</span></span><span class="sig-name descname"><span class="pre">DataPreprocessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.DataPreprocessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Handles loading, cleaning, and normalizing financial data from various sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include in the analysis</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.node_data">
+<span class="sig-name descname"><span class="pre">node_data</span></span><a class="headerlink" href="#scr_financial.data.DataPreprocessor.node_data" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary containing bank-specific attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.edge_data">
+<span class="sig-name descname"><span class="pre">edge_data</span></span><a class="headerlink" href="#scr_financial.data.DataPreprocessor.edge_data" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary containing interbank network data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.system_data">
+<span class="sig-name descname"><span class="pre">system_data</span></span><a class="headerlink" href="#scr_financial.data.DataPreprocessor.system_data" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary containing system-wide indicators</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.DataPreprocessor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the data preprocessor with date range and optional bank list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.load_bank_node_data">
+<span class="sig-name descname"><span class="pre">load_bank_node_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_sources</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.load_bank_node_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.DataPreprocessor.load_bank_node_data" title="Link to this definition">¶</a></dt>
+<dd><p>Load bank-specific attributes from specified sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data_sources</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary mapping attribute categories to data sources</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of loaded bank attributes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.load_interbank_exposures">
+<span class="sig-name descname"><span class="pre">load_interbank_exposures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ECB_TARGET2'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.load_interbank_exposures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.DataPreprocessor.load_interbank_exposures" title="Link to this definition">¶</a></dt>
+<dd><p>Load interbank network data from specified source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Source for interbank exposure data, by default ‘ECB_TARGET2’</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of interbank exposure data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.load_system_indicators">
+<span class="sig-name descname"><span class="pre">load_system_indicators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.load_system_indicators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.DataPreprocessor.load_system_indicators" title="Link to this definition">¶</a></dt>
+<dd><p>Load system-wide financial indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of system-wide indicators</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.normalize_edge_weights">
+<span class="sig-name descname"><span class="pre">normalize_edge_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'degree'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.normalize_edge_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.DataPreprocessor.normalize_edge_weights" title="Link to this definition">¶</a></dt>
+<dd><p>Apply normalization to edge weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Normalization method, by default ‘degree’</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of normalized edge weights</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.filter_network">
+<span class="sig-name descname"><span class="pre">filter_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'threshold'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.filter_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.DataPreprocessor.filter_network" title="Link to this definition">¶</a></dt>
+<dd><p>Apply filtering techniques to reduce noise in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Filtering method, by default ‘threshold’</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Threshold value for filtering, by default 0.05</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of filtered edge data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.align_timescales">
+<span class="sig-name descname"><span class="pre">align_timescales</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.align_timescales"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.DataPreprocessor.align_timescales" title="Link to this definition">¶</a></dt>
+<dd><p>Align data with different frequencies to a common timeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.DataPreprocessor.get_data_for_timepoint">
+<span class="sig-name descname"><span class="pre">get_data_for_timepoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_point</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/preprocessor.html#DataPreprocessor.get_data_for_timepoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.DataPreprocessor.get_data_for_timepoint" title="Link to this definition">¶</a></dt>
+<dd><p>Get all data for a specific time point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_point</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>datetime</em>) – Time point for which to retrieve data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing node_data, edge_data, and system_data for the specified time point</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.EBACollector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.</span></span><span class="sig-name descname"><span class="pre">EBACollector</span></span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.EBACollector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Collector for European Banking Authority (EBA) data.</p>
+<p>This class provides methods for retrieving data from EBA transparency
+exercises and stress tests, which include key bank metrics like CET1 ratio,
+leverage ratio, and liquidity coverage ratio.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.EBACollector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.EBACollector.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the EBA data collector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.EBACollector.collect_transparency_data">
+<span class="sig-name descname"><span class="pre">collect_transparency_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector.collect_transparency_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.EBACollector.collect_transparency_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect data from EBA transparency exercises.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing bank solvency metrics</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.EBACollector.collect_aggregated_data">
+<span class="sig-name descname"><span class="pre">collect_aggregated_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector.collect_aggregated_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.EBACollector.collect_aggregated_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect aggregated data from EBA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing bank liquidity metrics</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.ECBCollector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.</span></span><span class="sig-name descname"><span class="pre">ECBCollector</span></span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.ECBCollector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Collector for European Central Bank (ECB) data.</p>
+<p>This class provides methods for retrieving data from ECB sources, including
+TARGET2 interbank payment data, CISS systemic stress indicator, and G-SIB data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.ECBCollector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.ECBCollector.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the ECB data collector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.ECBCollector.collect_target2_data">
+<span class="sig-name descname"><span class="pre">collect_target2_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.collect_target2_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.ECBCollector.collect_target2_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect TARGET2 interbank payment data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing interbank payment volumes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.ECBCollector.collect_ciss_data">
+<span class="sig-name descname"><span class="pre">collect_ciss_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.collect_ciss_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.ECBCollector.collect_ciss_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect ECB Composite Indicator of Systemic Stress (CISS) data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing CISS values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.ECBCollector.collect_gsib_data">
+<span class="sig-name descname"><span class="pre">collect_gsib_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.collect_gsib_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.ECBCollector.collect_gsib_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect G-SIB (Global Systemically Important Bank) indicator data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing G-SIB indicators</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.MarketDataCollector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.</span></span><span class="sig-name descname"><span class="pre">MarketDataCollector</span></span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.MarketDataCollector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Collector for market data.</p>
+<p>This class provides methods for retrieving market data such as CDS spreads,
+equity prices, SRISK, and other market indicators from various sources.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.MarketDataCollector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.MarketDataCollector.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the market data collector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.MarketDataCollector.collect_cds_data">
+<span class="sig-name descname"><span class="pre">collect_cds_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_cds_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.MarketDataCollector.collect_cds_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect CDS spread data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing CDS spreads</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.MarketDataCollector.collect_srisk_data">
+<span class="sig-name descname"><span class="pre">collect_srisk_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_srisk_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.MarketDataCollector.collect_srisk_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect SRISK data from NYU V-Lab.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing SRISK values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.MarketDataCollector.collect_equity_data">
+<span class="sig-name descname"><span class="pre">collect_equity_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_equity_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.MarketDataCollector.collect_equity_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect equity price data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing equity prices</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.MarketDataCollector.collect_funding_stress_data">
+<span class="sig-name descname"><span class="pre">collect_funding_stress_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_funding_stress_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.MarketDataCollector.collect_funding_stress_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect funding stress indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing funding stress indicators</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.MarketDataCollector.collect_bis_data">
+<span class="sig-name descname"><span class="pre">collect_bis_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indicator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_bis_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.MarketDataCollector.collect_bis_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect data from Bank for International Settlements (BIS).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>indicator</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Indicator to collect (e.g., ‘credit_to_GDP_gap’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing BIS data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

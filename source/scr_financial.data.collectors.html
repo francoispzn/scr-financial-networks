@@ -1,0 +1,696 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.data.collectors package &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">scr_financial.data.collectors package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-scr_financial.data.collectors.eba_collector">scr_financial.data.collectors.eba_collector module</a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.eba_collector.EBACollector"><code class="docutils literal notranslate"><span class="pre">EBACollector</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.eba_collector.EBACollector.__init__"><code class="docutils literal notranslate"><span class="pre">EBACollector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.eba_collector.EBACollector.collect_transparency_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_transparency_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.eba_collector.EBACollector.collect_aggregated_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_aggregated_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-scr_financial.data.collectors.ecb_collector">scr_financial.data.collectors.ecb_collector module</a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ecb_collector.ECBCollector"><code class="docutils literal notranslate"><span class="pre">ECBCollector</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ecb_collector.ECBCollector.__init__"><code class="docutils literal notranslate"><span class="pre">ECBCollector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_target2_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_target2_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_ciss_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_ciss_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_gsib_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_gsib_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-scr_financial.data.collectors.market_collector">scr_financial.data.collectors.market_collector module</a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.market_collector.MarketDataCollector"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.__init__"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_cds_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_cds_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_srisk_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_srisk_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_equity_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_equity_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_funding_stress_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_funding_stress_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_bis_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_bis_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-scr_financial.data.collectors">Module contents</a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.EBACollector"><code class="docutils literal notranslate"><span class="pre">EBACollector</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.EBACollector.__init__"><code class="docutils literal notranslate"><span class="pre">EBACollector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.EBACollector.collect_transparency_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_transparency_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.EBACollector.collect_aggregated_data"><code class="docutils literal notranslate"><span class="pre">EBACollector.collect_aggregated_data()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ECBCollector"><code class="docutils literal notranslate"><span class="pre">ECBCollector</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ECBCollector.__init__"><code class="docutils literal notranslate"><span class="pre">ECBCollector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ECBCollector.collect_target2_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_target2_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ECBCollector.collect_ciss_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_ciss_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.ECBCollector.collect_gsib_data"><code class="docutils literal notranslate"><span class="pre">ECBCollector.collect_gsib_data()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.MarketDataCollector"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.data.collectors.MarketDataCollector.__init__"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.MarketDataCollector.collect_cds_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_cds_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.MarketDataCollector.collect_srisk_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_srisk_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.MarketDataCollector.collect_equity_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_equity_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.MarketDataCollector.collect_funding_stress_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_funding_stress_data()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.data.collectors.MarketDataCollector.collect_bis_data"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector.collect_bis_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">scr_financial.data.collectors package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/scr_financial.data.collectors.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scr-financial-data-collectors-package">
+<h1>scr_financial.data.collectors package<a class="headerlink" href="#scr-financial-data-collectors-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-scr_financial.data.collectors.eba_collector">
+<span id="scr-financial-data-collectors-eba-collector-module"></span><h2>scr_financial.data.collectors.eba_collector module<a class="headerlink" href="#module-scr_financial.data.collectors.eba_collector" title="Link to this heading">¶</a></h2>
+<p>EBA data collector for financial network analysis.</p>
+<p>This module provides the EBACollector class for retrieving data from the
+European Banking Authority (EBA) transparency exercises and stress tests.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.eba_collector.EBACollector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.collectors.eba_collector.</span></span><span class="sig-name descname"><span class="pre">EBACollector</span></span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.eba_collector.EBACollector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Collector for European Banking Authority (EBA) data.</p>
+<p>This class provides methods for retrieving data from EBA transparency
+exercises and stress tests, which include key bank metrics like CET1 ratio,
+leverage ratio, and liquidity coverage ratio.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.eba_collector.EBACollector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.eba_collector.EBACollector.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the EBA data collector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.eba_collector.EBACollector.collect_transparency_data">
+<span class="sig-name descname"><span class="pre">collect_transparency_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector.collect_transparency_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.eba_collector.EBACollector.collect_transparency_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect data from EBA transparency exercises.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing bank solvency metrics</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.eba_collector.EBACollector.collect_aggregated_data">
+<span class="sig-name descname"><span class="pre">collect_aggregated_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector.collect_aggregated_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.eba_collector.EBACollector.collect_aggregated_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect aggregated data from EBA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing bank liquidity metrics</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.data.collectors.ecb_collector">
+<span id="scr-financial-data-collectors-ecb-collector-module"></span><h2>scr_financial.data.collectors.ecb_collector module<a class="headerlink" href="#module-scr_financial.data.collectors.ecb_collector" title="Link to this heading">¶</a></h2>
+<p>ECB data collector for financial network analysis.</p>
+<p>This module provides the ECBCollector class for retrieving data from the
+European Central Bank (ECB) Statistical Data Warehouse and other ECB sources.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ecb_collector.ECBCollector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.collectors.ecb_collector.</span></span><span class="sig-name descname"><span class="pre">ECBCollector</span></span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ecb_collector.ECBCollector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Collector for European Central Bank (ECB) data.</p>
+<p>This class provides methods for retrieving data from ECB sources, including
+TARGET2 interbank payment data, CISS systemic stress indicator, and G-SIB data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ecb_collector.ECBCollector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ecb_collector.ECBCollector.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the ECB data collector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ecb_collector.ECBCollector.collect_target2_data">
+<span class="sig-name descname"><span class="pre">collect_target2_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.collect_target2_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_target2_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect TARGET2 interbank payment data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing interbank payment volumes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ecb_collector.ECBCollector.collect_ciss_data">
+<span class="sig-name descname"><span class="pre">collect_ciss_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.collect_ciss_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_ciss_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect ECB Composite Indicator of Systemic Stress (CISS) data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing CISS values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ecb_collector.ECBCollector.collect_gsib_data">
+<span class="sig-name descname"><span class="pre">collect_gsib_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.collect_gsib_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_gsib_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect G-SIB (Global Systemically Important Bank) indicator data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing G-SIB indicators</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.data.collectors.market_collector">
+<span id="scr-financial-data-collectors-market-collector-module"></span><h2>scr_financial.data.collectors.market_collector module<a class="headerlink" href="#module-scr_financial.data.collectors.market_collector" title="Link to this heading">¶</a></h2>
+<p>Market data collector for financial network analysis.</p>
+<p>This module provides the MarketDataCollector class for retrieving market data
+such as CDS spreads, equity prices, and other market indicators.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.market_collector.MarketDataCollector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.collectors.market_collector.</span></span><span class="sig-name descname"><span class="pre">MarketDataCollector</span></span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.market_collector.MarketDataCollector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Collector for market data.</p>
+<p>This class provides methods for retrieving market data such as CDS spreads,
+equity prices, SRISK, and other market indicators from various sources.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.market_collector.MarketDataCollector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the market data collector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.market_collector.MarketDataCollector.collect_cds_data">
+<span class="sig-name descname"><span class="pre">collect_cds_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_cds_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_cds_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect CDS spread data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing CDS spreads</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.market_collector.MarketDataCollector.collect_srisk_data">
+<span class="sig-name descname"><span class="pre">collect_srisk_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_srisk_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_srisk_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect SRISK data from NYU V-Lab.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing SRISK values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.market_collector.MarketDataCollector.collect_equity_data">
+<span class="sig-name descname"><span class="pre">collect_equity_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_equity_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_equity_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect equity price data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing equity prices</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.market_collector.MarketDataCollector.collect_funding_stress_data">
+<span class="sig-name descname"><span class="pre">collect_funding_stress_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_funding_stress_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_funding_stress_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect funding stress indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing funding stress indicators</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.market_collector.MarketDataCollector.collect_bis_data">
+<span class="sig-name descname"><span class="pre">collect_bis_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indicator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_bis_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_bis_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect data from Bank for International Settlements (BIS).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>indicator</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Indicator to collect (e.g., ‘credit_to_GDP_gap’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing BIS data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.data.collectors">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-scr_financial.data.collectors" title="Link to this heading">¶</a></h2>
+<p>Data collectors for financial network analysis.</p>
+<p>This module provides collectors for retrieving financial data from various sources.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.EBACollector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.collectors.</span></span><span class="sig-name descname"><span class="pre">EBACollector</span></span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.EBACollector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Collector for European Banking Authority (EBA) data.</p>
+<p>This class provides methods for retrieving data from EBA transparency
+exercises and stress tests, which include key bank metrics like CET1 ratio,
+leverage ratio, and liquidity coverage ratio.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.EBACollector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.EBACollector.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the EBA data collector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.EBACollector.collect_transparency_data">
+<span class="sig-name descname"><span class="pre">collect_transparency_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector.collect_transparency_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.EBACollector.collect_transparency_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect data from EBA transparency exercises.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing bank solvency metrics</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.EBACollector.collect_aggregated_data">
+<span class="sig-name descname"><span class="pre">collect_aggregated_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/eba_collector.html#EBACollector.collect_aggregated_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.EBACollector.collect_aggregated_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect aggregated data from EBA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing bank liquidity metrics</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ECBCollector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.collectors.</span></span><span class="sig-name descname"><span class="pre">ECBCollector</span></span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ECBCollector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Collector for European Central Bank (ECB) data.</p>
+<p>This class provides methods for retrieving data from ECB sources, including
+TARGET2 interbank payment data, CISS systemic stress indicator, and G-SIB data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ECBCollector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ECBCollector.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the ECB data collector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ECBCollector.collect_target2_data">
+<span class="sig-name descname"><span class="pre">collect_target2_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.collect_target2_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ECBCollector.collect_target2_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect TARGET2 interbank payment data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing interbank payment volumes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ECBCollector.collect_ciss_data">
+<span class="sig-name descname"><span class="pre">collect_ciss_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.collect_ciss_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ECBCollector.collect_ciss_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect ECB Composite Indicator of Systemic Stress (CISS) data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing CISS values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.ECBCollector.collect_gsib_data">
+<span class="sig-name descname"><span class="pre">collect_gsib_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/ecb_collector.html#ECBCollector.collect_gsib_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.ECBCollector.collect_gsib_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect G-SIB (Global Systemically Important Bank) indicator data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing G-SIB indicators</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.MarketDataCollector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.data.collectors.</span></span><span class="sig-name descname"><span class="pre">MarketDataCollector</span></span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.MarketDataCollector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Collector for market data.</p>
+<p>This class provides methods for retrieving market data such as CDS spreads,
+equity prices, SRISK, and other market indicators from various sources.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.MarketDataCollector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.MarketDataCollector.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the market data collector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.MarketDataCollector.collect_cds_data">
+<span class="sig-name descname"><span class="pre">collect_cds_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_cds_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.MarketDataCollector.collect_cds_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect CDS spread data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing CDS spreads</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.MarketDataCollector.collect_srisk_data">
+<span class="sig-name descname"><span class="pre">collect_srisk_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_srisk_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.MarketDataCollector.collect_srisk_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect SRISK data from NYU V-Lab.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing SRISK values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.MarketDataCollector.collect_equity_data">
+<span class="sig-name descname"><span class="pre">collect_equity_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_equity_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.MarketDataCollector.collect_equity_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect equity price data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of bank identifiers to include</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing equity prices</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.MarketDataCollector.collect_funding_stress_data">
+<span class="sig-name descname"><span class="pre">collect_funding_stress_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_funding_stress_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.MarketDataCollector.collect_funding_stress_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect funding stress indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing funding stress indicators</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.data.collectors.MarketDataCollector.collect_bis_data">
+<span class="sig-name descname"><span class="pre">collect_bis_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indicator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/data/collectors/market_collector.html#MarketDataCollector.collect_bis_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.data.collectors.MarketDataCollector.collect_bis_data" title="Link to this definition">¶</a></dt>
+<dd><p>Collect data from Bank for International Settlements (BIS).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Start date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – End date for data collection in ‘YYYY-MM-DD’ format</p></li>
+<li><p><strong>indicator</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Indicator to collect (e.g., ‘credit_to_GDP_gap’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing BIS data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.data.collectors.eba_collector &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scr_financial.data.collectors.eba_collector</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scr_financial.data.collectors.eba_collector</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">EBA data collector for financial network analysis.</span>
+
+<span class="sd">This module provides the EBACollector class for retrieving data from the</span>
+<span class="sd">European Banking Authority (EBA) transparency exercises and stress tests.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+
+<div class="viewcode-block" id="EBACollector">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.eba_collector.EBACollector">[docs]</a>
+<span class="k">class</span> <span class="nc">EBACollector</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collector for European Banking Authority (EBA) data.</span>
+<span class="sd">    </span>
+<span class="sd">    This class provides methods for retrieving data from EBA transparency</span>
+<span class="sd">    exercises and stress tests, which include key bank metrics like CET1 ratio,</span>
+<span class="sd">    leverage ratio, and liquidity coverage ratio.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="EBACollector.__init__">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.eba_collector.EBACollector.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the EBA data collector.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="s2">&quot;https://www.eba.europa.eu/sites/default/documents/files/&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transparency_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">+</span> <span class="s2">&quot;transparency-exercise/&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stress_test_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">+</span> <span class="s2">&quot;eu-wide-stress-testing/&quot;</span></div>
+
+    
+<div class="viewcode-block" id="EBACollector.collect_transparency_data">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.eba_collector.EBACollector.collect_transparency_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">collect_transparency_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect data from EBA transparency exercises.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing bank solvency metrics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert dates to datetime</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+        
+        <span class="c1"># Determine which transparency exercises to include based on dates</span>
+        <span class="n">exercises</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="s2">&quot;2020-12-31&quot;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">:</span>
+            <span class="n">exercises</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;2020&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="s2">&quot;2021-12-31&quot;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">:</span>
+            <span class="n">exercises</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;2021&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="s2">&quot;2022-12-31&quot;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">:</span>
+            <span class="n">exercises</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;2022&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="s2">&quot;2023-12-31&quot;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">:</span>
+            <span class="n">exercises</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;2023&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="s2">&quot;2024-12-31&quot;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">:</span>
+            <span class="n">exercises</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;2024&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># If no exercises match the date range, use sample data</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exercises</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_transparency_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">bank_list</span><span class="p">)</span>
+        
+        <span class="c1"># Initialize empty DataFrame to store results</span>
+        <span class="n">all_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        
+        <span class="c1"># Collect data from each exercise</span>
+        <span class="k">for</span> <span class="n">exercise</span> <span class="ow">in</span> <span class="n">exercises</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># In a real implementation, this would download from EBA website</span>
+                <span class="c1"># For now, we&#39;ll use sample data</span>
+                <span class="n">exercise_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_transparency_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">bank_list</span><span class="p">)</span>
+                <span class="n">exercise_data</span><span class="p">[</span><span class="s1">&#39;exercise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exercise</span>
+                <span class="n">all_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">all_data</span><span class="p">,</span> <span class="n">exercise_data</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error collecting </span><span class="si">{</span><span class="n">exercise</span><span class="si">}</span><span class="s2"> transparency data: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Filter by bank list if provided</span>
+        <span class="k">if</span> <span class="n">bank_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">all_data</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">all_data</span> <span class="o">=</span> <span class="n">all_data</span><span class="p">[</span><span class="n">all_data</span><span class="p">[</span><span class="s1">&#39;bank_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">bank_list</span><span class="p">)]</span>
+        
+        <span class="k">return</span> <span class="n">all_data</span></div>
+
+    
+<div class="viewcode-block" id="EBACollector.collect_aggregated_data">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.eba_collector.EBACollector.collect_aggregated_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">collect_aggregated_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect aggregated data from EBA.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing bank liquidity metrics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert dates to datetime</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+        
+        <span class="c1"># For now, use sample data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_aggregated_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">bank_list</span><span class="p">)</span></div>
+
+    
+    <span class="k">def</span> <span class="nf">_get_sample_transparency_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate sample transparency exercise data for testing.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing sample bank solvency metrics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Default bank list if none provided</span>
+        <span class="k">if</span> <span class="n">bank_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bank_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;DE_DBK&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_BNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ES_SAN&quot;</span><span class="p">,</span> <span class="s2">&quot;IT_UCG&quot;</span><span class="p">,</span> <span class="s2">&quot;NL_ING&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;SE_NDA&quot;</span><span class="p">,</span> <span class="s2">&quot;CH_UBS&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_BARC&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_ACA&quot;</span>
+            <span class="p">]</span>
+        
+        <span class="c1"># Generate dates within the range</span>
+        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;Q&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Create sample data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="n">bank_list</span><span class="p">:</span>
+            <span class="c1"># Base values for each bank</span>
+            <span class="k">if</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;DE_DBK&quot;</span><span class="p">:</span>  <span class="c1"># Deutsche Bank</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">13.2</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">4.5</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;FR_BNP&quot;</span><span class="p">:</span>  <span class="c1"># BNP Paribas</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">12.8</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">4.7</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;ES_SAN&quot;</span><span class="p">:</span>  <span class="c1"># Santander</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">11.9</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">5.1</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;IT_UCG&quot;</span><span class="p">:</span>  <span class="c1"># UniCredit</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">13.5</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">5.3</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;NL_ING&quot;</span><span class="p">:</span>  <span class="c1"># ING</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">14.2</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">4.9</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;SE_NDA&quot;</span><span class="p">:</span>  <span class="c1"># Nordea</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">16.1</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">5.5</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;CH_UBS&quot;</span><span class="p">:</span>  <span class="c1"># UBS</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">14.5</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">5.2</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;UK_BARC&quot;</span><span class="p">:</span>  <span class="c1"># Barclays</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">13.8</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">4.8</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">:</span>  <span class="c1"># HSBC</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">15.2</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">5.5</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;FR_ACA&quot;</span><span class="p">:</span>  <span class="c1"># Credit Agricole</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">13.1</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">4.6</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">base_cet1</span> <span class="o">=</span> <span class="mf">12.0</span>
+                <span class="n">base_t1_leverage</span> <span class="o">=</span> <span class="mf">4.5</span>
+            
+            <span class="c1"># Add some random variation over time</span>
+            <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">date_range</span><span class="p">:</span>
+                <span class="c1"># Add noise and slight trend</span>
+                <span class="n">time_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">))</span><span class="o">.</span><span class="n">days</span> <span class="o">/</span> <span class="mi">365</span>
+                <span class="n">cet1</span> <span class="o">=</span> <span class="n">base_cet1</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
+                <span class="n">t1_leverage</span> <span class="o">=</span> <span class="n">base_t1_leverage</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
+                
+                <span class="c1"># Add row to data</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                    <span class="s1">&#39;bank_id&#39;</span><span class="p">:</span> <span class="n">bank_id</span><span class="p">,</span>
+                    <span class="s1">&#39;CET1_ratio&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">cet1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                    <span class="s1">&#39;Tier1_leverage_ratio&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">t1_leverage</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                    <span class="s1">&#39;total_assets&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># in EUR</span>
+                    <span class="s1">&#39;risk_weighted_assets&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># in EUR</span>
+                <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_get_sample_aggregated_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate sample aggregated data for testing.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing sample bank liquidity metrics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Default bank list if none provided</span>
+        <span class="k">if</span> <span class="n">bank_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bank_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;DE_DBK&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_BNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ES_SAN&quot;</span><span class="p">,</span> <span class="s2">&quot;IT_UCG&quot;</span><span class="p">,</span> <span class="s2">&quot;NL_ING&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;SE_NDA&quot;</span><span class="p">,</span> <span class="s2">&quot;CH_UBS&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_BARC&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_ACA&quot;</span>
+            <span class="p">]</span>
+        
+        <span class="c1"># Generate dates within the range (semi-annual)</span>
+        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;6M&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Create sample data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="n">bank_list</span><span class="p">:</span>
+            <span class="c1"># Base values for each bank</span>
+            <span class="k">if</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;DE_DBK&quot;</span><span class="p">:</span>  <span class="c1"># Deutsche Bank</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">145</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">115</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;FR_BNP&quot;</span><span class="p">:</span>  <span class="c1"># BNP Paribas</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">152</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">118</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;ES_SAN&quot;</span><span class="p">:</span>  <span class="c1"># Santander</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">158</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">112</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;IT_UCG&quot;</span><span class="p">:</span>  <span class="c1"># UniCredit</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">165</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">110</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;NL_ING&quot;</span><span class="p">:</span>  <span class="c1"># ING</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">138</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">115</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;SE_NDA&quot;</span><span class="p">:</span>  <span class="c1"># Nordea</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">172</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">120</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;CH_UBS&quot;</span><span class="p">:</span>  <span class="c1"># UBS</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">168</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">117</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;UK_BARC&quot;</span><span class="p">:</span>  <span class="c1"># Barclays</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">156</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">113</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">:</span>  <span class="c1"># HSBC</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">160</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">116</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s2">&quot;FR_ACA&quot;</span><span class="p">:</span>  <span class="c1"># Credit Agricole</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">149</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">114</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">base_lcr</span> <span class="o">=</span> <span class="mi">150</span>
+                <span class="n">base_nsfr</span> <span class="o">=</span> <span class="mi">110</span>
+            
+            <span class="c1"># Add some random variation over time</span>
+            <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">date_range</span><span class="p">:</span>
+                <span class="c1"># Add noise and slight trend</span>
+                <span class="n">time_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">))</span><span class="o">.</span><span class="n">days</span> <span class="o">/</span> <span class="mi">365</span>
+                <span class="n">lcr</span> <span class="o">=</span> <span class="n">base_lcr</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+                <span class="n">nsfr</span> <span class="o">=</span> <span class="n">base_nsfr</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                
+                <span class="c1"># Add row to data</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                    <span class="s1">&#39;bank_id&#39;</span><span class="p">:</span> <span class="n">bank_id</span><span class="p">,</span>
+                    <span class="s1">&#39;LCR&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">lcr</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="s1">&#39;NSFR&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">nsfr</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="s1">&#39;liquid_assets&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># in EUR</span>
+                    <span class="s1">&#39;net_cash_outflows&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># in EUR</span>
+                <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

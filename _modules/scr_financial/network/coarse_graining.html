@@ -1,0 +1,431 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.network.coarse_graining &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scr_financial.network.coarse_graining</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scr_financial.network.coarse_graining</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Spectral coarse-graining for financial networks.</span>
+
+<span class="sd">This module implements spectral coarse-graining techniques for simplifying</span>
+<span class="sd">financial networks while preserving their essential structural and dynamic properties.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="k">as</span> <span class="nn">la</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">SpectralClustering</span>
+
+<span class="kn">from</span> <span class="nn">.builder</span> <span class="kn">import</span> <span class="n">FinancialNetworkBuilder</span>
+
+
+<div class="viewcode-block" id="SpectralCoarseGraining">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining">[docs]</a>
+<span class="k">class</span> <span class="nc">SpectralCoarseGraining</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements spectral coarse-graining for financial networks.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network_builder : FinancialNetworkBuilder</span>
+<span class="sd">        Network builder containing the network to coarse-grain</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    coarse_grained_laplacian : numpy.ndarray</span>
+<span class="sd">        Coarse-grained Laplacian matrix</span>
+<span class="sd">    coarse_grained_adjacency : numpy.ndarray</span>
+<span class="sd">        Coarse-grained adjacency matrix</span>
+<span class="sd">    rescaled_adjacency : numpy.ndarray</span>
+<span class="sd">        Rescaled coarse-grained adjacency matrix</span>
+<span class="sd">    clusters : numpy.ndarray</span>
+<span class="sd">        Cluster assignments for nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="SpectralCoarseGraining.__init__">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network_builder</span><span class="p">:</span> <span class="n">FinancialNetworkBuilder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the coarse-graining with a network builder.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span> <span class="o">=</span> <span class="n">network_builder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_laplacian</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_adjacency</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rescaled_adjacency</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_mapping</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_graph</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    
+<div class="viewcode-block" id="SpectralCoarseGraining.coarse_grain">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grain">[docs]</a>
+    <span class="k">def</span> <span class="nf">coarse_grain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform spectral coarse-graining using k eigenmodes.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        k : int, optional</span>
+<span class="sd">            Number of eigenmodes to use, by default None</span>
+<span class="sd">            If None, determined automatically using spectral gap</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            Coarse-grained Laplacian matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvalues</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvectors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">spectral_analysis</span><span class="p">()</span>
+        
+        <span class="n">eigenvalues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvalues</span>
+        <span class="n">eigenvectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvectors</span>
+        
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Use spectral gap to determine k</span>
+            <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">find_spectral_gap</span><span class="p">()</span>
+        
+        <span class="c1"># Construct coarse-grained Laplacian using first k eigenmodes</span>
+        <span class="n">L_cg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">laplacian</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>  <span class="c1"># Include eigenmode 0 to k</span>
+            <span class="n">lambda_alpha</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="n">alpha</span><span class="p">]</span>
+            <span class="n">u_alpha</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">alpha</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">L_cg</span> <span class="o">+=</span> <span class="n">lambda_alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">u_alpha</span> <span class="o">@</span> <span class="n">u_alpha</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_laplacian</span> <span class="o">=</span> <span class="n">L_cg</span>
+        
+        <span class="c1"># Extract adjacency matrix from Laplacian</span>
+        <span class="c1"># For a normalized Laplacian L = I - D^(-1/2)AD^(-1/2)</span>
+        <span class="c1"># We need to reverse this to get A</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">L_cg</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_adjacency</span> <span class="o">=</span> <span class="n">D</span> <span class="o">-</span> <span class="n">L_cg</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_laplacian</span></div>
+
+    
+<div class="viewcode-block" id="SpectralCoarseGraining.rescale">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining.rescale">[docs]</a>
+    <span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lambda_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rescale the coarse-grained adjacency matrix.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lambda_k : float, optional</span>
+<span class="sd">            Eigenvalue to use for rescaling, by default None</span>
+<span class="sd">            If None, uses the k-th eigenvalue where k is from find_spectral_gap</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            Rescaled coarse-grained adjacency matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_adjacency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Coarse-grained adjacency not computed. Call coarse_grain first.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">lambda_k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">find_spectral_gap</span><span class="p">()</span>
+            <span class="n">lambda_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        
+        <span class="c1"># Rescale by 1/lambda_k to preserve diffusion dynamics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rescaled_adjacency</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">lambda_k</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_adjacency</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rescaled_adjacency</span></div>
+
+    
+<div class="viewcode-block" id="SpectralCoarseGraining.identify_clusters">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining.identify_clusters">[docs]</a>
+    <span class="k">def</span> <span class="nf">identify_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Identify clusters based on eigenvectors.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_clusters : int, optional</span>
+<span class="sd">            Number of clusters, by default None</span>
+<span class="sd">            If None, determined from spectral gap</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            Cluster assignments for nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvectors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">spectral_analysis</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">n_clusters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">find_spectral_gap</span><span class="p">()</span>
+            <span class="n">n_clusters</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Use k+1 clusters</span>
+        
+        <span class="c1"># Extract relevant eigenvectors</span>
+        <span class="n">eigenvectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvectors</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="n">n_clusters</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Skip first eigenvector</span>
+        
+        <span class="c1"># Apply k-means clustering</span>
+        <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+        <span class="n">kmeans</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">kmeans</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">eigenvectors</span><span class="p">)</span>
+        
+        <span class="c1"># Create mapping from nodes to clusters</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))}</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span></div>
+
+    
+<div class="viewcode-block" id="SpectralCoarseGraining.create_coarse_grained_graph">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining.create_coarse_grained_graph">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_coarse_grained_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a coarse-grained graph based on identified clusters.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        networkx.Graph</span>
+<span class="sd">            Coarse-grained graph</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">identify_clusters</span><span class="p">()</span>
+        
+        <span class="c1"># Create a new graph with clusters as nodes</span>
+        <span class="n">G_cg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        
+        <span class="c1"># Add cluster nodes</span>
+        <span class="n">n_clusters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">):</span>
+            <span class="n">G_cg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cluster_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Compute inter-cluster weights</span>
+        <span class="n">original_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">G</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">original_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="c1"># Find nodes in each cluster</span>
+                    <span class="n">nodes_i</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span>
+                    <span class="n">nodes_j</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="n">j</span><span class="p">]</span>
+                    
+                    <span class="c1"># Compute total weight between clusters</span>
+                    <span class="n">total_weight</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">nodes_i</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">nodes_j</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">original_graph</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+                                <span class="n">total_weight</span> <span class="o">+=</span> <span class="n">original_graph</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+                    
+                    <span class="c1"># Add edge if there&#39;s a connection</span>
+                    <span class="k">if</span> <span class="n">total_weight</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">G_cg</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cluster_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cluster_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">total_weight</span><span class="p">)</span>
+        
+        <span class="c1"># Compute aggregate node attributes</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">):</span>
+            <span class="n">nodes_i</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span>
+            
+            <span class="c1"># Aggregate node attributes</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">original_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+                <span class="c1"># Skip non-numeric attributes</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">original_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">attr</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                    <span class="k">continue</span>
+                
+                <span class="c1"># Compute average</span>
+                <span class="n">avg_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">original_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">attr</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes_i</span> 
+                                    <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">original_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]])</span>
+                
+                <span class="n">G_cg</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cluster_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">avg_value</span>
+            
+            <span class="c1"># Store original nodes in this cluster</span>
+            <span class="n">G_cg</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cluster_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="s2">&quot;original_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes_i</span>
+            <span class="n">G_cg</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cluster_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_i</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_graph</span> <span class="o">=</span> <span class="n">G_cg</span>
+        
+        <span class="k">return</span> <span class="n">G_cg</span></div>
+
+    
+<div class="viewcode-block" id="SpectralCoarseGraining.map_node_to_cluster">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining.map_node_to_cluster">[docs]</a>
+    <span class="k">def</span> <span class="nf">map_node_to_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Map an original node to its cluster.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node : str</span>
+<span class="sd">            Original node identifier</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Cluster identifier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Clusters not identified. Call identify_clusters first.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_mapping</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s2"> not found in the network&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;cluster_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cluster_mapping</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+    
+<div class="viewcode-block" id="SpectralCoarseGraining.compute_coarse_graining_error">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining.compute_coarse_graining_error">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_coarse_graining_error</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the error introduced by coarse-graining.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Relative error in eigenvalues</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_laplacian</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Coarse-grained Laplacian not computed. Call coarse_grain first.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Get original eigenvalues</span>
+        <span class="n">orig_eigenvalues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvalues</span>
+        
+        <span class="c1"># Compute eigenvalues of coarse-grained Laplacian</span>
+        <span class="n">cg_eigenvalues</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_laplacian</span><span class="p">)</span>
+        
+        <span class="c1"># Determine k</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">find_spectral_gap</span><span class="p">()</span>
+        
+        <span class="c1"># Compare first k+1 eigenvalues</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">orig_eigenvalues</span><span class="p">[:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">cg_eigenvalues</span><span class="p">[:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">orig_eigenvalues</span><span class="p">[:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="k">return</span> <span class="n">error</span></div>
+
+    
+<div class="viewcode-block" id="SpectralCoarseGraining.compare_diffusion_dynamics">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining.compare_diffusion_dynamics">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_diffusion_dynamics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare diffusion dynamics between original and coarse-grained networks.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        time_steps : int, optional</span>
+<span class="sd">            Number of time steps to simulate, by default 10</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            List of errors at each time step</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_laplacian</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Coarse-grained Laplacian not computed. Call coarse_grain first.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Original Laplacian</span>
+        <span class="n">L_orig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">laplacian</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+        
+        <span class="c1"># Coarse-grained Laplacian</span>
+        <span class="n">L_cg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained_laplacian</span>
+        
+        <span class="c1"># Initial state (uniform distribution)</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">L_orig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">L_orig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="c1"># Simulate diffusion on both networks</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">time_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># Original diffusion</span>
+            <span class="n">pt_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">*</span> <span class="n">L_orig</span><span class="p">)</span> <span class="o">@</span> <span class="n">p0</span>
+            
+            <span class="c1"># Coarse-grained diffusion</span>
+            <span class="n">pt_cg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">*</span> <span class="n">L_cg</span><span class="p">)</span> <span class="o">@</span> <span class="n">p0</span>
+            
+            <span class="c1"># Compute error</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pt_orig</span> <span class="o">-</span> <span class="n">pt_cg</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pt_orig</span><span class="p">)</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">errors</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
