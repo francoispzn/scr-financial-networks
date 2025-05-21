@@ -216,10 +216,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-For any questions or feedback, please contact:
+For any questions or feedback, please contact me:
 - Francois Petizon - francois.petizon@kcl.ac.uk
 - Department of Informatics, King's College London
-
-Sources
-[1] Preliminary_report____Contingency_BW_9_08_x20_03.pdf https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/69832163/42dc6d7e-0aa1-4264-83b1-24c2ce5cded2/Preliminary_report____Contingency_BW_9_08_x20_03.pdf
-[2] SCG_for_FM.pdf https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/69832163/4022d8ef-44ca-4dc3-b2f9-adbbe30957c3/SCG_for_FM.pdf
