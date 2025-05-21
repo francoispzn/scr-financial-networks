@@ -184,7 +184,7 @@ The VAE module provides dimensionality reduction and feature extraction for fina
 
 ## Documentation
 
-For detailed documentation, please visit [the documentation site](https://scr-financial-networks.readthedocs.io/).
+For detailed documentation, please visit check the source folder with the .htlm documentation files.
 
 ## Examples
 
