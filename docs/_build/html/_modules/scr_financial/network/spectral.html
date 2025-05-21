@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.network.spectral &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scr_financial.network.spectral</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scr_financial.network.spectral</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Spectral analysis tools for financial networks.</span>
+
+<span class="sd">This module provides functions for spectral analysis of financial networks,</span>
+<span class="sd">including eigendecomposition, spectral gap identification, and diffusion modes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="k">as</span> <span class="nn">la</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+
+<div class="viewcode-block" id="compute_laplacian">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.spectral.compute_laplacian">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_laplacian</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">normalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the graph Laplacian from an adjacency matrix.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adjacency_matrix : numpy.ndarray</span>
+<span class="sd">        Adjacency matrix of the graph</span>
+<span class="sd">    normalized : bool, optional</span>
+<span class="sd">        Whether to compute the normalized Laplacian, by default True</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        Graph Laplacian matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure the adjacency matrix is symmetric for undirected graphs</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
+        <span class="c1"># Undirected graph</span>
+        <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
+            <span class="c1"># Compute degree matrix</span>
+            <span class="n">degrees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Avoid division by zero</span>
+            <span class="n">degrees</span><span class="p">[</span><span class="n">degrees</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">D_inv_sqrt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">degrees</span><span class="p">))</span>
+            <span class="c1"># Normalized Laplacian: I - D^(-1/2) A D^(-1/2)</span>
+            <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">I</span> <span class="o">-</span> <span class="n">D_inv_sqrt</span> <span class="o">@</span> <span class="n">adjacency_matrix</span> <span class="o">@</span> <span class="n">D_inv_sqrt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Compute degree matrix</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="c1"># Unnormalized Laplacian: D - A</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">D</span> <span class="o">-</span> <span class="n">adjacency_matrix</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Directed graph - use networkx for proper handling</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_numpy_array</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">normalized_laplacian_matrix</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">laplacian_matrix</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">L</span></div>
+
+
+
+<div class="viewcode-block" id="eigendecomposition">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.spectral.eigendecomposition">[docs]</a>
+<span class="k">def</span> <span class="nf">eigendecomposition</span><span class="p">(</span><span class="n">laplacian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform eigendecomposition of the Laplacian matrix.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    laplacian : numpy.ndarray</span>
+<span class="sd">        Graph Laplacian matrix</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        Tuple containing eigenvalues and eigenvectors</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># For symmetric matrices, use eigh which is faster and more accurate</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">laplacian</span><span class="p">,</span> <span class="n">laplacian</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">laplacian</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">laplacian</span><span class="p">)</span>
+        <span class="c1"># Sort by eigenvalues</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+        <span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
+    
+    <span class="k">return</span> <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span></div>
+
+
+
+<div class="viewcode-block" id="find_spectral_gap">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.spectral.find_spectral_gap">[docs]</a>
+<span class="k">def</span> <span class="nf">find_spectral_gap</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">min_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Identify the spectral gap in the eigenvalue spectrum.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eigenvalues : numpy.ndarray</span>
+<span class="sd">        Array of eigenvalues</span>
+<span class="sd">    min_index : int, optional</span>
+<span class="sd">        Minimum index to consider, by default 1</span>
+<span class="sd">    max_index : int, optional</span>
+<span class="sd">        Maximum index to consider, by default None</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        Tuple containing the index of the gap and the gap size</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">max_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">max_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+    
+    <span class="c1"># Compute differences between consecutive eigenvalues</span>
+    <span class="n">gaps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+    
+    <span class="c1"># Find the largest gap in the specified range</span>
+    <span class="n">search_range</span> <span class="o">=</span> <span class="n">gaps</span><span class="p">[</span><span class="n">min_index</span><span class="p">:</span><span class="n">max_index</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">search_range</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">min_index</span><span class="p">,</span> <span class="mi">0</span>
+    
+    <span class="n">max_gap_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">search_range</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_index</span>
+    <span class="n">max_gap</span> <span class="o">=</span> <span class="n">gaps</span><span class="p">[</span><span class="n">max_gap_idx</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">max_gap_idx</span><span class="p">,</span> <span class="n">max_gap</span></div>
+
+
+
+<div class="viewcode-block" id="compute_diffusion_modes">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.spectral.compute_diffusion_modes">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_diffusion_modes</span><span class="p">(</span><span class="n">laplacian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the first k diffusion modes of the network.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    laplacian : numpy.ndarray</span>
+<span class="sd">        Graph Laplacian matrix</span>
+<span class="sd">    k : int</span>
+<span class="sd">        Number of modes to compute</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        Tuple containing eigenvalues and eigenvectors for the first k modes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigendecomposition</span><span class="p">(</span><span class="n">laplacian</span><span class="p">)</span>
+    
+    <span class="c1"># Return the first k+1 modes (including the constant mode)</span>
+    <span class="k">return</span> <span class="n">eigenvalues</span><span class="p">[:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="p">:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="analyze_spectral_properties">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.spectral.analyze_spectral_properties">[docs]</a>
+<span class="k">def</span> <span class="nf">analyze_spectral_properties</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analyze spectral properties of the network.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eigenvalues : numpy.ndarray</span>
+<span class="sd">        Array of eigenvalues</span>
+<span class="sd">    eigenvectors : numpy.ndarray</span>
+<span class="sd">        Matrix of eigenvectors</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing spectral properties</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="c1"># Spectral gap</span>
+    <span class="n">gap_idx</span><span class="p">,</span> <span class="n">gap_size</span> <span class="o">=</span> <span class="n">find_spectral_gap</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+    <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;spectral_gap_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gap_idx</span>
+    <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;spectral_gap_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gap_size</span>
+    
+    <span class="c1"># Algebraic connectivity (second smallest eigenvalue)</span>
+    <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;algebraic_connectivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># Spectral radius (largest eigenvalue)</span>
+    <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;spectral_radius&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># Participation ratio of eigenvectors</span>
+    <span class="n">participation_ratios</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">eigenvectors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="n">pr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">v</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">v</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">participation_ratios</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span>
+    
+    <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;participation_ratios&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">participation_ratios</span><span class="p">)</span>
+    
+    <span class="c1"># Localization of eigenvectors</span>
+    <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;localization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;participation_ratios&#39;</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">properties</span></div>
+
+
+
+<div class="viewcode-block" id="compute_spectral_embedding">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.spectral.compute_spectral_embedding">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_spectral_embedding</span><span class="p">(</span><span class="n">laplacian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute spectral embedding of the network.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    laplacian : numpy.ndarray</span>
+<span class="sd">        Graph Laplacian matrix</span>
+<span class="sd">    dim : int, optional</span>
+<span class="sd">        Embedding dimension, by default 2</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        Spectral embedding matrix of shape (n_nodes, dim)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigendecomposition</span><span class="p">(</span><span class="n">laplacian</span><span class="p">)</span>
+    
+    <span class="c1"># Use the first non-trivial eigenvectors for embedding</span>
+    <span class="c1"># Skip the first eigenvector for connected graphs (constant)</span>
+    <span class="n">embedding</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="n">dim</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">embedding</span></div>
+
+
+
+<div class="viewcode-block" id="compute_diffusion_distance">
+<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.spectral.compute_diffusion_distance">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_diffusion_distance</span><span class="p">(</span><span class="n">laplacian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute diffusion distance matrix at time t.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    laplacian : numpy.ndarray</span>
+<span class="sd">        Graph Laplacian matrix</span>
+<span class="sd">    t : float, optional</span>
+<span class="sd">        Diffusion time, by default 1.0</span>
+<span class="sd">    k : int, optional</span>
+<span class="sd">        Number of eigenmodes to use, by default None (use all)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        Diffusion distance matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigendecomposition</span><span class="p">(</span><span class="n">laplacian</span><span class="p">)</span>
+    
+    <span class="c1"># Determine number of eigenmodes to use</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">))</span>
+    
+    <span class="c1"># Compute diffusion distance</span>
+    <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">laplacian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">distance_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">):</span>
+            <span class="c1"># Sum over eigenmodes</span>
+            <span class="n">distance_sq</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>  <span class="c1"># Skip the first eigenmode (constant)</span>
+                <span class="n">term</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="n">l</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">eigenvectors</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">-</span> <span class="n">eigenvectors</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">distance_sq</span> <span class="o">+=</span> <span class="n">term</span>
+            
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">distance_sq</span><span class="p">)</span>
+            <span class="n">distance_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance</span>
+            <span class="n">distance_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance</span>
+    
+    <span class="k">return</span> <span class="n">distance_matrix</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

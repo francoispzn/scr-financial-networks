@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Visualization Example &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Network Visualization Example</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#code-example">Code Example</a></li>
+<li><a class="reference internal" href="#visualization-types">Visualization Types</a><ul>
+<li><a class="reference internal" href="#static-visualizations">Static Visualizations</a></li>
+<li><a class="reference internal" href="#interactive-visualizations">Interactive Visualizations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#interpreting-the-visualizations">Interpreting the Visualizations</a></li>
+<li><a class="reference internal" href="#further-customization">Further Customization</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Network Visualization Example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/network_visualization.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="network-visualization-example">
+<h1>Network Visualization Example<a class="headerlink" href="#network-visualization-example" title="Link to this heading">¶</a></h1>
+<p>This example demonstrates how to visualize financial networks and their coarse-grained representations using the SCR-Financial-Networks framework.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>Visualizing financial networks is essential for understanding their structure, identifying key nodes, and analyzing contagion pathways. This example shows how to create various visualizations of banking networks, including:</p>
+<ol class="arabic simple">
+<li><p>Basic network graphs</p></li>
+<li><p>Spectral embeddings</p></li>
+<li><p>Coarse-grained network representations</p></li>
+<li><p>Dynamic visualizations of contagion spread</p></li>
+</ol>
+</section>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<p>Before running this example, ensure you have:</p>
+<ul class="simple">
+<li><p>Installed the SCR-Financial-Networks package</p></li>
+<li><p>Downloaded the required financial data (or use the provided sample data)</p></li>
+<li><p>Set up the conda environment with visualization dependencies</p></li>
+</ul>
+</section>
+<section id="code-example">
+<h2>Code Example<a class="headerlink" href="#code-example" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scr_financial</span> <span class="k">as</span> <span class="nn">scrf</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pyvis.network</span> <span class="kn">import</span> <span class="n">Network</span>
+
+<span class="c1"># Initialize data preprocessor</span>
+<span class="n">preprocessor</span> <span class="o">=</span> <span class="n">scrf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataPreprocessor</span><span class="p">(</span>
+    <span class="n">start_date</span><span class="o">=</span><span class="s1">&#39;2008-01-01&#39;</span><span class="p">,</span>
+    <span class="n">end_date</span><span class="o">=</span><span class="s1">&#39;2008-12-31&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Load bank data</span>
+<span class="n">preprocessor</span><span class="o">.</span><span class="n">load_bank_node_data</span><span class="p">({</span>
+    <span class="s1">&#39;solvency&#39;</span><span class="p">:</span> <span class="s1">&#39;EBA_transparency&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;liquidity&#39;</span><span class="p">:</span> <span class="s1">&#39;EBA_aggregated&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;market_risk&#39;</span><span class="p">:</span> <span class="s1">&#39;NYU_VLAB&#39;</span>
+<span class="p">})</span>
+
+<span class="c1"># Load network data</span>
+<span class="n">preprocessor</span><span class="o">.</span><span class="n">load_interbank_exposures</span><span class="p">(</span><span class="s1">&#39;ECB_TARGET2&#39;</span><span class="p">)</span>
+
+<span class="c1"># Initialize network builder</span>
+<span class="n">network_builder</span> <span class="o">=</span> <span class="n">scrf</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">FinancialNetworkBuilder</span><span class="p">(</span><span class="n">preprocessor</span><span class="p">)</span>
+
+<span class="c1"># Construct network for a specific time point</span>
+<span class="n">time_point</span> <span class="o">=</span> <span class="s1">&#39;2008-09-15&#39;</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">network_builder</span><span class="o">.</span><span class="n">construct_network</span><span class="p">(</span><span class="n">time_point</span><span class="p">)</span>
+
+<span class="c1"># Compute Laplacian and perform spectral analysis</span>
+<span class="n">network_builder</span><span class="o">.</span><span class="n">compute_laplacian</span><span class="p">()</span>
+<span class="n">network_builder</span><span class="o">.</span><span class="n">spectral_analysis</span><span class="p">()</span>
+
+<span class="c1"># Initialize spectral coarse-graining</span>
+<span class="n">scg</span> <span class="o">=</span> <span class="n">scrf</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">SpectralCoarseGraining</span><span class="p">(</span><span class="n">network_builder</span><span class="p">)</span>
+
+<span class="c1"># Find spectral gap and perform coarse-graining</span>
+<span class="n">k</span><span class="p">,</span> <span class="n">gap</span> <span class="o">=</span> <span class="n">network_builder</span><span class="o">.</span><span class="n">find_spectral_gap</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found spectral gap at k=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> with gap size </span><span class="si">{</span><span class="n">gap</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">scg</span><span class="o">.</span><span class="n">coarse_grain</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+<span class="c1"># Identify clusters</span>
+<span class="n">clusters</span> <span class="o">=</span> <span class="n">scg</span><span class="o">.</span><span class="n">identify_clusters</span><span class="p">()</span>
+
+<span class="c1"># Basic network visualization</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># Node colors based on CET1 ratio</span>
+<span class="n">cet1_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;CET1_ratio&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()]</span>
+<span class="n">node_colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">RdYlGn</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cet1_values</span><span class="p">)</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span>  <span class="c1"># Normalize to 0-1 range</span>
+
+<span class="c1"># Node sizes based on total assets</span>
+<span class="n">node_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;total_assets&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e9</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()]</span>
+
+<span class="c1"># Edge widths based on exposure weights</span>
+<span class="n">edge_widths</span> <span class="o">=</span> <span class="p">[</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()]</span>
+
+<span class="c1"># Draw the network</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span>
+    <span class="n">node_color</span><span class="o">=</span><span class="n">node_colors</span><span class="p">,</span>
+    <span class="n">node_size</span><span class="o">=</span><span class="n">node_sizes</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="n">edge_widths</span><span class="p">,</span>
+    <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span>
+<span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Banking Network on </span><span class="si">{</span><span class="n">time_point</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;banking_network.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+
+<span class="c1"># Visualize spectral embedding</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="c1"># Use first two non-trivial eigenvectors for 2D embedding</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvectors</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvectors</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">node_colors</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">node_sizes</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Spectral Embedding of Banking Network&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Eigenvector 1&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Eigenvector 2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;spectral_embedding.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+
+<span class="c1"># Visualize clusters</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># Color nodes by cluster</span>
+<span class="n">cluster_colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">tab10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">clusters</span><span class="p">)</span> <span class="o">%</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span>
+    <span class="n">node_color</span><span class="o">=</span><span class="n">cluster_colors</span><span class="p">,</span>
+    <span class="n">node_size</span><span class="o">=</span><span class="n">node_sizes</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="n">edge_widths</span><span class="p">,</span>
+    <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span>
+<span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Banking Network Clusters (k=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;banking_clusters.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create interactive visualization with pyvis</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="s2">&quot;800px&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;100%&quot;</span><span class="p">,</span> <span class="n">notebook</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Add nodes with attributes</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span>
+        <span class="n">node</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Bank: </span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s2">&lt;br&gt;CET1: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;CET1_ratio&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&lt;br&gt;Cluster: </span><span class="si">{</span><span class="n">clusters</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;total_assets&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e10</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;rgb(</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">cluster_colors</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">255</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">cluster_colors</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">255</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">cluster_colors</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="mi">255</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="p">)</span>
+
+<span class="c1"># Add edges with attributes</span>
+<span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Exposure: </span><span class="si">{</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> billion EUR&quot;</span>
+    <span class="p">)</span>
+
+<span class="c1"># Set physics options</span>
+<span class="n">net</span><span class="o">.</span><span class="n">barnes_hut</span><span class="p">(</span><span class="n">gravity</span><span class="o">=-</span><span class="mi">80000</span><span class="p">,</span> <span class="n">central_gravity</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">spring_length</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+
+<span class="c1"># Save interactive visualization</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_graph</span><span class="p">(</span><span class="s2">&quot;interactive_banking_network.html&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="visualization-types">
+<h2>Visualization Types<a class="headerlink" href="#visualization-types" title="Link to this heading">¶</a></h2>
+<section id="static-visualizations">
+<h3>Static Visualizations<a class="headerlink" href="#static-visualizations" title="Link to this heading">¶</a></h3>
+<p>The example generates several static visualizations using matplotlib:</p>
+<ol class="arabic simple">
+<li><p><strong>Basic Network Graph</strong>: Shows the banking network with nodes colored by CET1 ratio and sized by total assets</p></li>
+<li><p><strong>Spectral Embedding</strong>: Projects banks into a 2D space based on the first two non-trivial eigenvectors</p></li>
+<li><p><strong>Cluster Visualization</strong>: Colors nodes according to their cluster assignment from spectral coarse-graining</p></li>
+</ol>
+</section>
+<section id="interactive-visualizations">
+<h3>Interactive Visualizations<a class="headerlink" href="#interactive-visualizations" title="Link to this heading">¶</a></h3>
+<p>The example also creates interactive visualizations using pyvis:</p>
+<ol class="arabic simple">
+<li><p><strong>Interactive Network</strong>: Allows zooming, panning, and hovering for detailed information</p></li>
+<li><p><strong>Dynamic Contagion Simulation</strong>: Animates the spread of shocks through the network</p></li>
+</ol>
+</section>
+</section>
+<section id="interpreting-the-visualizations">
+<h2>Interpreting the Visualizations<a class="headerlink" href="#interpreting-the-visualizations" title="Link to this heading">¶</a></h2>
+<p>When analyzing these visualizations, look for:</p>
+<ul class="simple">
+<li><p><strong>Highly connected nodes</strong>: These represent systemically important banks</p></li>
+<li><p><strong>Clusters</strong>: Groups of banks that are more strongly connected to each other</p></li>
+<li><p><strong>Spectral embedding patterns</strong>: Banks that are close in the embedding are likely to influence each other</p></li>
+<li><p><strong>Color patterns</strong>: Identify banks with low capital ratios (red) that might be vulnerable</p></li>
+</ul>
+</section>
+<section id="further-customization">
+<h2>Further Customization<a class="headerlink" href="#further-customization" title="Link to this heading">¶</a></h2>
+<p>You can customize these visualizations by:</p>
+<ul class="simple">
+<li><p>Changing the node attributes used for coloring and sizing</p></li>
+<li><p>Adjusting the layout algorithm (e.g., force-directed, circular)</p></li>
+<li><p>Adding time-series animations to show network evolution</p></li>
+<li><p>Incorporating additional financial indicators</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="black_week_simulation.html"><span class="doc">Black Week Simulation Example</span></a> - For simulating crisis scenarios</p></li>
+<li><p><a class="reference internal" href="../api/network_construction.html"><span class="doc">Network Construction Module</span></a> - Documentation of the network construction module</p></li>
+<li><p><a class="reference internal" href="../api/coarse_graining.html"><span class="doc">Coarse-Graining Module</span></a> - Documentation of the coarse-graining module</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

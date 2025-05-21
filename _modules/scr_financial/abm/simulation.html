@@ -1,0 +1,444 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.abm.simulation &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scr_financial.abm.simulation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scr_financial.abm.simulation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Banking system simulation for financial network analysis.</span>
+
+<span class="sd">This module provides the BankingSystemSimulation class for simulating</span>
+<span class="sd">interbank lending and contagion dynamics.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="kn">from</span> <span class="nn">.bank_agent</span> <span class="kn">import</span> <span class="n">BankAgent</span>
+
+
+<div class="viewcode-block" id="BankingSystemSimulation">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation">[docs]</a>
+<span class="k">class</span> <span class="nc">BankingSystemSimulation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements the agent-based simulation engine.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bank_data : dict</span>
+<span class="sd">        Dictionary mapping bank IDs to their initial states</span>
+<span class="sd">    network_data : dict</span>
+<span class="sd">        Dictionary representing the network structure</span>
+<span class="sd">    system_indicators : dict</span>
+<span class="sd">        Dictionary of system-wide indicators</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    banks : dict</span>
+<span class="sd">        Dictionary of bank agents</span>
+<span class="sd">    network : dict</span>
+<span class="sd">        Current network structure</span>
+<span class="sd">    time : int</span>
+<span class="sd">        Current simulation time</span>
+<span class="sd">    history : list</span>
+<span class="sd">        History of system states</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="BankingSystemSimulation.__init__">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> 
+        <span class="n">network_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> 
+        <span class="n">system_indicators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the simulation with bank data, network data, and system indicators.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">banks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span> <span class="o">=</span> <span class="n">system_indicators</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Initialize bank agents</span>
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">bank_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">BankAgent</span><span class="p">(</span><span class="n">bank_id</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            
+        <span class="c1"># Initialize connections</span>
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">connections</span> <span class="ow">in</span> <span class="n">network_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">target_id</span><span class="p">,</span> <span class="n">strength</span> <span class="ow">in</span> <span class="n">connections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">target_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">target_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">strength</span></div>
+
+    
+<div class="viewcode-block" id="BankingSystemSimulation.calculate_market_sentiment">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.calculate_market_sentiment">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_market_sentiment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate overall market sentiment based on system indicators.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Market sentiment (0-1 scale, 1 being positive)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Simple model: inverse of CISS (higher CISS = lower sentiment)</span>
+        <span class="n">ciss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CISS&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        
+        <span class="c1"># Normalize to 0-1 range, where 1 is positive sentiment</span>
+        <span class="n">sentiment</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">ciss</span><span class="p">))</span>
+        
+        <span class="c1"># Adjust based on funding stress if available</span>
+        <span class="k">if</span> <span class="s1">&#39;funding_stress&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="p">:</span>
+            <span class="n">funding_stress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="p">[</span><span class="s1">&#39;funding_stress&#39;</span><span class="p">]</span>
+            <span class="n">sentiment</span> <span class="o">*=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">funding_stress</span><span class="p">))</span>
+        
+        <span class="k">return</span> <span class="n">sentiment</span></div>
+
+    
+<div class="viewcode-block" id="BankingSystemSimulation.apply_external_shock">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.apply_external_shock">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_external_shock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shock_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply an external shock to the system.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shock_params : dict</span>
+<span class="sd">            Dictionary containing shock parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Apply bank-specific shocks</span>
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">shock</span> <span class="ow">in</span> <span class="n">shock_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">bank_id</span> <span class="o">==</span> <span class="s1">&#39;system&#39;</span><span class="p">:</span>
+                <span class="c1"># System-wide shock</span>
+                <span class="k">for</span> <span class="n">indicator</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">shock</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">indicator</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="p">[</span><span class="n">indicator</span><span class="p">]</span> <span class="o">+=</span> <span class="n">value</span>
+            <span class="k">elif</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">:</span>
+                <span class="c1"># Bank-specific shock</span>
+                <span class="n">new_state</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">shock</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+                        <span class="n">new_state</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">value</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span>
+                
+                <span class="c1"># Let the bank respond to the shock</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">respond_to_shock</span><span class="p">(</span><span class="n">shock</span><span class="p">)</span>
+                
+                <span class="c1"># Process response actions</span>
+                <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="s1">&#39;actions&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;actions&#39;</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;reduce_lending&#39;</span><span class="p">:</span>
+                            <span class="c1"># Reduce connections to other banks</span>
+                            <span class="k">for</span> <span class="n">target_id</span><span class="p">,</span> <span class="n">reduction</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;targets&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                                <span class="k">if</span> <span class="n">target_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">target_id</span><span class="p">]</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">reduction</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="BankingSystemSimulation.simulate_interbank_lending">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.simulate_interbank_lending">[docs]</a>
+    <span class="k">def</span> <span class="nf">simulate_interbank_lending</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulate one round of interbank lending decisions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get current bank states for decision-making</span>
+        <span class="n">current_states</span> <span class="o">=</span> <span class="p">{</span><span class="n">bank_id</span><span class="p">:</span> <span class="n">bank</span><span class="o">.</span><span class="n">state</span> <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        
+        <span class="c1"># Calculate market sentiment</span>
+        <span class="n">sentiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_market_sentiment</span><span class="p">()</span>
+        
+        <span class="c1"># Each bank makes lending decisions</span>
+        <span class="n">lending_decisions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">decision</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">decide_lending_action</span><span class="p">(</span><span class="n">current_states</span><span class="p">,</span> <span class="n">sentiment</span><span class="p">)</span>
+            <span class="n">lending_decisions</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">decision</span>
+        
+        <span class="c1"># Each bank makes borrowing decisions</span>
+        <span class="n">borrowing_decisions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">decision</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">decide_borrowing_action</span><span class="p">(</span><span class="n">current_states</span><span class="p">,</span> <span class="n">sentiment</span><span class="p">)</span>
+            <span class="n">borrowing_decisions</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">decision</span>
+        
+        <span class="c1"># Match lending and borrowing decisions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_match_lending_borrowing</span><span class="p">(</span><span class="n">lending_decisions</span><span class="p">,</span> <span class="n">borrowing_decisions</span><span class="p">)</span>
+        
+        <span class="c1"># Update network data based on new connections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_network</span><span class="p">()</span></div>
+
+    
+    <span class="k">def</span> <span class="nf">_match_lending_borrowing</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">lending_decisions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> 
+        <span class="n">borrowing_decisions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Match lending and borrowing decisions between banks.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lending_decisions : dict</span>
+<span class="sd">            Dictionary of lending decisions by bank</span>
+<span class="sd">        borrowing_decisions : dict</span>
+<span class="sd">            Dictionary of borrowing decisions by bank</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Process lending decisions</span>
+        <span class="k">for</span> <span class="n">lender_id</span><span class="p">,</span> <span class="n">decision</span> <span class="ow">in</span> <span class="n">lending_decisions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">decision</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;lend&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">borrower_id</span><span class="p">,</span> <span class="n">amount</span> <span class="ow">in</span> <span class="n">decision</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;allocations&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="c1"># Check if borrower wants to borrow</span>
+                    <span class="n">borrower_decision</span> <span class="o">=</span> <span class="n">borrowing_decisions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">borrower_id</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="k">if</span> <span class="n">borrower_decision</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;borrow&quot;</span><span class="p">:</span>
+                        <span class="c1"># Get maximum amount borrower wants from this lender</span>
+                        <span class="n">max_borrow</span> <span class="o">=</span> <span class="n">borrower_decision</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lender_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                        
+                        <span class="c1"># Determine actual amount (minimum of offer and request)</span>
+                        <span class="n">actual_amount</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">max_borrow</span><span class="p">)</span>
+                        
+                        <span class="k">if</span> <span class="n">actual_amount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="c1"># Update lender&#39;s state</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">lender_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;interbank_assets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">lender_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;interbank_assets&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">actual_amount</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">lender_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;cash&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">lender_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cash&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">actual_amount</span>
+                            
+                            <span class="c1"># Update borrower&#39;s state</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">borrower_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;interbank_liabilities&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">borrower_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;interbank_liabilities&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">actual_amount</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">borrower_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;cash&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">borrower_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cash&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">actual_amount</span>
+                            
+                            <span class="c1"># Update connection strength</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">lender_id</span><span class="p">]</span><span class="o">.</span><span class="n">update_connections</span><span class="p">(</span><span class="n">borrower_id</span><span class="p">,</span> <span class="n">actual_amount</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="BankingSystemSimulation.update_network">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.update_network">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_network</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update network data based on current bank connections.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">connections</span></div>
+
+    
+<div class="viewcode-block" id="BankingSystemSimulation.run_simulation">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.run_simulation">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">shocks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the simulation for a specified number of steps.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        steps : int</span>
+<span class="sd">            Number of simulation steps</span>
+<span class="sd">        shocks : dict, optional</span>
+<span class="sd">            Dictionary mapping time steps to shock parameters</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            History of system states</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+            <span class="c1"># Apply any scheduled shocks</span>
+            <span class="k">if</span> <span class="n">shocks</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="ow">in</span> <span class="n">shocks</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">apply_external_shock</span><span class="p">(</span><span class="n">shocks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">])</span>
+            
+            <span class="c1"># Run interbank lending simulation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulate_interbank_lending</span><span class="p">()</span>
+            
+            <span class="c1"># Record system state</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">record_state</span><span class="p">()</span>
+            
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span></div>
+
+    
+<div class="viewcode-block" id="BankingSystemSimulation.record_state">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.record_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">record_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Record the current state of the system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+            <span class="s2">&quot;bank_states&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">bank_id</span><span class="p">:</span> <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="s2">&quot;network&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="s2">&quot;system_indicators&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="p">}</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="BankingSystemSimulation.get_adjacency_matrix">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.get_adjacency_matrix">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the adjacency matrix of the current network.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            Adjacency matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get list of bank IDs</span>
+        <span class="n">bank_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">)</span>
+        
+        <span class="c1"># Create empty adjacency matrix</span>
+        <span class="n">adj_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        
+        <span class="c1"># Fill with connection weights</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+                    <span class="n">adj_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+        
+        <span class="k">return</span> <span class="n">adj_matrix</span></div>
+
+    
+<div class="viewcode-block" id="BankingSystemSimulation.get_bank_metrics">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.get_bank_metrics">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_bank_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get current metrics for all banks.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.DataFrame</span>
+<span class="sd">            DataFrame containing bank metrics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bank_id&quot;</span><span class="p">:</span> <span class="n">bank_id</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">}</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="BankingSystemSimulation.get_system_metrics">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.get_system_metrics">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_system_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get current system-wide metrics.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Dictionary of system metrics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        
+        <span class="c1"># Add derived metrics</span>
+        
+        <span class="c1"># Average CET1 ratio</span>
+        <span class="n">cet1_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CET1_ratio&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;avg_CET1_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cet1_values</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">cet1_values</span><span class="p">)</span> <span class="k">if</span> <span class="n">cet1_values</span> <span class="k">else</span> <span class="mi">0</span>
+        
+        <span class="c1"># Average LCR</span>
+        <span class="n">lcr_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LCR&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;avg_LCR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">lcr_values</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">lcr_values</span><span class="p">)</span> <span class="k">if</span> <span class="n">lcr_values</span> <span class="k">else</span> <span class="mi">0</span>
+        
+        <span class="c1"># Network density</span>
+        <span class="n">adj_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">adj_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;network_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">adj_matrix</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;network_density&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="k">return</span> <span class="n">metrics</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

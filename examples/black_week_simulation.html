@@ -1,0 +1,183 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Black Week Simulation Example &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Black Week Simulation Example</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#code-example">Code Example</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Black Week Simulation Example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/black_week_simulation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="black-week-simulation-example">
+<h1>Black Week Simulation Example<a class="headerlink" href="#black-week-simulation-example" title="Link to this heading">¶</a></h1>
+<p>This example demonstrates how to use the SCR-Financial-Networks framework to simulate the “Black Week” of the 2008 financial crisis, focusing on interbank contagion dynamics.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The 2008 financial crisis reached a critical point during the week of September 15-19, 2008, often referred to as “Black Week.” During this period, Lehman Brothers filed for bankruptcy, AIG received a government bailout, and financial markets experienced extreme stress.</p>
+<p>This example shows how to:</p>
+<ol class="arabic simple">
+<li><p>Set up the SCR-ABM framework with historical data</p></li>
+<li><p>Define shock scenarios based on actual events</p></li>
+<li><p>Run simulations with both full and coarse-grained networks</p></li>
+<li><p>Analyze and visualize the results</p></li>
+</ol>
+</section>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<p>Before running this example, ensure you have:</p>
+<ul class="simple">
+<li><p>Installed the SCR-Financial-Networks package</p></li>
+<li><p>Downloaded the required historical data (or use the provided sample data)</p></li>
+<li><p>Set up the conda environment as described in the installation guide</p></li>
+</ul>
+</section>
+<section id="code-example">
+<h2>Code Example<a class="headerlink" href="#code-example" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scr_financial</span> <span class="k">as</span> <span class="nn">scrf</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="c1"># Initialize data preprocessor</span>
+<span class="n">preprocessor</span> <span class="o">=</span> <span class="n">scrf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataPreprocessor</span><span class="p">(</span>
+    <span class="n">start_date</span><span class="o">=</span><span class="s1">&#39;2008-01-01&#39;</span><span class="p">,</span>
+    <span class="n">end_date</span><span class="o">=</span><span class="s1">&#39;2008-12-31&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Load bank data for selected European banks</span>
+<span class="n">preprocessor</span><span class="o">.</span><span class="n">load_bank_node_data</span><span class="p">({</span>
+    <span class="s1">&#39;solvency&#39;</span><span class="p">:</span> <span class="s1">&#39;EBA_transparency&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;liquidity&#39;</span><span class="p">:</span> <span class="s1">&#39;EBA_aggregated&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;market_risk&#39;</span><span class="p">:</span> <span class="s1">&#39;NYU_VLAB&#39;</span>
+<span class="p">})</span>
+
+<span class="c1"># Load network data</span>
+<span class="n">preprocessor</span><span class="o">.</span><span class="n">load_interbank_exposures</span><span class="p">(</span><span class="s1">&#39;ECB_TARGET2&#39;</span><span class="p">)</span>
+
+<span class="c1"># Initialize framework</span>
+<span class="n">framework</span> <span class="o">=</span> <span class="n">scrf</span><span class="o">.</span><span class="n">SCG_ABM_Framework</span><span class="p">(</span><span class="n">preprocessor</span><span class="p">)</span>
+
+<span class="c1"># Set up for Black Week 2008 analysis</span>
+<span class="n">black_week_start</span> <span class="o">=</span> <span class="s1">&#39;2008-09-15&#39;</span>  <span class="c1"># Lehman Brothers bankruptcy</span>
+<span class="n">framework</span><span class="o">.</span><span class="n">initialize_for_timepoint</span><span class="p">(</span><span class="n">black_week_start</span><span class="p">)</span>
+
+<span class="c1"># Define shocks based on historical events</span>
+<span class="n">shocks</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;Lehman_Brothers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;CET1_ratio&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;LCR&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">30</span><span class="p">}},</span>  <span class="c1"># Day 1: Lehman shock</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;AIG&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;CET1_ratio&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;LCR&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">25</span><span class="p">}},</span>              <span class="c1"># Day 3: AIG bailout</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;system&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;funding_stress&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">}}</span>                      <span class="c1"># Day 5: General funding stress</span>
+<span class="p">}</span>
+
+<span class="c1"># Run simulation with full network</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running simulation with full network...&quot;</span><span class="p">)</span>
+<span class="n">full_results</span> <span class="o">=</span> <span class="n">framework</span><span class="o">.</span><span class="n">run_simulation</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">shocks</span><span class="p">)</span>
+
+<span class="c1"># Run simulation with coarse-grained network</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running simulation with coarse-grained network...&quot;</span><span class="p">)</span>
+<span class="n">cg_results</span><span class="p">,</span> <span class="n">clusters</span> <span class="o">=</span> <span class="n">framework</span><span class="o">.</span><span class="n">run_coarse_grained_simulation</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">shocks</span><span class="p">)</span>
+
+<span class="c1"># Compare results</span>
+<span class="n">comparison</span> <span class="o">=</span> <span class="n">framework</span><span class="o">.</span><span class="n">compare_full_vs_coarse_grained</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">shocks</span><span class="p">)</span>
+
+<span class="c1"># Visualize results</span>
+<span class="n">scrf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">visualize_results</span><span class="p">(</span><span class="n">full_results</span><span class="p">,</span> <span class="n">cg_results</span><span class="p">,</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

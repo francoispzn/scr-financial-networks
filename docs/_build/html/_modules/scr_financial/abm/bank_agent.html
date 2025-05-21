@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.abm.bank_agent &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scr_financial.abm.bank_agent</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scr_financial.abm.bank_agent</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Bank agent implementation for financial network simulations.</span>
+
+<span class="sd">This module provides the BankAgent class which represents a bank in the</span>
+<span class="sd">agent-based model and implements its decision-making behaviors.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
+
+<span class="kn">from</span> <span class="nn">.decision_models</span> <span class="kn">import</span> <span class="n">DefaultDecisionModel</span>
+
+
+<div class="viewcode-block" id="BankAgent">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent">[docs]</a>
+<span class="k">class</span> <span class="nc">BankAgent</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a bank in the agent-based model.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bank_id : str</span>
+<span class="sd">        Unique identifier for the bank</span>
+<span class="sd">    initial_state : dict</span>
+<span class="sd">        Dictionary containing initial bank attributes</span>
+<span class="sd">    decision_model : object, optional</span>
+<span class="sd">        Decision model to use for agent behavior, by default DefaultDecisionModel()</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id : str</span>
+<span class="sd">        Bank identifier</span>
+<span class="sd">    state : dict</span>
+<span class="sd">        Current state of the bank</span>
+<span class="sd">    connections : dict</span>
+<span class="sd">        Dictionary of connections to other banks</span>
+<span class="sd">    memory : list</span>
+<span class="sd">        List of past states</span>
+<span class="sd">    memory_length : int</span>
+<span class="sd">        Maximum number of past states to remember</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="BankAgent.__init__">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">bank_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">initial_state</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">decision_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a bank agent with an ID and initial state.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">bank_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">initial_state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory_length</span> <span class="o">=</span> <span class="mi">10</span>
+        
+        <span class="c1"># Set default decision model if none provided</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decision_model</span> <span class="o">=</span> <span class="n">decision_model</span> <span class="k">if</span> <span class="n">decision_model</span> <span class="k">else</span> <span class="n">DefaultDecisionModel</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="BankAgent.update_state">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.update_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the bank&#39;s state with new information.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_state : dict</span>
+<span class="sd">            Dictionary containing updated attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Store current state in memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        
+        <span class="c1"># Limit memory length</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">memory_length</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">memory_length</span><span class="p">:]</span>
+        
+        <span class="c1"># Update state</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">new_state</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+    
+<div class="viewcode-block" id="BankAgent.assess_solvency">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.assess_solvency">[docs]</a>
+    <span class="k">def</span> <span class="nf">assess_solvency</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine if the bank is solvent based on capital ratios.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the bank is solvent, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;CET1_ratio&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;CET1_ratio&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">4.5</span>  <span class="c1"># Minimum CET1 requirement</span>
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Default to solvent if no data</span></div>
+
+    
+<div class="viewcode-block" id="BankAgent.assess_liquidity">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.assess_liquidity">[docs]</a>
+    <span class="k">def</span> <span class="nf">assess_liquidity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine if the bank has adequate liquidity.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the bank has adequate liquidity, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;LCR&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;LCR&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">100</span>  <span class="c1"># LCR requirement</span>
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Default to liquid if no data</span></div>
+
+    
+<div class="viewcode-block" id="BankAgent.calculate_lending_capacity">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.calculate_lending_capacity">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_lending_capacity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate how much the bank can lend to other banks.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Lending capacity in currency units</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Simple model: lending capacity is a function of excess liquidity and capital</span>
+        
+        <span class="c1"># Base capacity from total assets</span>
+        <span class="k">if</span> <span class="s1">&#39;total_assets&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+            <span class="n">base_capacity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;total_assets&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.1</span>  <span class="c1"># 10% of assets</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_capacity</span> <span class="o">=</span> <span class="mf">1e9</span>  <span class="c1"># Default value</span>
+        
+        <span class="c1"># Adjust for liquidity</span>
+        <span class="n">liquidity_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">if</span> <span class="s1">&#39;LCR&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+            <span class="n">excess_liquidity</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;LCR&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
+            <span class="n">liquidity_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">excess_liquidity</span>
+        
+        <span class="c1"># Adjust for capital</span>
+        <span class="n">capital_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">if</span> <span class="s1">&#39;CET1_ratio&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+            <span class="n">excess_capital</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;CET1_ratio&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mf">8.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">4.0</span>
+            <span class="n">capital_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">excess_capital</span>
+        
+        <span class="k">return</span> <span class="n">base_capacity</span> <span class="o">*</span> <span class="n">liquidity_factor</span> <span class="o">*</span> <span class="n">capital_factor</span></div>
+
+    
+<div class="viewcode-block" id="BankAgent.decide_lending_action">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.decide_lending_action">[docs]</a>
+    <span class="k">def</span> <span class="nf">decide_lending_action</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">potential_borrowers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> 
+        <span class="n">market_sentiment</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decide lending actions based on current state and market conditions.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        potential_borrowers : dict</span>
+<span class="sd">            Dictionary mapping bank IDs to their states</span>
+<span class="sd">        market_sentiment : float</span>
+<span class="sd">            Market sentiment indicator (0-1 scale, 1 being positive)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Dictionary containing lending decisions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use decision model to make lending decisions</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision_model</span><span class="o">.</span><span class="n">decide_lending_action</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> 
+            <span class="n">potential_borrowers</span><span class="p">,</span> 
+            <span class="n">market_sentiment</span>
+        <span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="BankAgent.decide_borrowing_action">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.decide_borrowing_action">[docs]</a>
+    <span class="k">def</span> <span class="nf">decide_borrowing_action</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">potential_lenders</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> 
+        <span class="n">market_sentiment</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decide borrowing actions based on current state and market conditions.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        potential_lenders : dict</span>
+<span class="sd">            Dictionary mapping bank IDs to their states</span>
+<span class="sd">        market_sentiment : float</span>
+<span class="sd">            Market sentiment indicator (0-1 scale, 1 being positive)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Dictionary containing borrowing decisions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use decision model to make borrowing decisions</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision_model</span><span class="o">.</span><span class="n">decide_borrowing_action</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> 
+            <span class="n">potential_lenders</span><span class="p">,</span> 
+            <span class="n">market_sentiment</span>
+        <span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="BankAgent.respond_to_shock">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.respond_to_shock">[docs]</a>
+    <span class="k">def</span> <span class="nf">respond_to_shock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shock_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Respond to an external shock.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shock_params : dict</span>
+<span class="sd">            Dictionary containing shock parameters</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Dictionary containing response actions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use decision model to determine response</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision_model</span><span class="o">.</span><span class="n">respond_to_shock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shock_params</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="BankAgent.update_connections">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.update_connections">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bank_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update connection strength with another bank.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bank_id : str</span>
+<span class="sd">            Identifier of the connected bank</span>
+<span class="sd">        weight : float</span>
+<span class="sd">            New connection weight</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span></div>
+
+    
+<div class="viewcode-block" id="BankAgent.get_connection_strength">
+<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent.get_connection_strength">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_connection_strength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bank_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get connection strength with another bank.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bank_id : str</span>
+<span class="sd">            Identifier of the connected bank</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Connection strength</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bank_id</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

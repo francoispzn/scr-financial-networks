@@ -1,0 +1,1174 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.network package &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">scr_financial.network package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-scr_financial.network.builder">scr_financial.network.builder module</a><ul>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.G"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.G</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.adjacency_matrix</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.laplacian"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.laplacian</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.eigenvalues"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.eigenvalues</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.eigenvectors"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.eigenvectors</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.__init__"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.construct_network"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.construct_network()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.compute_laplacian"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.compute_laplacian()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.spectral_analysis"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.spectral_analysis()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.find_spectral_gap"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.find_spectral_gap()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.get_node_attribute_matrix"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.get_node_attribute_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.get_edge_weight_matrix"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.get_edge_weight_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.compute_centrality_measures"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.compute_centrality_measures()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder.compute_community_structure"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.compute_community_structure()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-scr_financial.network.coarse_graining">scr_financial.network.coarse_graining module</a><ul>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grained_laplacian"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.coarse_grained_laplacian</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grained_adjacency"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.coarse_grained_adjacency</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.rescaled_adjacency"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.rescaled_adjacency</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.clusters"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.clusters</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.__init__"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grain"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.coarse_grain()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.rescale"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.rescale()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.identify_clusters"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.identify_clusters()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.create_coarse_grained_graph"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.create_coarse_grained_graph()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.map_node_to_cluster"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.map_node_to_cluster()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.compute_coarse_graining_error"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.compute_coarse_graining_error()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.compare_diffusion_dynamics"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.compare_diffusion_dynamics()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-scr_financial.network.spectral">scr_financial.network.spectral module</a><ul>
+<li><a class="reference internal" href="#scr_financial.network.spectral.compute_laplacian"><code class="docutils literal notranslate"><span class="pre">compute_laplacian()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.spectral.eigendecomposition"><code class="docutils literal notranslate"><span class="pre">eigendecomposition()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.spectral.find_spectral_gap"><code class="docutils literal notranslate"><span class="pre">find_spectral_gap()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.spectral.compute_diffusion_modes"><code class="docutils literal notranslate"><span class="pre">compute_diffusion_modes()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.spectral.analyze_spectral_properties"><code class="docutils literal notranslate"><span class="pre">analyze_spectral_properties()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.spectral.compute_spectral_embedding"><code class="docutils literal notranslate"><span class="pre">compute_spectral_embedding()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.spectral.compute_diffusion_distance"><code class="docutils literal notranslate"><span class="pre">compute_diffusion_distance()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-scr_financial.network">Module contents</a><ul>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.G"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.G</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.adjacency_matrix</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.laplacian"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.laplacian</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.eigenvalues"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.eigenvalues</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.eigenvectors"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.eigenvectors</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.__init__"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.construct_network"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.construct_network()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.compute_laplacian"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.compute_laplacian()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.spectral_analysis"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.spectral_analysis()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.find_spectral_gap"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.find_spectral_gap()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.get_node_attribute_matrix"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.get_node_attribute_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.get_edge_weight_matrix"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.get_edge_weight_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.compute_centrality_measures"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.compute_centrality_measures()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder.compute_community_structure"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder.compute_community_structure()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scr_financial.network.find_spectral_gap"><code class="docutils literal notranslate"><span class="pre">find_spectral_gap()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.compute_diffusion_modes"><code class="docutils literal notranslate"><span class="pre">compute_diffusion_modes()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining</span></code></a><ul>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.coarse_grained_laplacian"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.coarse_grained_laplacian</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.coarse_grained_adjacency"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.coarse_grained_adjacency</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.rescaled_adjacency"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.rescaled_adjacency</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.clusters"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.clusters</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.__init__"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.coarse_grain"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.coarse_grain()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.rescale"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.rescale()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.identify_clusters"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.identify_clusters()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.create_coarse_grained_graph"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.create_coarse_grained_graph()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.map_node_to_cluster"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.map_node_to_cluster()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.compute_coarse_graining_error"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.compute_coarse_graining_error()</span></code></a></li>
+<li><a class="reference internal" href="#scr_financial.network.SpectralCoarseGraining.compare_diffusion_dynamics"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining.compare_diffusion_dynamics()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">scr_financial.network package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/scr_financial.network.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scr-financial-network-package">
+<h1>scr_financial.network package<a class="headerlink" href="#scr-financial-network-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-scr_financial.network.builder">
+<span id="scr-financial-network-builder-module"></span><h2>scr_financial.network.builder module<a class="headerlink" href="#module-scr_financial.network.builder" title="Link to this heading">¶</a></h2>
+<p>Network builder for financial network analysis.</p>
+<p>This module provides the FinancialNetworkBuilder class for constructing
+financial networks from preprocessed data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.network.builder.</span></span><span class="sig-name descname"><span class="pre">FinancialNetworkBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preprocessor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Constructs financial networks from preprocessed data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>preprocessor</strong> (<a class="reference internal" href="scr_financial.data.html#scr_financial.data.preprocessor.DataPreprocessor" title="scr_financial.data.preprocessor.DataPreprocessor"><em>DataPreprocessor</em></a>) – Preprocessor containing the data to build the network from</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.G">
+<span class="sig-name descname"><span class="pre">G</span></span><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.G" title="Link to this definition">¶</a></dt>
+<dd><p>NetworkX graph representing the financial network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.4.2)">networkx.Graph</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.adjacency_matrix">
+<span class="sig-name descname"><span class="pre">adjacency_matrix</span></span><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.adjacency_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Sparse adjacency matrix of the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.15.3)">scipy.sparse.csr_matrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.laplacian">
+<span class="sig-name descname"><span class="pre">laplacian</span></span><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.laplacian" title="Link to this definition">¶</a></dt>
+<dd><p>Graph Laplacian matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.15.3)">scipy.sparse.csr_matrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.eigenvalues">
+<span class="sig-name descname"><span class="pre">eigenvalues</span></span><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.eigenvalues" title="Link to this definition">¶</a></dt>
+<dd><p>Eigenvalues of the Laplacian</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.eigenvectors">
+<span class="sig-name descname"><span class="pre">eigenvectors</span></span><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.eigenvectors" title="Link to this definition">¶</a></dt>
+<dd><p>Eigenvectors of the Laplacian</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preprocessor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the network builder with preprocessed data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>preprocessor</strong> (<a class="reference internal" href="scr_financial.data.html#scr_financial.data.preprocessor.DataPreprocessor" title="scr_financial.data.preprocessor.DataPreprocessor"><em>DataPreprocessor</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.construct_network">
+<span class="sig-name descname"><span class="pre">construct_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weight_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interbank_exposures'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.construct_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.construct_network" title="Link to this definition">¶</a></dt>
+<dd><p>Construct network for a specific time point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_point</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>pd.Timestamp</em>) – Date for which to construct the network</p></li>
+<li><p><strong>edge_weight_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Type of edge weight to use, by default ‘interbank_exposures’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Constructed financial network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.4.2)">networkx.Graph</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.compute_laplacian">
+<span class="sig-name descname"><span class="pre">compute_laplacian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.compute_laplacian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.compute_laplacian" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the graph Laplacian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>normalized</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to compute the normalized Laplacian, by default True</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Graph Laplacian matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.15.3)">scipy.sparse.csr_matrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.spectral_analysis">
+<span class="sig-name descname"><span class="pre">spectral_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.spectral_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.spectral_analysis" title="Link to this definition">¶</a></dt>
+<dd><p>Perform spectral analysis of the Laplacian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing eigenvalues and eigenvectors</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.find_spectral_gap">
+<span class="sig-name descname"><span class="pre">find_spectral_gap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.find_spectral_gap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.find_spectral_gap" title="Link to this definition">¶</a></dt>
+<dd><p>Identify the spectral gap for coarse-graining.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing the index of the gap and the gap size</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.get_node_attribute_matrix">
+<span class="sig-name descname"><span class="pre">get_node_attribute_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.get_node_attribute_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.get_node_attribute_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Get matrix of node attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Node attribute to extract</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matrix of node attributes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.get_edge_weight_matrix">
+<span class="sig-name descname"><span class="pre">get_edge_weight_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.get_edge_weight_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.get_edge_weight_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Get matrix of edge weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of edge weights</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.compute_centrality_measures">
+<span class="sig-name descname"><span class="pre">compute_centrality_measures</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.compute_centrality_measures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.compute_centrality_measures" title="Link to this definition">¶</a></dt>
+<dd><p>Compute various centrality measures for the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary mapping centrality types to dictionaries of node centralities</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.builder.FinancialNetworkBuilder.compute_community_structure">
+<span class="sig-name descname"><span class="pre">compute_community_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'louvain'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.compute_community_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.builder.FinancialNetworkBuilder.compute_community_structure" title="Link to this definition">¶</a></dt>
+<dd><p>Compute community structure of the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Community detection method, by default ‘louvain’</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping nodes to community IDs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.network.coarse_graining">
+<span id="scr-financial-network-coarse-graining-module"></span><h2>scr_financial.network.coarse_graining module<a class="headerlink" href="#module-scr_financial.network.coarse_graining" title="Link to this heading">¶</a></h2>
+<p>Spectral coarse-graining for financial networks.</p>
+<p>This module implements spectral coarse-graining techniques for simplifying
+financial networks while preserving their essential structural and dynamic properties.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.network.coarse_graining.</span></span><span class="sig-name descname"><span class="pre">SpectralCoarseGraining</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network_builder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Implements spectral coarse-graining for financial networks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>network_builder</strong> (<a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder" title="scr_financial.network.builder.FinancialNetworkBuilder"><em>FinancialNetworkBuilder</em></a>) – Network builder containing the network to coarse-grain</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grained_laplacian">
+<span class="sig-name descname"><span class="pre">coarse_grained_laplacian</span></span><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grained_laplacian" title="Link to this definition">¶</a></dt>
+<dd><p>Coarse-grained Laplacian matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grained_adjacency">
+<span class="sig-name descname"><span class="pre">coarse_grained_adjacency</span></span><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grained_adjacency" title="Link to this definition">¶</a></dt>
+<dd><p>Coarse-grained adjacency matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.rescaled_adjacency">
+<span class="sig-name descname"><span class="pre">rescaled_adjacency</span></span><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.rescaled_adjacency" title="Link to this definition">¶</a></dt>
+<dd><p>Rescaled coarse-grained adjacency matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.clusters">
+<span class="sig-name descname"><span class="pre">clusters</span></span><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.clusters" title="Link to this definition">¶</a></dt>
+<dd><p>Cluster assignments for nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network_builder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the coarse-graining with a network builder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>network_builder</strong> (<a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder" title="scr_financial.network.builder.FinancialNetworkBuilder"><em>FinancialNetworkBuilder</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grain">
+<span class="sig-name descname"><span class="pre">coarse_grain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.coarse_grain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.coarse_grain" title="Link to this definition">¶</a></dt>
+<dd><p>Perform spectral coarse-graining using k eigenmodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of eigenmodes to use, by default None
+If None, determined automatically using spectral gap</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Coarse-grained Laplacian matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.rescale">
+<span class="sig-name descname"><span class="pre">rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.rescale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.rescale" title="Link to this definition">¶</a></dt>
+<dd><p>Rescale the coarse-grained adjacency matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lambda_k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Eigenvalue to use for rescaling, by default None
+If None, uses the k-th eigenvalue where k is from find_spectral_gap</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rescaled coarse-grained adjacency matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.identify_clusters">
+<span class="sig-name descname"><span class="pre">identify_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.identify_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.identify_clusters" title="Link to this definition">¶</a></dt>
+<dd><p>Identify clusters based on eigenvectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_clusters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of clusters, by default None
+If None, determined from spectral gap</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cluster assignments for nodes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.create_coarse_grained_graph">
+<span class="sig-name descname"><span class="pre">create_coarse_grained_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.create_coarse_grained_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.create_coarse_grained_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Create a coarse-grained graph based on identified clusters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Coarse-grained graph</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.4.2)">networkx.Graph</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.map_node_to_cluster">
+<span class="sig-name descname"><span class="pre">map_node_to_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.map_node_to_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.map_node_to_cluster" title="Link to this definition">¶</a></dt>
+<dd><p>Map an original node to its cluster.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Original node identifier</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cluster identifier</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.compute_coarse_graining_error">
+<span class="sig-name descname"><span class="pre">compute_coarse_graining_error</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.compute_coarse_graining_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.compute_coarse_graining_error" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the error introduced by coarse-graining.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Relative error in eigenvalues</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.coarse_graining.SpectralCoarseGraining.compare_diffusion_dynamics">
+<span class="sig-name descname"><span class="pre">compare_diffusion_dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.compare_diffusion_dynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.coarse_graining.SpectralCoarseGraining.compare_diffusion_dynamics" title="Link to this definition">¶</a></dt>
+<dd><p>Compare diffusion dynamics between original and coarse-grained networks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of time steps to simulate, by default 10</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of errors at each time step</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.network.spectral">
+<span id="scr-financial-network-spectral-module"></span><h2>scr_financial.network.spectral module<a class="headerlink" href="#module-scr_financial.network.spectral" title="Link to this heading">¶</a></h2>
+<p>Spectral analysis tools for financial networks.</p>
+<p>This module provides functions for spectral analysis of financial networks,
+including eigendecomposition, spectral gap identification, and diffusion modes.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.network.spectral.compute_laplacian">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.network.spectral.</span></span><span class="sig-name descname"><span class="pre">compute_laplacian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adjacency_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/spectral.html#compute_laplacian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.spectral.compute_laplacian" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the graph Laplacian from an adjacency matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adjacency_matrix</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Adjacency matrix of the graph</p></li>
+<li><p><strong>normalized</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to compute the normalized Laplacian, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Graph Laplacian matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.network.spectral.eigendecomposition">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.network.spectral.</span></span><span class="sig-name descname"><span class="pre">eigendecomposition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">laplacian</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/spectral.html#eigendecomposition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.spectral.eigendecomposition" title="Link to this definition">¶</a></dt>
+<dd><p>Perform eigendecomposition of the Laplacian matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>laplacian</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Graph Laplacian matrix</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing eigenvalues and eigenvectors</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.network.spectral.find_spectral_gap">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.network.spectral.</span></span><span class="sig-name descname"><span class="pre">find_spectral_gap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/spectral.html#find_spectral_gap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.spectral.find_spectral_gap" title="Link to this definition">¶</a></dt>
+<dd><p>Identify the spectral gap in the eigenvalue spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eigenvalues</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Array of eigenvalues</p></li>
+<li><p><strong>min_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Minimum index to consider, by default 1</p></li>
+<li><p><strong>max_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum index to consider, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing the index of the gap and the gap size</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.network.spectral.compute_diffusion_modes">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.network.spectral.</span></span><span class="sig-name descname"><span class="pre">compute_diffusion_modes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">laplacian</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/spectral.html#compute_diffusion_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.spectral.compute_diffusion_modes" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the first k diffusion modes of the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>laplacian</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Graph Laplacian matrix</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of modes to compute</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing eigenvalues and eigenvectors for the first k modes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.network.spectral.analyze_spectral_properties">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.network.spectral.</span></span><span class="sig-name descname"><span class="pre">analyze_spectral_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eigenvectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/spectral.html#analyze_spectral_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.spectral.analyze_spectral_properties" title="Link to this definition">¶</a></dt>
+<dd><p>Analyze spectral properties of the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eigenvalues</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Array of eigenvalues</p></li>
+<li><p><strong>eigenvectors</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Matrix of eigenvectors</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing spectral properties</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.network.spectral.compute_spectral_embedding">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.network.spectral.</span></span><span class="sig-name descname"><span class="pre">compute_spectral_embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">laplacian</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/spectral.html#compute_spectral_embedding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.spectral.compute_spectral_embedding" title="Link to this definition">¶</a></dt>
+<dd><p>Compute spectral embedding of the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>laplacian</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Graph Laplacian matrix</p></li>
+<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Embedding dimension, by default 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Spectral embedding matrix of shape (n_nodes, dim)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.network.spectral.compute_diffusion_distance">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.network.spectral.</span></span><span class="sig-name descname"><span class="pre">compute_diffusion_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">laplacian</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/spectral.html#compute_diffusion_distance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.spectral.compute_diffusion_distance" title="Link to this definition">¶</a></dt>
+<dd><p>Compute diffusion distance matrix at time t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>laplacian</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Graph Laplacian matrix</p></li>
+<li><p><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Diffusion time, by default 1.0</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of eigenmodes to use, by default None (use all)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Diffusion distance matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.network">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-scr_financial.network" title="Link to this heading">¶</a></h2>
+<p>Network module for financial network analysis.</p>
+<p>This module provides tools for constructing, analyzing, and coarse-graining
+financial networks based on interbank exposures and other financial data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.network.</span></span><span class="sig-name descname"><span class="pre">FinancialNetworkBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preprocessor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Constructs financial networks from preprocessed data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>preprocessor</strong> (<a class="reference internal" href="scr_financial.data.html#scr_financial.data.preprocessor.DataPreprocessor" title="scr_financial.data.preprocessor.DataPreprocessor"><em>DataPreprocessor</em></a>) – Preprocessor containing the data to build the network from</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.G">
+<span class="sig-name descname"><span class="pre">G</span></span><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.G" title="Link to this definition">¶</a></dt>
+<dd><p>NetworkX graph representing the financial network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.4.2)">networkx.Graph</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.adjacency_matrix">
+<span class="sig-name descname"><span class="pre">adjacency_matrix</span></span><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.adjacency_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Sparse adjacency matrix of the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.15.3)">scipy.sparse.csr_matrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.laplacian">
+<span class="sig-name descname"><span class="pre">laplacian</span></span><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.laplacian" title="Link to this definition">¶</a></dt>
+<dd><p>Graph Laplacian matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.15.3)">scipy.sparse.csr_matrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.eigenvalues">
+<span class="sig-name descname"><span class="pre">eigenvalues</span></span><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.eigenvalues" title="Link to this definition">¶</a></dt>
+<dd><p>Eigenvalues of the Laplacian</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.eigenvectors">
+<span class="sig-name descname"><span class="pre">eigenvectors</span></span><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.eigenvectors" title="Link to this definition">¶</a></dt>
+<dd><p>Eigenvectors of the Laplacian</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preprocessor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the network builder with preprocessed data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>preprocessor</strong> (<a class="reference internal" href="scr_financial.data.html#scr_financial.data.preprocessor.DataPreprocessor" title="scr_financial.data.preprocessor.DataPreprocessor"><em>DataPreprocessor</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.construct_network">
+<span class="sig-name descname"><span class="pre">construct_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weight_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interbank_exposures'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.construct_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.construct_network" title="Link to this definition">¶</a></dt>
+<dd><p>Construct network for a specific time point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_point</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>pd.Timestamp</em>) – Date for which to construct the network</p></li>
+<li><p><strong>edge_weight_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Type of edge weight to use, by default ‘interbank_exposures’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Constructed financial network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.4.2)">networkx.Graph</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.compute_laplacian">
+<span class="sig-name descname"><span class="pre">compute_laplacian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.compute_laplacian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.compute_laplacian" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the graph Laplacian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>normalized</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to compute the normalized Laplacian, by default True</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Graph Laplacian matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.15.3)">scipy.sparse.csr_matrix</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.spectral_analysis">
+<span class="sig-name descname"><span class="pre">spectral_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.spectral_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.spectral_analysis" title="Link to this definition">¶</a></dt>
+<dd><p>Perform spectral analysis of the Laplacian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing eigenvalues and eigenvectors</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.find_spectral_gap">
+<span class="sig-name descname"><span class="pre">find_spectral_gap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.find_spectral_gap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.find_spectral_gap" title="Link to this definition">¶</a></dt>
+<dd><p>Identify the spectral gap for coarse-graining.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing the index of the gap and the gap size</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.get_node_attribute_matrix">
+<span class="sig-name descname"><span class="pre">get_node_attribute_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.get_node_attribute_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.get_node_attribute_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Get matrix of node attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Node attribute to extract</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matrix of node attributes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.get_edge_weight_matrix">
+<span class="sig-name descname"><span class="pre">get_edge_weight_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.get_edge_weight_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.get_edge_weight_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Get matrix of edge weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of edge weights</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.compute_centrality_measures">
+<span class="sig-name descname"><span class="pre">compute_centrality_measures</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.compute_centrality_measures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.compute_centrality_measures" title="Link to this definition">¶</a></dt>
+<dd><p>Compute various centrality measures for the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary mapping centrality types to dictionaries of node centralities</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.FinancialNetworkBuilder.compute_community_structure">
+<span class="sig-name descname"><span class="pre">compute_community_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'louvain'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/builder.html#FinancialNetworkBuilder.compute_community_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.FinancialNetworkBuilder.compute_community_structure" title="Link to this definition">¶</a></dt>
+<dd><p>Compute community structure of the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Community detection method, by default ‘louvain’</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping nodes to community IDs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.network.find_spectral_gap">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.network.</span></span><span class="sig-name descname"><span class="pre">find_spectral_gap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/spectral.html#find_spectral_gap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.find_spectral_gap" title="Link to this definition">¶</a></dt>
+<dd><p>Identify the spectral gap in the eigenvalue spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eigenvalues</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Array of eigenvalues</p></li>
+<li><p><strong>min_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Minimum index to consider, by default 1</p></li>
+<li><p><strong>max_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum index to consider, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing the index of the gap and the gap size</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.network.compute_diffusion_modes">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.network.</span></span><span class="sig-name descname"><span class="pre">compute_diffusion_modes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">laplacian</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/spectral.html#compute_diffusion_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.compute_diffusion_modes" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the first k diffusion modes of the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>laplacian</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Graph Laplacian matrix</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of modes to compute</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing eigenvalues and eigenvectors for the first k modes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.network.</span></span><span class="sig-name descname"><span class="pre">SpectralCoarseGraining</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network_builder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Implements spectral coarse-graining for financial networks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>network_builder</strong> (<a class="reference internal" href="#scr_financial.network.FinancialNetworkBuilder" title="scr_financial.network.FinancialNetworkBuilder"><em>FinancialNetworkBuilder</em></a>) – Network builder containing the network to coarse-grain</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.coarse_grained_laplacian">
+<span class="sig-name descname"><span class="pre">coarse_grained_laplacian</span></span><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.coarse_grained_laplacian" title="Link to this definition">¶</a></dt>
+<dd><p>Coarse-grained Laplacian matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.coarse_grained_adjacency">
+<span class="sig-name descname"><span class="pre">coarse_grained_adjacency</span></span><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.coarse_grained_adjacency" title="Link to this definition">¶</a></dt>
+<dd><p>Coarse-grained adjacency matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.rescaled_adjacency">
+<span class="sig-name descname"><span class="pre">rescaled_adjacency</span></span><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.rescaled_adjacency" title="Link to this definition">¶</a></dt>
+<dd><p>Rescaled coarse-grained adjacency matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.clusters">
+<span class="sig-name descname"><span class="pre">clusters</span></span><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.clusters" title="Link to this definition">¶</a></dt>
+<dd><p>Cluster assignments for nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network_builder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the coarse-graining with a network builder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>network_builder</strong> (<a class="reference internal" href="#scr_financial.network.builder.FinancialNetworkBuilder" title="scr_financial.network.builder.FinancialNetworkBuilder"><em>FinancialNetworkBuilder</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.coarse_grain">
+<span class="sig-name descname"><span class="pre">coarse_grain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.coarse_grain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.coarse_grain" title="Link to this definition">¶</a></dt>
+<dd><p>Perform spectral coarse-graining using k eigenmodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of eigenmodes to use, by default None
+If None, determined automatically using spectral gap</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Coarse-grained Laplacian matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.rescale">
+<span class="sig-name descname"><span class="pre">rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.rescale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.rescale" title="Link to this definition">¶</a></dt>
+<dd><p>Rescale the coarse-grained adjacency matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lambda_k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Eigenvalue to use for rescaling, by default None
+If None, uses the k-th eigenvalue where k is from find_spectral_gap</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rescaled coarse-grained adjacency matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.identify_clusters">
+<span class="sig-name descname"><span class="pre">identify_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.identify_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.identify_clusters" title="Link to this definition">¶</a></dt>
+<dd><p>Identify clusters based on eigenvectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_clusters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of clusters, by default None
+If None, determined from spectral gap</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cluster assignments for nodes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.create_coarse_grained_graph">
+<span class="sig-name descname"><span class="pre">create_coarse_grained_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.create_coarse_grained_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.create_coarse_grained_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Create a coarse-grained graph based on identified clusters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Coarse-grained graph</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.4.2)">networkx.Graph</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.map_node_to_cluster">
+<span class="sig-name descname"><span class="pre">map_node_to_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.map_node_to_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.map_node_to_cluster" title="Link to this definition">¶</a></dt>
+<dd><p>Map an original node to its cluster.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Original node identifier</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cluster identifier</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.compute_coarse_graining_error">
+<span class="sig-name descname"><span class="pre">compute_coarse_graining_error</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.compute_coarse_graining_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.compute_coarse_graining_error" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the error introduced by coarse-graining.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Relative error in eigenvalues</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.network.SpectralCoarseGraining.compare_diffusion_dynamics">
+<span class="sig-name descname"><span class="pre">compare_diffusion_dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/network/coarse_graining.html#SpectralCoarseGraining.compare_diffusion_dynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.network.SpectralCoarseGraining.compare_diffusion_dynamics" title="Link to this definition">¶</a></dt>
+<dd><p>Compare diffusion dynamics between original and coarse-grained networks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of time steps to simulate, by default 10</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of errors at each time step</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

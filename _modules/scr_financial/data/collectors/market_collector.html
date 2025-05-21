@@ -1,0 +1,686 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.data.collectors.market_collector &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scr_financial.data.collectors.market_collector</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scr_financial.data.collectors.market_collector</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Market data collector for financial network analysis.</span>
+
+<span class="sd">This module provides the MarketDataCollector class for retrieving market data</span>
+<span class="sd">such as CDS spreads, equity prices, and other market indicators.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+
+<div class="viewcode-block" id="MarketDataCollector">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector">[docs]</a>
+<span class="k">class</span> <span class="nc">MarketDataCollector</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collector for market data.</span>
+<span class="sd">    </span>
+<span class="sd">    This class provides methods for retrieving market data such as CDS spreads,</span>
+<span class="sd">    equity prices, SRISK, and other market indicators from various sources.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="MarketDataCollector.__init__">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the market data collector.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fred_base_url</span> <span class="o">=</span> <span class="s2">&quot;https://api.stlouisfed.org/fred/series/observations&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vlab_base_url</span> <span class="o">=</span> <span class="s2">&quot;https://vlab.stern.nyu.edu/api/v2&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bis_base_url</span> <span class="o">=</span> <span class="s2">&quot;https://www.bis.org/statistics/api/data&quot;</span></div>
+
+    
+<div class="viewcode-block" id="MarketDataCollector.collect_cds_data">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_cds_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">collect_cds_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect CDS spread data.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing CDS spreads</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert dates to datetime</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+        
+        <span class="c1"># For now, use sample data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_cds_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">bank_list</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="MarketDataCollector.collect_srisk_data">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_srisk_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">collect_srisk_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect SRISK data from NYU V-Lab.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing SRISK values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert dates to datetime</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+        
+        <span class="c1"># For now, use sample data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_srisk_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">bank_list</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="MarketDataCollector.collect_equity_data">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_equity_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">collect_equity_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect equity price data.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing equity prices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert dates to datetime</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+        
+        <span class="c1"># For now, use sample data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_equity_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">bank_list</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="MarketDataCollector.collect_funding_stress_data">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_funding_stress_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">collect_funding_stress_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect funding stress indicators.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing funding stress indicators</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert dates to datetime</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+        
+        <span class="c1"># For now, use sample data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_funding_stress_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="MarketDataCollector.collect_bis_data">
+<a class="viewcode-back" href="../../../../source/scr_financial.data.collectors.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_bis_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">collect_bis_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">indicator</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect data from Bank for International Settlements (BIS).</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        indicator : str</span>
+<span class="sd">            Indicator to collect (e.g., &#39;credit_to_GDP_gap&#39;)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing BIS data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert dates to datetime</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+        
+        <span class="c1"># For now, use sample data</span>
+        <span class="k">if</span> <span class="n">indicator</span> <span class="o">==</span> <span class="s1">&#39;credit_to_GDP_gap&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_credit_gap_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">indicator</span> <span class="o">==</span> <span class="s1">&#39;house_price_gap&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_house_price_gap_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown BIS indicator: </span><span class="si">{</span><span class="n">indicator</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    
+    <span class="k">def</span> <span class="nf">_get_sample_cds_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate sample CDS data for testing.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing sample CDS spreads</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Default bank list if none provided</span>
+        <span class="k">if</span> <span class="n">bank_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bank_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;DE_DBK&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_BNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ES_SAN&quot;</span><span class="p">,</span> <span class="s2">&quot;IT_UCG&quot;</span><span class="p">,</span> <span class="s2">&quot;NL_ING&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;SE_NDA&quot;</span><span class="p">,</span> <span class="s2">&quot;CH_UBS&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_BARC&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_ACA&quot;</span>
+            <span class="p">]</span>
+        
+        <span class="c1"># Generate dates within the range (daily)</span>
+        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;B&#39;</span><span class="p">)</span>  <span class="c1"># Business days</span>
+        
+        <span class="c1"># Create sample data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Base CDS spreads for each bank</span>
+        <span class="n">base_cds</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;DE_DBK&quot;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span>     <span class="c1"># Deutsche Bank</span>
+            <span class="s2">&quot;FR_BNP&quot;</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span>     <span class="c1"># BNP Paribas</span>
+            <span class="s2">&quot;ES_SAN&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>     <span class="c1"># Santander</span>
+            <span class="s2">&quot;IT_UCG&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>    <span class="c1"># UniCredit</span>
+            <span class="s2">&quot;NL_ING&quot;</span><span class="p">:</span> <span class="mi">65</span><span class="p">,</span>     <span class="c1"># ING</span>
+            <span class="s2">&quot;SE_NDA&quot;</span><span class="p">:</span> <span class="mi">55</span><span class="p">,</span>     <span class="c1"># Nordea</span>
+            <span class="s2">&quot;CH_UBS&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>     <span class="c1"># UBS</span>
+            <span class="s2">&quot;UK_BARC&quot;</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span>    <span class="c1"># Barclays</span>
+            <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">:</span> <span class="mi">65</span><span class="p">,</span>    <span class="c1"># HSBC</span>
+            <span class="s2">&quot;FR_ACA&quot;</span><span class="p">:</span> <span class="mi">75</span>      <span class="c1"># Credit Agricole</span>
+        <span class="p">}</span>
+        
+        <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">date_range</span><span class="p">:</span>
+            <span class="c1"># Add some stress events</span>
+            <span class="k">if</span> <span class="s2">&quot;2008-09&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2008-10&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># Financial crisis</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">5.0</span>
+            <span class="k">elif</span> <span class="s2">&quot;2011-08&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2011-09&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># European debt crisis</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">3.0</span>
+            <span class="k">elif</span> <span class="s2">&quot;2020-03&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2020-04&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># COVID-19</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">4.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+            
+            <span class="k">for</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="n">bank_list</span><span class="p">:</span>
+                <span class="c1"># Get base CDS</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="n">base_cds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bank_id</span><span class="p">,</span> <span class="mi">75</span><span class="p">)</span>
+                
+                <span class="c1"># Add noise and stress factor</span>
+                <span class="n">cds</span> <span class="o">=</span> <span class="n">base</span> <span class="o">*</span> <span class="n">stress_factor</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">))</span>
+                
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                    <span class="s1">&#39;bank_id&#39;</span><span class="p">:</span> <span class="n">bank_id</span><span class="p">,</span>
+                    <span class="s1">&#39;CDS_5yr&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">cds</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_get_sample_srisk_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate sample SRISK data for testing.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing sample SRISK values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Default bank list if none provided</span>
+        <span class="k">if</span> <span class="n">bank_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bank_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;DE_DBK&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_BNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ES_SAN&quot;</span><span class="p">,</span> <span class="s2">&quot;IT_UCG&quot;</span><span class="p">,</span> <span class="s2">&quot;NL_ING&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;SE_NDA&quot;</span><span class="p">,</span> <span class="s2">&quot;CH_UBS&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_BARC&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_ACA&quot;</span>
+            <span class="p">]</span>
+        
+        <span class="c1"># Generate dates within the range (weekly)</span>
+        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Create sample data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Base SRISK for each bank (in billions EUR)</span>
+        <span class="n">base_srisk</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;DE_DBK&quot;</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span>     <span class="c1"># Deutsche Bank</span>
+            <span class="s2">&quot;FR_BNP&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>     <span class="c1"># BNP Paribas</span>
+            <span class="s2">&quot;ES_SAN&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>     <span class="c1"># Santander</span>
+            <span class="s2">&quot;IT_UCG&quot;</span><span class="p">:</span> <span class="mi">28</span><span class="p">,</span>     <span class="c1"># UniCredit</span>
+            <span class="s2">&quot;NL_ING&quot;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>     <span class="c1"># ING</span>
+            <span class="s2">&quot;SE_NDA&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>     <span class="c1"># Nordea</span>
+            <span class="s2">&quot;CH_UBS&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>     <span class="c1"># UBS</span>
+            <span class="s2">&quot;UK_BARC&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>    <span class="c1"># Barclays</span>
+            <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">:</span> <span class="mi">38</span><span class="p">,</span>    <span class="c1"># HSBC</span>
+            <span class="s2">&quot;FR_ACA&quot;</span><span class="p">:</span> <span class="mi">27</span>      <span class="c1"># Credit Agricole</span>
+        <span class="p">}</span>
+        
+        <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">date_range</span><span class="p">:</span>
+            <span class="c1"># Add some stress events</span>
+            <span class="k">if</span> <span class="s2">&quot;2008-09&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2008-10&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># Financial crisis</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">2.5</span>
+            <span class="k">elif</span> <span class="s2">&quot;2011-08&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2011-09&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># European debt crisis</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">1.8</span>
+            <span class="k">elif</span> <span class="s2">&quot;2020-03&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2020-04&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># COVID-19</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">2.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+            
+            <span class="k">for</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="n">bank_list</span><span class="p">:</span>
+                <span class="c1"># Get base SRISK</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="n">base_srisk</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bank_id</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+                
+                <span class="c1"># Add noise and stress factor</span>
+                <span class="n">srisk</span> <span class="o">=</span> <span class="n">base</span> <span class="o">*</span> <span class="n">stress_factor</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">))</span>
+                
+                <span class="c1"># Convert to billions EUR</span>
+                <span class="n">srisk</span> <span class="o">=</span> <span class="n">srisk</span> <span class="o">*</span> <span class="mf">1e9</span>
+                
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                    <span class="s1">&#39;bank_id&#39;</span><span class="p">:</span> <span class="n">bank_id</span><span class="p">,</span>
+                    <span class="s1">&#39;SRISK&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">srisk</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_get_sample_equity_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate sample equity price data for testing.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        bank_list : list of str, optional</span>
+<span class="sd">            List of bank identifiers to include</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing sample equity prices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Default bank list if none provided</span>
+        <span class="k">if</span> <span class="n">bank_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bank_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;DE_DBK&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_BNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ES_SAN&quot;</span><span class="p">,</span> <span class="s2">&quot;IT_UCG&quot;</span><span class="p">,</span> <span class="s2">&quot;NL_ING&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;SE_NDA&quot;</span><span class="p">,</span> <span class="s2">&quot;CH_UBS&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_BARC&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_ACA&quot;</span>
+            <span class="p">]</span>
+        
+        <span class="c1"># Generate dates within the range (daily)</span>
+        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;B&#39;</span><span class="p">)</span>  <span class="c1"># Business days</span>
+        
+        <span class="c1"># Create sample data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Base equity prices for each bank (in EUR)</span>
+        <span class="n">base_price</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;DE_DBK&quot;</span><span class="p">:</span> <span class="mf">12.5</span><span class="p">,</span>    <span class="c1"># Deutsche Bank</span>
+            <span class="s2">&quot;FR_BNP&quot;</span><span class="p">:</span> <span class="mf">55.0</span><span class="p">,</span>    <span class="c1"># BNP Paribas</span>
+            <span class="s2">&quot;ES_SAN&quot;</span><span class="p">:</span> <span class="mf">3.8</span><span class="p">,</span>     <span class="c1"># Santander</span>
+            <span class="s2">&quot;IT_UCG&quot;</span><span class="p">:</span> <span class="mf">15.2</span><span class="p">,</span>    <span class="c1"># UniCredit</span>
+            <span class="s2">&quot;NL_ING&quot;</span><span class="p">:</span> <span class="mf">12.8</span><span class="p">,</span>    <span class="c1"># ING</span>
+            <span class="s2">&quot;SE_NDA&quot;</span><span class="p">:</span> <span class="mf">10.5</span><span class="p">,</span>    <span class="c1"># Nordea</span>
+            <span class="s2">&quot;CH_UBS&quot;</span><span class="p">:</span> <span class="mf">18.2</span><span class="p">,</span>    <span class="c1"># UBS</span>
+            <span class="s2">&quot;UK_BARC&quot;</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">,</span>    <span class="c1"># Barclays</span>
+            <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">:</span> <span class="mf">6.5</span><span class="p">,</span>    <span class="c1"># HSBC</span>
+            <span class="s2">&quot;FR_ACA&quot;</span><span class="p">:</span> <span class="mf">11.8</span>     <span class="c1"># Credit Agricole</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Generate price series with random walk</span>
+        <span class="k">for</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="n">bank_list</span><span class="p">:</span>
+            <span class="c1"># Get base price</span>
+            <span class="n">price</span> <span class="o">=</span> <span class="n">base_price</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bank_id</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+            
+            <span class="c1"># Generate price series with random walk</span>
+            <span class="n">prices</span> <span class="o">=</span> <span class="p">[</span><span class="n">price</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_range</span><span class="p">)):</span>
+                <span class="c1"># Add some stress events</span>
+                <span class="k">if</span> <span class="s2">&quot;2008-09&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_range</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">or</span> <span class="s2">&quot;2008-10&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_range</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>  <span class="c1"># Financial crisis</span>
+                    <span class="n">drift</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span>
+                    <span class="n">volatility</span> <span class="o">=</span> <span class="mf">0.03</span>
+                <span class="k">elif</span> <span class="s2">&quot;2011-08&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_range</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">or</span> <span class="s2">&quot;2011-09&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_range</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>  <span class="c1"># European debt crisis</span>
+                    <span class="n">drift</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.005</span>
+                    <span class="n">volatility</span> <span class="o">=</span> <span class="mf">0.025</span>
+                <span class="k">elif</span> <span class="s2">&quot;2020-03&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_range</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">or</span> <span class="s2">&quot;2020-04&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_range</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>  <span class="c1"># COVID-19</span>
+                    <span class="n">drift</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.015</span>
+                    <span class="n">volatility</span> <span class="o">=</span> <span class="mf">0.035</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">drift</span> <span class="o">=</span> <span class="mf">0.0002</span>
+                    <span class="n">volatility</span> <span class="o">=</span> <span class="mf">0.015</span>
+                
+                <span class="c1"># Random walk with drift</span>
+                <span class="n">change</span> <span class="o">=</span> <span class="n">drift</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">volatility</span><span class="p">)</span>
+                <span class="n">new_price</span> <span class="o">=</span> <span class="n">prices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">change</span><span class="p">)</span>
+                <span class="c1"># Ensure price doesn&#39;t go below 0.1</span>
+                <span class="n">prices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">new_price</span><span class="p">))</span>
+            
+            <span class="c1"># Add to data</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">date</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">date_range</span><span class="p">):</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                    <span class="s1">&#39;bank_id&#39;</span><span class="p">:</span> <span class="n">bank_id</span><span class="p">,</span>
+                    <span class="s1">&#39;price&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">prices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">2</span><span class="p">),</span>
+                    <span class="s1">&#39;volume&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1000000</span><span class="p">,</span> <span class="mi">10000000</span><span class="p">))</span>
+                <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_get_sample_funding_stress_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate sample funding stress indicators for testing.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing sample funding stress indicators</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Generate dates within the range (daily)</span>
+        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;B&#39;</span><span class="p">)</span>  <span class="c1"># Business days</span>
+        
+        <span class="c1"># Create sample data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Base values</span>
+        <span class="n">base_libor_ois</span> <span class="o">=</span> <span class="mf">0.15</span>  <span class="c1"># LIBOR-OIS spread in percentage points</span>
+        <span class="n">base_gc_tbill</span> <span class="o">=</span> <span class="mf">0.08</span>   <span class="c1"># GC Repo - T-Bill spread in percentage points</span>
+        
+        <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">date_range</span><span class="p">:</span>
+            <span class="c1"># Add some stress events</span>
+            <span class="k">if</span> <span class="s2">&quot;2008-09&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2008-10&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># Financial crisis</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">5.0</span>
+            <span class="k">elif</span> <span class="s2">&quot;2011-08&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2011-09&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># European debt crisis</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">3.0</span>
+            <span class="k">elif</span> <span class="s2">&quot;2020-03&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2020-04&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># COVID-19</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">4.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">stress_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+            
+            <span class="c1"># Add noise and stress factor</span>
+            <span class="n">libor_ois</span> <span class="o">=</span> <span class="n">base_libor_ois</span> <span class="o">*</span> <span class="n">stress_factor</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">))</span>
+            <span class="n">gc_tbill</span> <span class="o">=</span> <span class="n">base_gc_tbill</span> <span class="o">*</span> <span class="n">stress_factor</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">))</span>
+            
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                <span class="s1">&#39;LIBOR_OIS_spread&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">libor_ois</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                <span class="s1">&#39;GC_Repo_TBill_spread&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">gc_tbill</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_get_sample_credit_gap_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate sample credit-to-GDP gap data for testing.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing sample credit-to-GDP gap data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Generate dates within the range (quarterly)</span>
+        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;Q&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Create sample data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Base values for different countries</span>
+        <span class="n">base_gaps</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;USA&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+            <span class="s1">&#39;EUR&#39;</span><span class="p">:</span> <span class="mf">3.2</span><span class="p">,</span>
+            <span class="s1">&#39;GBR&#39;</span><span class="p">:</span> <span class="mf">1.8</span><span class="p">,</span>
+            <span class="s1">&#39;CHE&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span>
+            <span class="s1">&#39;JPN&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5</span>
+        <span class="p">}</span>
+        
+        <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">date_range</span><span class="p">:</span>
+            <span class="c1"># Time factor for trend</span>
+            <span class="n">time_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">))</span><span class="o">.</span><span class="n">days</span> <span class="o">/</span> <span class="mi">365</span>
+            
+            <span class="k">for</span> <span class="n">country</span><span class="p">,</span> <span class="n">base_gap</span> <span class="ow">in</span> <span class="n">base_gaps</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># Add trend and noise</span>
+                <span class="k">if</span> <span class="s2">&quot;2008&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2009&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># Financial crisis</span>
+                    <span class="n">gap</span> <span class="o">=</span> <span class="n">base_gap</span> <span class="o">+</span> <span class="mf">5.0</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;2011&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2012&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># European debt crisis</span>
+                    <span class="n">gap</span> <span class="o">=</span> <span class="n">base_gap</span> <span class="o">+</span> <span class="mf">3.0</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">gap</span> <span class="o">=</span> <span class="n">base_gap</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+                
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                    <span class="s1">&#39;country&#39;</span><span class="p">:</span> <span class="n">country</span><span class="p">,</span>
+                    <span class="s1">&#39;credit_to_GDP_gap&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">gap</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_get_sample_house_price_gap_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate sample house price gap data for testing.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_date : str</span>
+<span class="sd">            Start date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">        end_date : str</span>
+<span class="sd">            End date for data collection in &#39;YYYY-MM-DD&#39; format</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing sample house price gap data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Generate dates within the range (quarterly)</span>
+        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;Q&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Create sample data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Base values for different countries</span>
+        <span class="n">base_gaps</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;USA&#39;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span>
+            <span class="s1">&#39;EUR&#39;</span><span class="p">:</span> <span class="mf">2.8</span><span class="p">,</span>
+            <span class="s1">&#39;GBR&#39;</span><span class="p">:</span> <span class="mf">4.2</span><span class="p">,</span>
+            <span class="s1">&#39;CHE&#39;</span><span class="p">:</span> <span class="mf">5.5</span><span class="p">,</span>
+            <span class="s1">&#39;JPN&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span>
+        <span class="p">}</span>
+        
+        <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">date_range</span><span class="p">:</span>
+            <span class="c1"># Time factor for trend</span>
+            <span class="n">time_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">))</span><span class="o">.</span><span class="n">days</span> <span class="o">/</span> <span class="mi">365</span>
+            
+            <span class="k">for</span> <span class="n">country</span><span class="p">,</span> <span class="n">base_gap</span> <span class="ow">in</span> <span class="n">base_gaps</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># Add trend and noise</span>
+                <span class="k">if</span> <span class="s2">&quot;2008&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2009&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># Financial crisis</span>
+                    <span class="n">gap</span> <span class="o">=</span> <span class="n">base_gap</span> <span class="o">-</span> <span class="mf">4.0</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;2011&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;2012&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>  <span class="c1"># European debt crisis</span>
+                    <span class="n">gap</span> <span class="o">=</span> <span class="n">base_gap</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">gap</span> <span class="o">=</span> <span class="n">base_gap</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">time_factor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)</span>
+                
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                    <span class="s1">&#39;country&#39;</span><span class="p">:</span> <span class="n">country</span><span class="p">,</span>
+                    <span class="s1">&#39;house_price_gap&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">gap</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
