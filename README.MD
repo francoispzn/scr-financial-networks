@@ -69,9 +69,9 @@ framework.initialize_for_timepoint('2008-09-15')  # Lehman Brothers bankruptcy
 
 # Define shocks based on historical events
 shocks = {
-    1: {'Lehman_Brothers': {'CET1_ratio': -2.0, 'LCR': -30}},  # Day 1: Lehman shock
-    3: {'AIG': {'CET1_ratio': -1.5, 'LCR': -25}},              # Day 3: AIG bailout
-    5: {'system': {'funding_stress': 0.2}}                      # Day 5: General funding stress
+    1: {'Societe Generale': {'CET1_ratio': -2.0, 'LCR': -30}},  
+    3: {'DeutscheBank': {'CET1_ratio': -1.5, 'LCR': -25}},           
+    5: {'system': {'funding_stress': 0.2}}fr5tc
 }
 
 # Run simulation
@@ -100,7 +100,7 @@ scr-financial-networks/
 │   │   ├── spectral_analysis.rst
 │   │   ├── coarse_graining.rst
 │   │   ├── abm.rst
-│   │   └── vae.rst
+<!-- │   │   └── vae.rst -->
 │   └── examples/
 │       ├── black_week_simulation.rst
 │       └── network_visualization.rst
@@ -125,16 +125,16 @@ scr-financial-networks/
 │   │   ├── bank_agent.py
 │   │   ├── simulation.py
 │   │   └── decision_models.py
-│   ├── vae/
+<!-- │   ├── vae/
 │   │   ├── __init__.py
 │   │   ├── encoder.py
 │   │   ├── decoder.py
 │   │   ├── model.py
-│   │   └── training.py
-│   ├── ml/
+│   │   └── training.py -->
+<!-- │   ├── ml/
 │   │   ├── __init__.py
 │   │   ├── sentiment_model.py
-│   │   └── predictors.py
+│   │   └── predictors.py -->
 │   └── utils/
 │       ├── __init__.py
 │       ├── visualization.py
@@ -146,11 +146,11 @@ scr-financial-networks/
 │   ├── test_spectral_analysis.py
 │   ├── test_coarse_graining.py
 │   ├── test_abm.py
-│   └── test_vae.py
+<!-- │   └── test_vae.py -->
 └── examples/
     ├── black_week_simulation.py
     ├── network_visualization.py
-    └── vae_financial_features.py
+    <!-- └── vae_financial_features.py -->
 ```
 
 ## Key Components
