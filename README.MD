@@ -99,21 +99,16 @@ scr-financial-networks/
 │   │   ├── network_construction.rst
 │   │   ├── spectral_analysis.rst
 │   │   ├── coarse_graining.rst
-│   │   ├── abm.rst
-<!-- │   │   └── vae.rst -->
+│   │   └── abm.rst
 │   └── examples/
 │       ├── black_week_simulation.rst
+│       ├── COVID19_simulation.rst
 │       └── network_visualization.rst
 ├── scr_financial/
 │   ├── __init__.py
 │   ├── data/
 │   │   ├── __init__.py
 │   │   ├── preprocessor.py
-│   │   ├── collectors/
-│   │   │   ├── __init__.py
-│   │   │   ├── eba_collector.py
-│   │   │   ├── ecb_collector.py
-│   │   │   └── market_collector.py
 │   │   └── utils.py
 │   ├── network/
 │   │   ├── __init__.py
@@ -125,16 +120,6 @@ scr-financial-networks/
 │   │   ├── bank_agent.py
 │   │   ├── simulation.py
 │   │   └── decision_models.py
-<!-- │   ├── vae/
-│   │   ├── __init__.py
-│   │   ├── encoder.py
-│   │   ├── decoder.py
-│   │   ├── model.py
-│   │   └── training.py -->
-<!-- │   ├── ml/
-│   │   ├── __init__.py
-│   │   ├── sentiment_model.py
-│   │   └── predictors.py -->
 │   └── utils/
 │       ├── __init__.py
 │       ├── visualization.py
@@ -145,12 +130,10 @@ scr-financial-networks/
 │   ├── test_network_construction.py
 │   ├── test_spectral_analysis.py
 │   ├── test_coarse_graining.py
-│   ├── test_abm.py
-<!-- │   └── test_vae.py -->
+│   └── test_abm.py
 └── examples/
     ├── black_week_simulation.py
-    ├── network_visualization.py
-    <!-- └── vae_financial_features.py -->
+    └── network_visualization.py
 ```
 
 ## Key Components
