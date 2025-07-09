@@ -26,7 +26,7 @@ The methodology is based on the theoretical framework described in "Spectral Coa
 
 ```bash
 # Clone the repository
-git clone https://github.com/username/scr-financial-networks.git
+git clone https://github.com/francoispzn/scr-financial-networks.git
 cd scr-financial-networks
 
 # Create and activate the conda environment
@@ -46,39 +46,26 @@ pip install scr-financial-networks
 ## Quick Start
 
 ```python
-import scr_financial as scrf
+from scr_financial.data.collectors.ecb_collector import ECBCollector
+from scr_financial.data.collectors.eba_collector import EBACollector
+from scr_financial.abm.simulation import BankingSystemSimulation
 
-# Initialize data preprocessor
-preprocessor = scrf.data.DataPreprocessor(start_date='2006-01-01', end_date='2025-01-01')
+# Generate sample data
+ecb = ECBCollector()
+eba = EBACollector()
+ciss_df = ecb.collect_ciss_data("2020-01-01", "2021-12-31")
+bank_df = eba.collect_transparency_data("2020-01-01", "2021-12-31")
+print(f"CISS data: {len(ciss_df)} rows")
+print(f"Bank data: {len(bank_df)} rows")
+```
 
-# Load bank data
-preprocessor.load_bank_node_data({
-    'solvency': 'EBA_transparency',
-    'liquidity': 'EBA_aggregated',
-    'market_risk': 'NYU_VLAB'
-})
+## Development Setup
 
-# Load network data
-preprocessor.load_interbank_exposures('ECB_TARGET2')
-
-# Initialize framework
-framework = scrf.SCG_ABM_Framework(preprocessor)
-
-# Set up for Black Week 2008 analysis
-framework.initialize_for_timepoint('2008-09-15')  # Lehman Brothers bankruptcy
-
-# Define shocks based on historical events
-shocks = {
-    1: {'Societe Generale': {'CET1_ratio': -2.0, 'LCR': -30}},  
-    3: {'DeutscheBank': {'CET1_ratio': -1.5, 'LCR': -25}},           
-    5: {'system': {'funding_stress': 0.2}}fr5tc
-}
-
-# Run simulation
-results = framework.run_simulation(10, shocks)
-
-# Visualize results
-scrf.utils.visualize_results(results)
+```
+git clone https://github.com/francoispzn/scr-financial-networks
+cd scr-financial-networks
+pip install -e ".[dev]"
+pytest tests/
 ```
 
 ## Project Structure
@@ -167,7 +154,7 @@ The VAE module provides dimensionality reduction and feature extraction for fina
 
 ## Documentation
 
-For detailed documentation, please visit check the source folder with the .htlm documentation files.
+For detailed documentation, please check the source folder with the HTML documentation files.
 
 ## Examples
 

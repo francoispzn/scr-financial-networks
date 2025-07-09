@@ -2,8 +2,8 @@
 Variational Autoencoder (VAE) module for financial network analysis.
 
 This module provides implementations of VAE architectures for extracting
-latent representations from financial data, which can be used for dimensionality
-reduction, anomaly detection, and feature extraction.
+latent representations from financial data, which can be used for
+dimensionality reduction, anomaly detection, and feature extraction.
 """
 
 from .model import FinancialVAE

@@ -6,11 +6,12 @@ and prediction in financial networks.
 """
 
 from .sentiment_model import LSTMSentimentModel, train_sentiment_model
-from .predictors import NetworkPredictor, MarketPredictor
+from .predictors import NetworkPredictor, MarketPredictor, LSTMPredictor
 
 __all__ = [
     "LSTMSentimentModel",
     "train_sentiment_model",
     "NetworkPredictor",
     "MarketPredictor",
+    "LSTMPredictor",
 ]
