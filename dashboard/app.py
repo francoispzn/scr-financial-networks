@@ -1525,7 +1525,7 @@ def _run_training_thread(features, seq_len, hidden_dim, gcn_layers, lstm_layers,
         predictor, tr, te = train_predictor(
             features,
             seq_len=seq_len, hidden_dim=hidden_dim,
-            num_gcn_layers=gcn_layers, num_lstm_layers=lstm_layers,
+            num_gat_layers=gcn_layers, num_lstm_layers=lstm_layers,
             epochs=epochs, lr=lr, dropout=dropout,
             progress_callback=_progress_cb,
         )

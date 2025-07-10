@@ -132,7 +132,7 @@ def train_predictor(
     snapshots: List[Dict[str, Any]],
     seq_len: int = 10,
     hidden_dim: int = 64,
-    num_gcn_layers: int = 3,
+    num_gat_layers: int = 3,
     num_lstm_layers: int = 2,
     epochs: int = 200,
     lr: float = 3e-3,
@@ -146,7 +146,7 @@ def train_predictor(
     predictor = GNNPredictor(
         seq_len=seq_len,
         hidden_dim=hidden_dim,
-        num_gcn_layers=num_gcn_layers,
+        num_gat_layers=num_gat_layers,
         num_lstm_layers=num_lstm_layers,
         dropout=dropout,
     )

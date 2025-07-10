@@ -1,11 +1,14 @@
 """
 Temporal Graph Neural Network predictor for spectral metric evolution.
 
-Replaces the flat LSTM with a GCN encoder that operates on the actual
+Uses a GAT (Graph Attention Network) encoder that operates on the actual
 interbank graph at each timestep, producing graph-level embeddings that
 feed into a temporal LSTM for spectral metric forecasting.
 
-Architecture: GCNConv layers → global_mean_pool → LSTM → FC → [λ₂, gap, ρ]
+Architecture: GATConv layers → global_mean_pool → LSTM → FC → [λ₂, gap, ρ]
+
+The attention mechanism learns which inter-bank relationships matter most
+for predicting spectral risk indicators, providing interpretability.
 """
 
 from __future__ import annotations
@@ -16,7 +19,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import numpy as np
 import torch
 import torch.nn as nn
-from torch_geometric.nn import GCNConv, global_mean_pool
+from torch_geometric.nn import GATConv, global_mean_pool
 from torch_geometric.data import Data
 
 logger = logging.getLogger(__name__)
@@ -28,26 +31,37 @@ NODE_FEATURE_NAMES = ["CET1_ratio", "LCR", "NSFR", "total_assets", "is_stressed"
 
 
 class GNNEncoder(nn.Module):
-    """Multi-layer GCN that produces a graph-level embedding."""
+    """Multi-layer GAT that produces a graph-level embedding.
 
-    def __init__(self, in_channels: int, hidden_channels: int, num_gcn_layers: int = 3,
-                 dropout: float = 0.1):
+    Uses multi-head attention to learn which inter-bank relationships
+    are most informative for predicting spectral risk indicators.
+    Attention weights are stored for interpretability analysis.
+    """
+
+    def __init__(self, in_channels: int, hidden_channels: int, num_layers: int = 3,
+                 heads: int = 4, dropout: float = 0.1):
         super().__init__()
         self.convs = nn.ModuleList()
         self.bns = nn.ModuleList()
-        self.convs.append(GCNConv(in_channels, hidden_channels))
-        self.bns.append(nn.BatchNorm1d(hidden_channels))
-        for _ in range(num_gcn_layers - 1):
-            self.convs.append(GCNConv(hidden_channels, hidden_channels))
-            self.bns.append(nn.BatchNorm1d(hidden_channels))
+        self.heads = heads
+        # First layer: in_channels → hidden_channels (each head outputs hidden_channels // heads)
+        head_dim = max(1, hidden_channels // heads)
+        self.convs.append(GATConv(in_channels, head_dim, heads=heads, dropout=dropout, concat=True))
+        self.bns.append(nn.BatchNorm1d(head_dim * heads))
+        for _ in range(num_layers - 1):
+            self.convs.append(GATConv(head_dim * heads, head_dim, heads=heads, dropout=dropout, concat=True))
+            self.bns.append(nn.BatchNorm1d(head_dim * heads))
         self.dropout = nn.Dropout(dropout)
-        self.act = nn.ReLU()
+        self.act = nn.ELU()
+        self._last_attention_weights: Optional[torch.Tensor] = None
 
     def forward(self, x: torch.Tensor, edge_index: torch.Tensor,
                 edge_weight: Optional[torch.Tensor] = None,
                 batch: Optional[torch.Tensor] = None) -> torch.Tensor:
         for i, (conv, bn) in enumerate(zip(self.convs, self.bns)):
-            h = conv(x, edge_index, edge_weight)
+            h, (edge_idx, attn_w) = conv(x, edge_index, return_attention_weights=True)
+            if i == len(self.convs) - 1:
+                self._last_attention_weights = attn_w.detach()
             h = bn(h)
             h = self.act(h)
             if i < len(self.convs) - 1:
@@ -57,15 +71,19 @@ class GNNEncoder(nn.Module):
             batch = torch.zeros(x.size(0), dtype=torch.long, device=x.device)
         return global_mean_pool(x, batch)  # [num_graphs, hidden]
 
+    def get_attention_weights(self) -> Optional[torch.Tensor]:
+        """Return attention weights from the last forward pass (last layer)."""
+        return self._last_attention_weights
+
 
 class TemporalGNN(nn.Module):
     """GNN encoder + LSTM for temporal graph sequences → spectral predictions."""
 
     def __init__(self, node_features: int, hidden_dim: int = 64,
-                 output_dim: int = 3, num_gcn_layers: int = 3,
-                 num_lstm_layers: int = 2, dropout: float = 0.1):
+                 output_dim: int = 3, num_gat_layers: int = 3,
+                 num_lstm_layers: int = 2, heads: int = 4, dropout: float = 0.1):
         super().__init__()
-        self.gnn = GNNEncoder(node_features, hidden_dim, num_gcn_layers, dropout)
+        self.gnn = GNNEncoder(node_features, hidden_dim, num_gat_layers, heads, dropout)
         self.lstm = nn.LSTM(hidden_dim, hidden_dim, num_lstm_layers,
                             batch_first=True, dropout=dropout if num_lstm_layers > 1 else 0.0)
         self.fc = nn.Sequential(
@@ -107,12 +125,13 @@ class GNNPredictor:
     """
 
     def __init__(self, seq_len: int = 10, hidden_dim: int = 64,
-                 num_gcn_layers: int = 3, num_lstm_layers: int = 2,
-                 dropout: float = 0.1):
+                 num_gat_layers: int = 3, num_lstm_layers: int = 2,
+                 heads: int = 4, dropout: float = 0.1):
         self.seq_len = seq_len
         self.hidden_dim = hidden_dim
-        self.num_gcn_layers = num_gcn_layers
+        self.num_gat_layers = num_gat_layers
         self.num_lstm_layers = num_lstm_layers
+        self.heads = heads
         self.dropout = dropout
         self.model: Optional[TemporalGNN] = None
         self._trained = False
@@ -274,11 +293,11 @@ class GNNPredictor:
         n_feat = len(NODE_FEATURE_NAMES)
         self.model = TemporalGNN(
             n_feat, self.hidden_dim, len(TARGET_NAMES),
-            self.num_gcn_layers, self.num_lstm_layers, self.dropout,
+            self.num_gat_layers, self.num_lstm_layers, self.heads, self.dropout,
         )
         n_params = self.model.count_parameters()
-        logger.info("TemporalGNN: %d params, %d GCN layers, %d LSTM layers, hidden=%d",
-                    n_params, self.num_gcn_layers, self.num_lstm_layers, self.hidden_dim)
+        logger.info("TemporalGNN: %d params, %d GAT layers (%d heads), %d LSTM layers, hidden=%d",
+                    n_params, self.num_gat_layers, self.heads, self.num_lstm_layers, self.hidden_dim)
 
         optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-5)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
