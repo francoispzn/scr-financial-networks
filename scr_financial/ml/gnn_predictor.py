@@ -253,12 +253,16 @@ class GNNPredictor:
         epochs: int = 200,
         lr: float = 3e-3,
         test_fraction: float = 0.2,
+        patience: int = 30,
         progress_callback: Optional[Callable[[int, int, float, Optional[float]], None]] = None,
     ) -> float:
-        """Train the temporal GNN. Returns final train loss.
+        """Train the temporal GNN with early stopping. Returns final train loss.
 
         Parameters
         ----------
+        patience : int
+            Early stopping patience — stop if test loss doesn't improve for
+            this many epochs. Set to 0 to disable early stopping.
         progress_callback : callable(epoch, total_epochs, train_loss, test_loss_or_None)
             Called every 5 epochs for UI progress updates.
         """
@@ -299,7 +303,15 @@ class GNNPredictor:
         logger.info("TemporalGNN: %d params, %d GAT layers (%d heads), %d LSTM layers, hidden=%d",
                     n_params, self.num_gat_layers, self.heads, self.num_lstm_layers, self.hidden_dim)
 
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-5)
+        # Warn if severely overparameterized
+        if n_params > 10 * len(train_seqs):
+            logger.warning(
+                "Model has %d params for %d training samples (ratio %.0f:1). "
+                "Consider reducing hidden_dim or heads to prevent overfitting.",
+                n_params, len(train_seqs), n_params / len(train_seqs),
+            )
+
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-4)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
         loss_fn = nn.MSELoss()
 
@@ -307,6 +319,11 @@ class GNNPredictor:
         self.model.train()
         self.training_history = []
         final_loss = 0.0
+
+        # Early stopping state
+        best_test_loss = float("inf")
+        best_state_dict = None
+        epochs_without_improvement = 0
 
         for epoch in range(epochs):
             perm = np.random.permutation(len(train_graph_seqs))
@@ -341,6 +358,15 @@ class GNNPredictor:
                         test_loss = float(np.mean((test_pred_s - y_test_s) ** 2))
                     self.model.train()
 
+                    # Early stopping check
+                    if patience > 0 and test_loss is not None:
+                        if test_loss < best_test_loss - 1e-6:
+                            best_test_loss = test_loss
+                            best_state_dict = {k: v.clone() for k, v in self.model.state_dict().items()}
+                            epochs_without_improvement = 0
+                        else:
+                            epochs_without_improvement += 5  # We check every 5 epochs
+
                 self.training_history.append({
                     "epoch": epoch + 1,
                     "train_loss": final_loss,
@@ -350,6 +376,17 @@ class GNNPredictor:
 
                 if progress_callback is not None:
                     progress_callback(epoch + 1, epochs, final_loss, test_loss)
+
+                # Early stopping trigger
+                if patience > 0 and epochs_without_improvement >= patience:
+                    logger.info("Early stopping at epoch %d (no improvement for %d epochs)",
+                                epoch + 1, patience)
+                    break
+
+        # Restore best model if early stopping was used
+        if best_state_dict is not None:
+            self.model.load_state_dict(best_state_dict)
+            logger.info("Restored best model (test_loss=%.6f)", best_test_loss)
 
         self._trained = True
 
