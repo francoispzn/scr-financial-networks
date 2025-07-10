@@ -34,6 +34,8 @@ class BankAgent:
         Dictionary containing initial bank attributes.
     decision_model : object, optional
         Decision model to use for agent behavior, by default DefaultDecisionModel().
+    stochastic : bool
+        Enable Ornstein-Uhlenbeck noise on regulatory ratios each step.
 
     Attributes
     ----------
@@ -47,26 +49,93 @@ class BankAgent:
         List of past states (capped at ``memory_length`` entries).
     memory_length : int
         Maximum number of past states to remember (default 10).
-        Can be overridden after initialisation, e.g.
-        ``agent.memory_length = 20``.
     """
-    
+
+    # Ornstein-Uhlenbeck parameters per ratio:  (theta, sigma, clamp_lo, clamp_hi)
+    _OU_PARAMS = {
+        "CET1_ratio": (0.05, 0.25, 0.0, 30.0),
+        "LCR":        (0.04, 1.5,  20.0, 300.0),
+        "NSFR":       (0.04, 0.8,  30.0, 250.0),
+    }
+    # Loss-given-default rate applied to counterparty interbank assets
+    _LGD = 0.40
+
     def __init__(
-        self, 
-        bank_id: str, 
+        self,
+        bank_id: str,
         initial_state: Dict[str, Any],
-        decision_model: Optional[object] = None
+        decision_model: Optional[object] = None,
+        stochastic: bool = True,
     ):
         """Initialize a bank agent with an ID and initial state."""
         self.id = bank_id
         self.state = initial_state.copy()
-        self.connections = {}
-        self.memory = []
+        self.connections: Dict[str, float] = {}
+        self.memory: List[Dict[str, Any]] = []
         self.memory_length = 10
-        
+        self.stochastic = stochastic
+        self._defaulted = False
+
+        # Store long-run means for OU reversion (snapshot at init)
+        self._ou_mu: Dict[str, float] = {}
+        for key in self._OU_PARAMS:
+            if key in self.state:
+                self._ou_mu[key] = float(self.state[key])
+
         # Set default decision model if none provided
         self.decision_model = decision_model if decision_model else DefaultDecisionModel()
     
+    # ── Stochastic dynamics ────────────────────────────────────────────────
+
+    def evolve_ratios(self, rng: np.random.Generator, dt: float = 1.0) -> None:
+        """Apply one discrete Ornstein-Uhlenbeck step to CET1, LCR, NSFR.
+
+        dx = theta*(mu - x)*dt + sigma*sqrt(dt)*N(0,1)
+        """
+        if not self.stochastic or self._defaulted:
+            return
+        for key, (theta, sigma, lo, hi) in self._OU_PARAMS.items():
+            x = self.state.get(key)
+            mu = self._ou_mu.get(key)
+            if x is None or mu is None:
+                continue
+            dx = theta * (mu - x) * dt + sigma * np.sqrt(dt) * rng.standard_normal()
+            self.state[key] = float(np.clip(x + dx, lo, hi))
+
+    def apply_counterparty_loss(self, loss_amount: float) -> None:
+        """Apply a credit loss from a defaulted counterparty.
+
+        Reduces interbank_assets, CET1 proportionally, and cash.
+        """
+        if loss_amount <= 0 or self._defaulted:
+            return
+        # Reduce interbank assets
+        ib = self.state.get("interbank_assets", 0.0)
+        actual_loss = min(loss_amount, ib)
+        self.state["interbank_assets"] = ib - actual_loss
+
+        # CET1 hit: loss / estimated RWA (assume RWA ≈ 35% of total_assets)
+        total_assets = self.state.get("total_assets", 1e9)
+        rwa_est = total_assets * 0.35
+        if rwa_est > 0:
+            self.state["CET1_ratio"] = self.state.get("CET1_ratio", 0.0) - (actual_loss / rwa_est) * 100
+
+        # Cash fire-sale cost (10% of loss)
+        cash = self.state.get("cash", 0.0)
+        self.state["cash"] = cash - actual_loss * 0.10
+
+    def is_defaulted(self) -> bool:
+        """Bank is in default if CET1 < 0 or cash < 0."""
+        if self._defaulted:
+            return True
+        return self.state.get("CET1_ratio", 10.0) < 0 or self.state.get("cash", 1.0) < 0
+
+    def freeze(self) -> None:
+        """Mark bank as defaulted — no further lending/evolution."""
+        self._defaulted = True
+
+    # ── State management ──────────────────────────────────────────────────
+
     def update_state(self, new_state: Dict[str, Any]) -> None:
         """
         Update the bank's state with new information.

@@ -26,7 +26,7 @@ import requests
 logger = logging.getLogger(__name__)
 
 _CEREBRAS_BASE_URL = "https://api.cerebras.ai/v1"
-_DEFAULT_MODEL = "llama-4-scout-17b-16e-instruct"
+_DEFAULT_MODEL = "qwen-3-235b-a22b-instruct-2507"
 _MAX_TOOL_ROUNDS = 5  # prevent infinite loops
 
 _SYSTEM_PROMPT = """You are an expert financial stability analyst specialising in
@@ -276,6 +276,267 @@ def analyze_system_state(
     except Exception as exc:
         logger.exception("LLM analysis failed")
         return f"**LLM analysis failed:** {exc}"
+
+
+# ── Real data fetcher ────────────────────────────────────────────────────────
+
+_FETCH_SYSTEM = """You are a financial data extraction agent. You have access to web_search.
+Search for the most recent publicly available regulatory data for each requested bank.
+Focus on official sources: annual reports, EBA transparency exercise, investor presentations,
+Q4 or H1 results press releases. Return ONLY valid JSON — no prose, no code fences."""
+
+_FETCH_PROMPT_TEMPLATE = """
+Search for the most recent CET1 ratio (%), LCR (%), NSFR (%), and total assets (EUR)
+for each of the following banks:
+
+{bank_list}
+
+Use web_search for each bank to find their latest reported figures.
+Return a single JSON object — keys are the bank IDs below, values are dicts with keys:
+  CET1_ratio  (float, percent)
+  LCR         (float, percent)
+  NSFR        (float, percent, use null if unavailable)
+  total_assets (float, EUR value — e.g. 1.32e12 for €1.32 trillion)
+
+Bank IDs and names:
+{id_name_map}
+
+Example output (do NOT include this, find real values):
+{{"DE_DBK": {{"CET1_ratio": 13.7, "LCR": 148, "NSFR": 119, "total_assets": 1.32e12}}}}
+
+Return ONLY the JSON object. No explanation, no markdown fences.
+"""
+
+# ── GNN feature fetcher ──────────────────────────────────────────────────────
+
+_GNN_FETCH_SYSTEM = """You are a financial data extraction agent specialising in
+European banking regulatory and market data. You have web_search access.
+Search official sources: EBA transparency exercises, annual reports, Pillar 3 disclosures,
+investor presentations, Q4/H1 press releases, ECB banking supervision data.
+Return ONLY valid JSON — no prose, no markdown fences."""
+
+_GNN_FETCH_PROMPT = """
+For each bank listed below, search and return the MOST RECENT available values for ALL
+of the following fields. Use web_search for each bank. If a field is genuinely unavailable
+after searching, use null.
+
+Fields required (all numeric):
+  CET1_ratio        – CET1 capital ratio (%, e.g. 13.7)
+  tier1_ratio       – Tier 1 capital ratio (%)
+  total_capital_ratio – Total capital ratio (%)
+  LCR               – Liquidity Coverage Ratio (%)
+  NSFR              – Net Stable Funding Ratio (%)
+  leverage_ratio    – Basel III leverage ratio (%)
+  npl_ratio         – Non-performing loan ratio (%)
+  roe               – Return on equity (%)
+  roa               – Return on assets (%)
+  cost_income_ratio – Cost-to-income ratio (%)
+  total_assets      – Total assets (EUR, e.g. 1.32e12)
+  tier1_capital     – Tier 1 capital amount (EUR)
+  rwa               – Risk-weighted assets (EUR)
+  net_income        – Net income (EUR, last annual)
+  deposits          – Total customer deposits (EUR)
+
+Bank IDs and names:
+{id_name_map}
+
+Return a single JSON object. Keys are the bank IDs above, values are dicts with the
+fields listed. Example structure (use REAL values, not these):
+{{"DE_DBK": {{"CET1_ratio": 13.7, "tier1_ratio": 14.9, "total_capital_ratio": 17.2,
+  "LCR": 148, "NSFR": 119, "leverage_ratio": 4.6, "npl_ratio": 1.8,
+  "roe": 9.1, "roa": 0.4, "cost_income_ratio": 62, "total_assets": 1.32e12,
+  "tier1_capital": 5.2e10, "rwa": 3.5e11, "net_income": 4.2e9,
+  "deposits": 6.1e11}}}}
+
+Return ONLY the JSON object.
+"""
+
+# Numeric fields we accept from the GNN fetch (in this order → feature vector)
+GNN_NODE_FEATURES = [
+    "CET1_ratio", "tier1_ratio", "total_capital_ratio",
+    "LCR", "NSFR", "leverage_ratio",
+    "npl_ratio", "roe", "roa", "cost_income_ratio",
+    "total_assets", "tier1_capital", "rwa", "net_income", "deposits",
+]
+
+
+def fetch_bank_features_for_gnn(
+    bank_ids: list,
+    model: Optional[str] = None,
+    api_key: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Use Cerebras LLM + web_search to fetch a rich feature set for GNN training.
+
+    Returns ``{bank_id: {feature: value, ...}}`` for all GNN_NODE_FEATURES,
+    or ``{"error": "..."}`` on failure.  Missing fields are set to ``None``.
+    """
+    from dashboard.data_loader import BANK_LABELS  # avoid circular at module level
+
+    key = api_key or os.environ.get("CEREBRAS_API_KEY", "")
+    if not key:
+        return {"error": "CEREBRAS_API_KEY not set."}
+
+    try:
+        from openai import OpenAI
+    except ImportError:
+        return {"error": "`openai` package not installed."}
+
+    client = OpenAI(api_key=key, base_url=_CEREBRAS_BASE_URL)
+    chosen_model = model or _DEFAULT_MODEL
+
+    id_name_map = {bid: BANK_LABELS.get(bid, bid) for bid in bank_ids}
+    prompt = _GNN_FETCH_PROMPT.format(id_name_map=json.dumps(id_name_map, indent=2))
+
+    messages: list[dict] = [
+        {"role": "system", "content": _GNN_FETCH_SYSTEM},
+        {"role": "user",   "content": prompt},
+    ]
+
+    try:
+        for _round in range(_MAX_TOOL_ROUNDS * 3):  # more rounds for more banks/features
+            resp = client.chat.completions.create(
+                model=chosen_model, messages=messages,
+                tools=_TOOLS, tool_choice="auto",
+                max_tokens=4000, temperature=0.1,
+            )
+            msg = resp.choices[0].message
+
+            if not msg.tool_calls:
+                content = (msg.content or "").strip()
+                if content.startswith("```"):
+                    content = content.split("```")[1]
+                    if content.startswith("json"):
+                        content = content[4:]
+                try:
+                    raw = json.loads(content)
+                    result: Dict[str, Any] = {}
+                    for bid in bank_ids:
+                        fields = raw.get(bid, {})
+                        node: Dict[str, Any] = {}
+                        for feat in GNN_NODE_FEATURES:
+                            v = fields.get(feat)
+                            if v is not None:
+                                try:
+                                    node[feat] = float(v)
+                                except (TypeError, ValueError):
+                                    node[feat] = None
+                            else:
+                                node[feat] = None
+                        result[bid] = node
+                    logger.info(
+                        "GNN fetch: %d banks, features: %s",
+                        len(result), GNN_NODE_FEATURES,
+                    )
+                    return result
+                except json.JSONDecodeError as exc:
+                    logger.warning("GNN JSON parse failed: %s", exc)
+                    return {"error": f"Could not parse LLM response: {exc}"}
+
+            messages.append(msg.model_dump(exclude_unset=True))
+            for tc in msg.tool_calls:
+                result_str = _dispatch_tool(tc.function.name, tc.function.arguments)
+                messages.append({
+                    "role": "tool", "tool_call_id": tc.id, "content": result_str,
+                })
+
+        return {"error": "LLM exhausted tool rounds without returning GNN data."}
+
+    except Exception as exc:
+        logger.exception("fetch_bank_features_for_gnn failed")
+        return {"error": str(exc)}
+
+
+def fetch_bank_data_via_llm(
+    bank_ids: list,
+    model: Optional[str] = None,
+    api_key: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Use Cerebras LLM + web_search to fetch real bank regulatory data.
+
+    Returns a dict of {bank_id: {CET1_ratio, LCR, NSFR, total_assets}}
+    or {"error": "..."} on failure.
+    """
+    from dashboard.data_loader import BANK_LABELS  # avoid circular at module level
+
+    key = api_key or os.environ.get("CEREBRAS_API_KEY", "")
+    if not key:
+        return {"error": "CEREBRAS_API_KEY not set."}
+
+    try:
+        from openai import OpenAI
+    except ImportError:
+        return {"error": "`openai` package not installed."}
+
+    client = OpenAI(api_key=key, base_url=_CEREBRAS_BASE_URL)
+    chosen_model = model or _DEFAULT_MODEL
+
+    id_name_map = {bid: BANK_LABELS.get(bid, bid) for bid in bank_ids}
+    bank_list_str = "\n".join(f"- {BANK_LABELS.get(b,b)} ({b})" for b in bank_ids)
+
+    prompt = _FETCH_PROMPT_TEMPLATE.format(
+        bank_list=bank_list_str,
+        id_name_map=json.dumps(id_name_map, indent=2),
+    )
+
+    messages: list[dict] = [
+        {"role": "system", "content": _FETCH_SYSTEM},
+        {"role": "user",   "content": prompt},
+    ]
+
+    try:
+        for _round in range(_MAX_TOOL_ROUNDS):
+            resp = client.chat.completions.create(
+                model=chosen_model, messages=messages,
+                tools=_TOOLS, tool_choice="auto",
+                max_tokens=2000, temperature=0.1,
+            )
+            msg = resp.choices[0].message
+
+            if not msg.tool_calls:
+                # Parse JSON from the final response
+                content = (msg.content or "").strip()
+                # Strip accidental markdown fences
+                if content.startswith("```"):
+                    content = content.split("```")[1]
+                    if content.startswith("json"):
+                        content = content[4:]
+                try:
+                    data = json.loads(content)
+                    # Sanitise: keep only numeric fields we expect
+                    result = {}
+                    for bid, fields in data.items():
+                        if bid not in bank_ids:
+                            continue
+                        clean = {}
+                        for k in ("CET1_ratio", "LCR", "NSFR", "total_assets"):
+                            v = fields.get(k)
+                            if v is not None:
+                                try:
+                                    clean[k] = float(v)
+                                except (TypeError, ValueError):
+                                    pass
+                        if clean:
+                            result[bid] = clean
+                    logger.info("LLM fetched data for %d banks", len(result))
+                    return result
+                except json.JSONDecodeError as exc:
+                    logger.warning("JSON parse failed: %s\nContent: %.200s", exc, content)
+                    return {"error": f"Could not parse LLM JSON response: {exc}"}
+
+            messages.append(msg.model_dump(exclude_unset=True))
+            for tc in msg.tool_calls:
+                result_str = _dispatch_tool(tc.function.name, tc.function.arguments)
+                messages.append({
+                    "role": "tool", "tool_call_id": tc.id, "content": result_str,
+                })
+
+        return {"error": "LLM exhausted tool rounds without returning data."}
+
+    except Exception as exc:
+        logger.exception("fetch_bank_data_via_llm failed")
+        return {"error": str(exc)}
 
 
 # ── Snapshot builder ─────────────────────────────────────────────────────────
