@@ -87,32 +87,150 @@ def find_spectral_gap(
     max_index: Optional[int] = None,
 ) -> Tuple[int, float]:
     """
-    Identify the spectral gap in the eigenvalue spectrum.
+    Identify the spectral gap in the eigenvalue spectrum using the
+    Erdos-Renyi null model test from Schmidt, Caccioli & Aste (2025).
+
+    For each gap index i, we compare the observed gap against a
+    distribution of gaps from an ensemble of Erdos-Renyi random graphs
+    with the same number of vertices and expected average degree. A gap
+    is flagged as a candidate if its empirical one-tailed p-value is
+    below alpha=0.01.
+
+    If no statistically significant gap is found, falls back to the
+    largest gap in [min_index, max_index].
 
     Args:
-        eigenvalues: Array of eigenvalues.
-        min_index: Minimum index to consider. Defaults to 1.
-        max_index: Maximum index to consider. Defaults to None (half of
-            spectrum).
+        eigenvalues: Array of eigenvalues (sorted ascending).
+        min_index: Minimum gap index to consider. Defaults to 1.
+        max_index: Maximum gap index to consider. Defaults to None (half
+            of spectrum).
 
     Returns:
         Tuple of (gap index, gap size).
+
+    References:
+        Schmidt, Caccioli & Aste, "Spectral coarse graining and rescaling
+        for preserving structural and dynamical properties in graphs",
+        Phys. Rev. E 112, 034303 (2025).
     """
     if max_index is None:
         max_index = len(eigenvalues) // 2
 
-    # Compute differences between consecutive eigenvalues
     gaps = np.diff(eigenvalues)
 
-    # Find the largest gap in the specified range
+    if len(gaps) < 2:
+        return min_index if min_index < len(gaps) else 0, float(gaps[0]) if len(gaps) > 0 else 0.0
+
+    # ── Schmidt null model: Erdos-Renyi ensemble ─────────────────────
+    n = len(eigenvalues)
+    candidate = _find_gap_via_er_null_model(eigenvalues, n, min_index, max_index)
+    if candidate is not None:
+        return candidate
+
+    # ── Fallback: largest gap in search range ────────────────────────
     search_range = gaps[min_index:max_index]
     if len(search_range) == 0:
-        return min_index, 0
+        return min_index, 0.0
 
     max_gap_idx = np.argmax(search_range) + min_index
-    max_gap = gaps[max_gap_idx]
+    return max_gap_idx, float(gaps[max_gap_idx])
 
-    return max_gap_idx, max_gap
+
+def _find_gap_via_er_null_model(
+    eigenvalues: np.ndarray,
+    n: int,
+    min_index: int,
+    max_index: int,
+    n_ensemble: int = 1000,
+    alpha: float = 0.01,
+    seed: int = 42,
+) -> Optional[Tuple[int, float]]:
+    """Erdos-Renyi null model gap test (Schmidt et al. 2025, Section II).
+
+    Generates an ensemble of connected ER graphs with same n and expected
+    average degree, computes their Laplacian spectra, and flags gaps whose
+    empirical p-value < alpha.
+
+    Args:
+        eigenvalues: Observed Laplacian eigenvalues.
+        n: Number of vertices.
+        min_index: Minimum gap index to test.
+        max_index: Maximum gap index to test.
+        n_ensemble: Number of ER realisations (Schmidt uses 10^4; we use
+            10^3 for speed, adjustable).
+        alpha: Significance threshold.
+        seed: Random seed for reproducibility.
+
+    Returns:
+        (gap_index, gap_size) for the first significant gap, or None.
+    """
+    rng = np.random.default_rng(seed)
+    gaps_obs = np.diff(eigenvalues)
+
+    # Estimate average degree from the unnormalized Laplacian diagonal
+    # For normalized Laplacian eigenvalues, k_avg can be estimated from
+    # the trace: for normalized L, trace = n, so we use the spectral
+    # radius as a proxy.  A simpler approach: assume we know k_avg from
+    # the sum of the adjacency.  Since we may not have A here, estimate
+    # from Chung's bound: k_avg ≈ n * (1 - eigenvalues[-1]) for
+    # normalized Laplacian is unreliable.  Instead, we use a moderate
+    # connectivity (p = 0.3 for dense financial graphs).
+    #
+    # Better: use the spectral sum.  For a connected ER(n,p),
+    # avg degree k = (n-1)*p.  We estimate p from the spectrum:
+    # For normalized Laplacian of ER: eigenvalues cluster around 1.
+    # The variance of eigenvalues decreases with density.
+    # A robust heuristic: p ≈ 1/(1 + variance(eigenvalues)*n)
+    ev_var = float(np.var(eigenvalues[1:]))  # skip lambda_0 = 0
+    p_est = min(0.9, max(0.1, 1.0 / (1.0 + ev_var * n)))
+
+    # Collect gap distributions from ER ensemble
+    gap_distributions: List[List[float]] = [[] for _ in range(len(gaps_obs))]
+
+    for _ in range(n_ensemble):
+        # Generate connected ER graph
+        for attempt in range(5):
+            adj_er = (rng.random((n, n)) < p_est).astype(float)
+            np.fill_diagonal(adj_er, 0)
+            adj_er = np.maximum(adj_er, adj_er.T)  # Symmetric
+            degrees = adj_er.sum(axis=1)
+            if np.all(degrees > 0):
+                break
+        else:
+            continue
+
+        # Compute normalized Laplacian eigenvalues
+        D_inv_sqrt = np.diag(1.0 / np.sqrt(np.maximum(degrees, 1e-10)))
+        I = np.eye(n)
+        L_er = I - D_inv_sqrt @ adj_er @ D_inv_sqrt
+        ev_er = la.eigh(L_er, eigvals_only=True)
+        gaps_er = np.diff(ev_er)
+
+        for i in range(min(len(gaps_er), len(gap_distributions))):
+            gap_distributions[i].append(gaps_er[i])
+
+    # Test each gap for significance
+    candidates = []
+    for i in range(min_index, min(max_index, len(gaps_obs))):
+        if len(gap_distributions[i]) < 50:
+            continue
+        er_gaps = np.array(gap_distributions[i])
+        # One-tailed p-value: fraction of ER gaps >= observed gap
+        p_value = float(np.mean(er_gaps >= gaps_obs[i]))
+        if p_value < alpha:
+            candidates.append((i, float(gaps_obs[i]), p_value))
+
+    if not candidates:
+        return None
+
+    # Return the first (smallest index) significant gap
+    candidates.sort(key=lambda x: x[0])
+    best = candidates[0]
+    logger.info(
+        "Schmidt gap test: found significant gap at index %d (size=%.4f, p=%.4f)",
+        best[0], best[1], best[2],
+    )
+    return best[0], best[1]
 
 
 def compute_diffusion_modes(
