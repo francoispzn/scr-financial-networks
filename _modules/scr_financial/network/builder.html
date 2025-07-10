@@ -5,12 +5,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>scr_financial.network.builder &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=92fd9be5" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+  <title>scr_financial.network.builder &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
-      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -38,8 +38,32 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -72,19 +96,23 @@
 <span class="sd">financial networks from preprocessed data.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
-<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="k">as</span> <span class="nn">la</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">..data.preprocessor</span> <span class="kn">import</span> <span class="n">DataPreprocessor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">la</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..data.preprocessor</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPreprocessor</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="FinancialNetworkBuilder">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder">[docs]</a>
-<span class="k">class</span> <span class="nc">FinancialNetworkBuilder</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FinancialNetworkBuilder</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Constructs financial networks from preprocessed data.</span>
 <span class="sd">    </span>
@@ -108,8 +136,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.__init__">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">:</span> <span class="n">DataPreprocessor</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">:</span> <span class="n">DataPreprocessor</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the network builder with preprocessed data.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">preprocessor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="kc">None</span>
@@ -120,8 +148,8 @@
 
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.construct_network">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder.construct_network">[docs]</a>
-    <span class="k">def</span> <span class="nf">construct_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">],</span> <span class="n">edge_weight_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;interbank_exposures&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.construct_network">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">construct_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">],</span> <span class="n">edge_weight_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;interbank_exposures&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct network for a specific time point.</span>
 <span class="sd">        </span>
@@ -172,18 +200,24 @@
                     <span class="k">if</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
                         <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">bank_id</span><span class="p">][</span><span class="n">category</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         
+        <span class="c1"># Validate that the graph has nodes</span>
+        <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;No nodes found in network for the given time point and edge weight type&quot;</span>
+            <span class="p">)</span>
+
         <span class="c1"># Store the graph</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">G</span>
-        
+
         <span class="c1"># Create adjacency matrix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adjacency_matrix</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_scipy_sparse_array</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">G</span></div>
 
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.compute_laplacian">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder.compute_laplacian">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_laplacian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.compute_laplacian">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_laplacian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the graph Laplacian.</span>
 <span class="sd">        </span>
@@ -209,8 +243,8 @@
 
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.spectral_analysis">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder.spectral_analysis">[docs]</a>
-    <span class="k">def</span> <span class="nf">spectral_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.spectral_analysis">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spectral_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform spectral analysis of the Laplacian.</span>
 <span class="sd">        </span>
@@ -223,15 +257,15 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Laplacian not computed. Call compute_laplacian first.&quot;</span><span class="p">)</span>
         
         <span class="c1"># For small networks, we can use dense eigendecomposition</span>
-        <span class="n">L_dense</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">laplacian</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+        <span class="n">L_dense</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">laplacian</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">L_dense</span><span class="p">)</span>
         
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors</span></div>
 
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.find_spectral_gap">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder.find_spectral_gap">[docs]</a>
-    <span class="k">def</span> <span class="nf">find_spectral_gap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.find_spectral_gap">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_spectral_gap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Identify the spectral gap for coarse-graining.</span>
 <span class="sd">        </span>
@@ -254,8 +288,8 @@
 
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.get_node_attribute_matrix">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder.get_node_attribute_matrix">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_node_attribute_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.get_node_attribute_matrix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_node_attribute_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get matrix of node attributes.</span>
 <span class="sd">        </span>
@@ -284,8 +318,8 @@
 
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.get_edge_weight_matrix">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder.get_edge_weight_matrix">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_edge_weight_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.get_edge_weight_matrix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_edge_weight_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get matrix of edge weights.</span>
 <span class="sd">        </span>
@@ -301,8 +335,8 @@
 
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.compute_centrality_measures">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder.compute_centrality_measures">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_centrality_measures</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.compute_centrality_measures">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_centrality_measures</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute various centrality measures for the network.</span>
 <span class="sd">        </span>
@@ -321,9 +355,13 @@
         
         <span class="c1"># Eigenvector centrality</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">centrality_measures</span><span class="p">[</span><span class="s1">&#39;eigenvector&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eigenvector_centrality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="c1"># May not converge for some networks</span>
+            <span class="n">centrality_measures</span><span class="p">[</span><span class="s1">&#39;eigenvector&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eigenvector_centrality</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">PowerIterationFailedConvergence</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Eigenvector centrality did not converge for graph; returning zeros.&quot;</span>
+            <span class="p">)</span>
             <span class="n">centrality_measures</span><span class="p">[</span><span class="s1">&#39;eigenvector&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()}</span>
         
         <span class="c1"># Betweenness centrality</span>
@@ -339,8 +377,8 @@
 
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.compute_community_structure">
-<a class="viewcode-back" href="../../../source/scr_financial.network.html#scr_financial.network.builder.FinancialNetworkBuilder.compute_community_structure">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_community_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;louvain&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.compute_community_structure">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_community_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;louvain&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute community structure of the network.</span>
 <span class="sd">        </span>
@@ -359,10 +397,12 @@
         
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;louvain&#39;</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">community</span> <span class="k">as</span> <span class="nn">community_louvain</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">community</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">community_louvain</span>
                 <span class="k">return</span> <span class="n">community_louvain</span><span class="o">.</span><span class="n">best_partition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">to_undirected</span><span class="p">(),</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;python-louvain package not installed. Using spectral clustering instead.&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;python-louvain package not installed. Using spectral clustering instead.&quot;</span>
+                <span class="p">)</span>
                 <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;spectral&#39;</span>
         
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;spectral&#39;</span><span class="p">:</span>
@@ -370,7 +410,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">spectral_analysis</span><span class="p">()</span>
             
             <span class="c1"># Use spectral clustering</span>
-            <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">SpectralClustering</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralClustering</span>
             
             <span class="c1"># Determine number of clusters from spectral gap</span>
             <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_spectral_gap</span><span class="p">()</span>
@@ -407,7 +447,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Francois Petizon.</p>
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

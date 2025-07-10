@@ -1,0 +1,26 @@
+Quickstart
+==========
+
+Launch the dashboard:
+
+.. code-block:: bash
+
+   python dashboard/app.py
+
+Open http://localhost:8050. Navigate to the **Evolve** page to train a GNN on real market data.
+
+Programmatic usage:
+
+.. code-block:: python
+
+   from scr_financial.abm.simulation import BankingSystemSimulation
+   from scr_financial.network.spectral import compute_laplacian, eigendecomposition
+   from scr_financial.ml.gnn_predictor import GNNPredictor
+
+   sim = BankingSystemSimulation()
+   sim.setup_banks()
+   sim.run_simulation(100)
+
+   adj = sim.get_adjacency_matrix()
+   L = compute_laplacian(adj, normalized=True)
+   eigenvalues, eigenvectors = eigendecomposition(L)

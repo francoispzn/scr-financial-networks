@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scr_financial.backtesting.engine &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scr_financial.backtesting.engine</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scr_financial.backtesting.engine</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Rolling backtesting engine for SCG vs traditional risk metrics.</span>
+
+<span class="sd">Loads historical EBA snapshots, builds networks per quarter,</span>
+<span class="sd">computes SCG metrics alongside CoVaR/MES/Basel, and evaluates</span>
+<span class="sd">which model best predicts future bank distress.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.coarse_graining</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralCoarseGraining</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">compute_laplacian</span><span class="p">,</span>
+    <span class="n">eigendecomposition</span><span class="p">,</span>
+    <span class="n">find_spectral_gap</span><span class="p">,</span>
+    <span class="n">analyze_spectral_properties</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.risk.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">compute_delta_covar</span><span class="p">,</span>
+    <span class="n">compute_mes</span><span class="p">,</span>
+    <span class="n">compute_var</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BacktestEngine">
+<a class="viewcode-back" href="../../../api/risk.html#scr_financial.backtesting.engine.BacktestEngine">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BacktestEngine</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rolling backtest comparing SCG, CoVaR, MES, and Basel risk indicators.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># ── Data loading ──────────────────────────────────────────────────────</span>
+
+<div class="viewcode-block" id="BacktestEngine.load_snapshots">
+<a class="viewcode-back" href="../../../api/risk.html#scr_financial.backtesting.engine.BacktestEngine.load_snapshots">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_snapshots</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">start_year</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2020</span><span class="p">,</span>
+        <span class="n">end_year</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2024</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load quarterly EBA snapshots via the data loader.</span>
+
+<span class="sd">        Returns the number of snapshots loaded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_simulation_inputs</span><span class="p">,</span> <span class="n">ALL_BANKS</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">quarter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+                <span class="n">month</span> <span class="o">=</span> <span class="p">(</span><span class="n">quarter</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">snap_date</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">-01&quot;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">bd</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="n">si</span> <span class="o">=</span> <span class="n">load_simulation_inputs</span><span class="p">(</span>
+                        <span class="n">start_date</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">-01-01&quot;</span><span class="p">,</span>
+                        <span class="n">end_date</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">-12-31&quot;</span><span class="p">,</span>
+                        <span class="n">bank_list</span><span class="o">=</span><span class="n">ALL_BANKS</span><span class="p">,</span>
+                        <span class="n">snapshot_date</span><span class="o">=</span><span class="n">snap_date</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">snap_date</span><span class="p">,</span>
+                        <span class="s2">&quot;bank_data&quot;</span><span class="p">:</span> <span class="n">bd</span><span class="p">,</span>
+                        <span class="s2">&quot;network_data&quot;</span><span class="p">:</span> <span class="n">nd</span><span class="p">,</span>
+                        <span class="s2">&quot;system_indicators&quot;</span><span class="p">:</span> <span class="n">si</span><span class="p">,</span>
+                    <span class="p">})</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping snapshot </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">snap_date</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded </span><span class="si">%d</span><span class="s2"> quarterly snapshots (</span><span class="si">%d</span><span class="s2">–</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">),</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ── Metric computation ────────────────────────────────────────────────</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_spectral_metrics</span><span class="p">(</span><span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">network_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute SCG spectral metrics from a snapshot.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.abm.simulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">BankingSystemSimulation</span>
+        <span class="n">sim</span> <span class="o">=</span> <span class="n">BankingSystemSimulation</span><span class="p">(</span><span class="n">bank_data</span><span class="p">,</span> <span class="n">network_data</span><span class="p">,</span> <span class="p">{},</span> <span class="n">stochastic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
+        <span class="n">adj_sym</span> <span class="o">=</span> <span class="p">(</span><span class="n">adj</span> <span class="o">+</span> <span class="n">adj</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">compute_laplacian</span><span class="p">(</span><span class="n">adj_sym</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigendecomposition</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+        <span class="n">gap_idx</span><span class="p">,</span> <span class="n">gap_size</span> <span class="o">=</span> <span class="n">find_spectral_gap</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="n">analyze_spectral_properties</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="p">)</span>
+
+        <span class="n">lam2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">props</span><span class="p">[</span><span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">])</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">props</span><span class="p">[</span><span class="s2">&quot;spectral_radius&quot;</span><span class="p">])</span>
+        <span class="n">scg_risk</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">lam2</span> <span class="o">/</span> <span class="n">radius</span><span class="p">)</span> <span class="k">if</span> <span class="n">radius</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;lambda_2&quot;</span><span class="p">:</span> <span class="n">lam2</span><span class="p">,</span>
+            <span class="s2">&quot;spectral_gap&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">gap_size</span><span class="p">),</span>
+            <span class="s2">&quot;spectral_radius&quot;</span><span class="p">:</span> <span class="n">radius</span><span class="p">,</span>
+            <span class="s2">&quot;scg_risk&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">scg_risk</span><span class="p">)),</span>
+        <span class="p">}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_bank_metrics</span><span class="p">(</span><span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute bank-level risk metrics.&quot;&quot;&quot;</span>
+        <span class="n">cet1s</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">bank_data</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;avg_cet1&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">cet1s</span><span class="p">)),</span>
+            <span class="s2">&quot;min_cet1&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">cet1s</span><span class="p">)),</span>
+            <span class="s2">&quot;n_stressed&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cet1s</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mf">8.0</span><span class="p">),</span>
+            <span class="s2">&quot;n_insolvent&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cet1s</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mf">4.5</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="c1"># ── Rolling backtest ──────────────────────────────────────────────────</span>
+
+<div class="viewcode-block" id="BacktestEngine.run_rolling">
+<a class="viewcode-back" href="../../../api/risk.html#scr_financial.backtesting.engine.BacktestEngine.run_rolling">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_rolling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_quarters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a rolling backtest across loaded snapshots.</span>
+
+<span class="sd">        For each window, computes risk metrics at time t and checks</span>
+<span class="sd">        whether stress materialised at t+step.</span>
+
+<span class="sd">        Returns a DataFrame with per-quarter metrics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">window_quarters</span> <span class="o">+</span> <span class="n">step</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Need &gt;= </span><span class="si">{</span><span class="n">window_quarters</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">step</span><span class="si">}</span><span class="s2"> snapshots, have </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_quarters</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">)</span> <span class="o">-</span> <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+
+            <span class="c1"># Spectral metrics at current time</span>
+            <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spectral_metrics</span><span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="s2">&quot;bank_data&quot;</span><span class="p">],</span> <span class="n">current</span><span class="p">[</span><span class="s2">&quot;network_data&quot;</span><span class="p">])</span>
+
+            <span class="c1"># Bank health at current time</span>
+            <span class="n">bm_now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bank_metrics</span><span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="s2">&quot;bank_data&quot;</span><span class="p">])</span>
+
+            <span class="c1"># Bank health at future time (what we&#39;re trying to predict)</span>
+            <span class="n">bm_future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bank_metrics</span><span class="p">(</span><span class="n">future</span><span class="p">[</span><span class="s2">&quot;bank_data&quot;</span><span class="p">])</span>
+
+            <span class="c1"># CET1 returns over the lookback window</span>
+            <span class="n">bank_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="s2">&quot;bank_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">cet1_history</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">-</span> <span class="n">window_quarters</span><span class="p">),</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">snap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">cet1_history</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="n">bid</span><span class="p">:</span> <span class="n">snap</span><span class="p">[</span><span class="s2">&quot;bank_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">bank_ids</span>
+                <span class="p">})</span>
+
+            <span class="c1"># Compute rolling returns and risk metrics</span>
+            <span class="n">avg_dcovar</span><span class="p">,</span> <span class="n">avg_mes</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cet1_history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">bank_returns</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">:</span>
+                    <span class="n">ts</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">cet1_history</span><span class="p">]</span>
+                    <span class="n">bank_returns</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
+                <span class="n">all_rets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bank_returns</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+                <span class="k">if</span> <span class="n">all_rets</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">sys_rets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">all_rets</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">dcovars</span> <span class="o">=</span> <span class="p">[</span><span class="n">compute_delta_covar</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">sys_rets</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">bank_returns</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+                    <span class="n">mess</span> <span class="o">=</span> <span class="p">[</span><span class="n">compute_mes</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">sys_rets</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">bank_returns</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+                    <span class="n">avg_dcovar</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dcovars</span><span class="p">))</span>
+                    <span class="n">avg_mes</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mess</span><span class="p">))</span>
+
+            <span class="c1"># Future stress indicator (target)</span>
+            <span class="n">stress_increased</span> <span class="o">=</span> <span class="n">bm_future</span><span class="p">[</span><span class="s2">&quot;n_stressed&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">bm_now</span><span class="p">[</span><span class="s2">&quot;n_stressed&quot;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">current</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;future_date&quot;</span><span class="p">:</span> <span class="n">future</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">],</span>
+                <span class="c1"># Risk indicators (predictors)</span>
+                <span class="s2">&quot;scg_risk&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;scg_risk&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;lambda_2&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;lambda_2&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;spectral_gap&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;spectral_gap&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;delta_covar&quot;</span><span class="p">:</span> <span class="n">avg_dcovar</span><span class="p">,</span>
+                <span class="s2">&quot;mes&quot;</span><span class="p">:</span> <span class="n">avg_mes</span><span class="p">,</span>
+                <span class="s2">&quot;basel_stress&quot;</span><span class="p">:</span> <span class="n">bm_now</span><span class="p">[</span><span class="s2">&quot;n_stressed&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;avg_cet1&quot;</span><span class="p">:</span> <span class="n">bm_now</span><span class="p">[</span><span class="s2">&quot;avg_cet1&quot;</span><span class="p">],</span>
+                <span class="c1"># Target</span>
+                <span class="s2">&quot;future_stressed&quot;</span><span class="p">:</span> <span class="n">bm_future</span><span class="p">[</span><span class="s2">&quot;n_stressed&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;future_min_cet1&quot;</span><span class="p">:</span> <span class="n">bm_future</span><span class="p">[</span><span class="s2">&quot;min_cet1&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;stress_increased&quot;</span><span class="p">:</span> <span class="n">stress_increased</span><span class="p">,</span>
+            <span class="p">})</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Backtest complete: </span><span class="si">%d</span><span class="s2"> evaluation points&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+    <span class="c1"># ── Evaluation ────────────────────────────────────────────────────────</span>
+
+<div class="viewcode-block" id="BacktestEngine.evaluate">
+<a class="viewcode-back" href="../../../api/risk.html#scr_financial.backtesting.engine.BacktestEngine.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate predictive accuracy of each risk model.</span>
+
+<span class="sd">        Returns a dict per model with correlation to future stress,</span>
+<span class="sd">        and hit rate (did high risk precede stress increase?).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Run run_rolling() first.&quot;</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;future_stressed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">stress_events</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;stress_increased&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="n">models</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;SCG Risk&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;scg_risk&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="s2">&quot;ΔCoVaR&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;delta_covar&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>  <span class="c1"># negate: more negative = more risk</span>
+            <span class="s2">&quot;MES&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;mes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="s2">&quot;Basel Stress&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;basel_stress&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">signal</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Correlation with future stress count</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-10</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+                <span class="n">corr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">target</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">corr</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="c1"># Hit rate: proportion of times top-quartile risk precedes stress</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="mi">75</span><span class="p">)</span>
+            <span class="n">high_risk</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+            <span class="k">if</span> <span class="n">high_risk</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">hit_rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stress_events</span><span class="p">[</span><span class="n">high_risk</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hit_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;correlation_future_stress&quot;</span><span class="p">:</span> <span class="n">corr</span><span class="p">,</span>
+                <span class="s2">&quot;hit_rate&quot;</span><span class="p">:</span> <span class="n">hit_rate</span><span class="p">,</span>
+                <span class="s2">&quot;mean_signal&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">signal</span><span class="p">)),</span>
+                <span class="s2">&quot;std_signal&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">signal</span><span class="p">)),</span>
+            <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="BacktestEngine.to_dataframe">
+<a class="viewcode-back" href="../../../api/risk.html#scr_financial.backtesting.engine.BacktestEngine.to_dataframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export results as a DataFrame.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -5,12 +5,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>scr_financial.abm.simulation &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=92fd9be5" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+  <title>scr_financial.abm.simulation &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
-      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -38,8 +38,32 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -72,17 +96,20 @@
 <span class="sd">interbank lending and contagion dynamics.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">.bank_agent</span> <span class="kn">import</span> <span class="n">BankAgent</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.bank_agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">BankAgent</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="BankingSystemSimulation">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation">[docs]</a>
-<span class="k">class</span> <span class="nc">BankingSystemSimulation</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BankingSystemSimulation</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the agent-based simulation engine.</span>
 <span class="sd">    </span>
@@ -108,24 +135,38 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     
 <div class="viewcode-block" id="BankingSystemSimulation.__init__">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> 
-        <span class="n">network_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> 
-        <span class="n">system_indicators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">network_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+        <span class="n">system_indicators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">stochastic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the simulation with bank data, network data, and system indicators.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">banks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bank_data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bank_data must not be empty.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">bank_id</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">bank_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_network_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">bank_id</span><span class="p">:</span> <span class="n">connections</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">connections</span> <span class="ow">in</span> <span class="n">network_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stochastic</span> <span class="o">=</span> <span class="n">stochastic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BankAgent</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span> <span class="o">=</span> <span class="n">system_indicators</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
-        
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="c1"># Initialize bank agents</span>
         <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">bank_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">BankAgent</span><span class="p">(</span><span class="n">bank_id</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-            
+            <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">BankAgent</span><span class="p">(</span><span class="n">bank_id</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">stochastic</span><span class="o">=</span><span class="n">stochastic</span><span class="p">)</span>
+
         <span class="c1"># Initialize connections</span>
         <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">connections</span> <span class="ow">in</span> <span class="n">network_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">:</span>
@@ -135,8 +176,8 @@
 
     
 <div class="viewcode-block" id="BankingSystemSimulation.calculate_market_sentiment">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.calculate_market_sentiment">[docs]</a>
-    <span class="k">def</span> <span class="nf">calculate_market_sentiment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.calculate_market_sentiment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_market_sentiment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate overall market sentiment based on system indicators.</span>
 <span class="sd">        </span>
@@ -160,8 +201,8 @@
 
     
 <div class="viewcode-block" id="BankingSystemSimulation.apply_external_shock">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.apply_external_shock">[docs]</a>
-    <span class="k">def</span> <span class="nf">apply_external_shock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shock_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.apply_external_shock">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_external_shock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shock_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply an external shock to the system.</span>
 <span class="sd">        </span>
@@ -200,8 +241,8 @@
 
     
 <div class="viewcode-block" id="BankingSystemSimulation.simulate_interbank_lending">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.simulate_interbank_lending">[docs]</a>
-    <span class="k">def</span> <span class="nf">simulate_interbank_lending</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.simulate_interbank_lending">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate_interbank_lending</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simulate one round of interbank lending decisions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -230,7 +271,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_network</span><span class="p">()</span></div>
 
     
-    <span class="k">def</span> <span class="nf">_match_lending_borrowing</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_match_lending_borrowing</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">lending_decisions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> 
         <span class="n">borrowing_decisions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
@@ -257,7 +298,11 @@
                         
                         <span class="c1"># Determine actual amount (minimum of offer and request)</span>
                         <span class="n">actual_amount</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">max_borrow</span><span class="p">)</span>
-                        
+
+                        <span class="c1"># Cap to available cash so lender cash never goes below zero</span>
+                        <span class="n">available_cash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">lender_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cash&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">))</span>
+                        <span class="n">actual_amount</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">actual_amount</span><span class="p">,</span> <span class="n">available_cash</span><span class="p">)</span>
+
                         <span class="k">if</span> <span class="n">actual_amount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                             <span class="c1"># Update lender&#39;s state</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">lender_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;interbank_assets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">lender_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;interbank_assets&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">actual_amount</span>
@@ -271,8 +316,8 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">lender_id</span><span class="p">]</span><span class="o">.</span><span class="n">update_connections</span><span class="p">(</span><span class="n">borrower_id</span><span class="p">,</span> <span class="n">actual_amount</span><span class="p">)</span>
     
 <div class="viewcode-block" id="BankingSystemSimulation.update_network">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.update_network">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_network</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.update_network">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_network</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update network data based on current bank connections.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -280,9 +325,52 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">connections</span></div>
 
     
+    <span class="c1"># ── Stochastic dynamics ────────────────────────────────────────────────</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evolve_bank_ratios</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply one OU step to every bank&#39;s ratios + small CISS noise.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">bank</span><span class="o">.</span><span class="n">evolve_ratios</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="p">)</span>
+        <span class="c1"># Small mean-reverting noise on CISS (σ=0.01)</span>
+        <span class="n">ciss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CISS&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">ciss_mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_ciss_mu&quot;</span><span class="p">,</span> <span class="n">ciss</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;_ciss_mu&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="p">[</span><span class="s2">&quot;_ciss_mu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ciss</span>
+        <span class="n">dciss</span> <span class="o">=</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="p">(</span><span class="n">ciss_mu</span> <span class="o">-</span> <span class="n">ciss</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="p">[</span><span class="s2">&quot;CISS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">ciss</span> <span class="o">+</span> <span class="n">dciss</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_propagate_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterative contagion cascade: defaulted banks impose losses on counterparties.&quot;&quot;&quot;</span>
+        <span class="n">newly_defaulted</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">bid</span> <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">bank</span><span class="o">.</span><span class="n">is_defaulted</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">bank</span><span class="o">.</span><span class="n">_defaulted</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">newly_defaulted</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">while</span> <span class="n">newly_defaulted</span><span class="p">:</span>
+            <span class="c1"># Freeze all newly-defaulted banks</span>
+            <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">newly_defaulted</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Bank </span><span class="si">%s</span><span class="s2"> defaulted at t=</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+
+            <span class="n">next_round</span><span class="p">:</span> <span class="nb">set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">newly_defaulted</span><span class="p">:</span>
+                <span class="c1"># Find counterparties that have interbank exposure to this bank</span>
+                <span class="k">for</span> <span class="n">other_id</span><span class="p">,</span> <span class="n">other_bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">other_bank</span><span class="o">.</span><span class="n">_defaulted</span> <span class="ow">or</span> <span class="n">other_id</span> <span class="o">==</span> <span class="n">bid</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">exposure</span> <span class="o">=</span> <span class="n">other_bank</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">exposure</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">loss</span> <span class="o">=</span> <span class="n">exposure</span> <span class="o">*</span> <span class="n">BankAgent</span><span class="o">.</span><span class="n">_LGD</span>
+                        <span class="n">other_bank</span><span class="o">.</span><span class="n">apply_counterparty_loss</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">other_bank</span><span class="o">.</span><span class="n">is_defaulted</span><span class="p">():</span>
+                            <span class="n">next_round</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">other_id</span><span class="p">)</span>
+            <span class="n">newly_defaulted</span> <span class="o">=</span> <span class="n">next_round</span>
+
 <div class="viewcode-block" id="BankingSystemSimulation.run_simulation">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.run_simulation">[docs]</a>
-    <span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">shocks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.run_simulation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">shocks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the simulation for a specified number of steps.</span>
 <span class="sd">        </span>
@@ -298,25 +386,43 @@
 <span class="sd">        list</span>
 <span class="sd">            History of system states</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">steps</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;steps must be a positive integer, got </span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;run_simulation starting: </span><span class="si">%d</span><span class="s2"> steps, </span><span class="si">%d</span><span class="s2"> banks.&quot;</span><span class="p">,</span>
+            <span class="n">steps</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">),</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+=</span> <span class="mi">1</span>
-            
+
             <span class="c1"># Apply any scheduled shocks</span>
             <span class="k">if</span> <span class="n">shocks</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="ow">in</span> <span class="n">shocks</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Applying shock at time step </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">shocks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span>
+                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">apply_external_shock</span><span class="p">(</span><span class="n">shocks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">])</span>
-            
+
+            <span class="c1"># Evolve stochastic ratios</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stochastic</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_evolve_bank_ratios</span><span class="p">()</span>
+
             <span class="c1"># Run interbank lending simulation</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">simulate_interbank_lending</span><span class="p">()</span>
-            
+
+            <span class="c1"># Propagate any defaults through the network</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_propagate_defaults</span><span class="p">()</span>
+
             <span class="c1"># Record system state</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">record_state</span><span class="p">()</span>
-            
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;run_simulation finished at time </span><span class="si">%d</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span></div>
 
     
 <div class="viewcode-block" id="BankingSystemSimulation.record_state">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.record_state">[docs]</a>
-    <span class="k">def</span> <span class="nf">record_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.record_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">record_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Record the current state of the system.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -330,9 +436,46 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
 
     
+<div class="viewcode-block" id="BankingSystemSimulation.reset">
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the simulation to its initial state.</span>
+
+<span class="sd">        Clears ``history``, resets ``time`` to 0, and re-initialises every</span>
+<span class="sd">        bank&#39;s state from the ``bank_data`` passed at construction.</span>
+<span class="sd">        Network connections are also restored from the original</span>
+<span class="sd">        ``network_data``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_bank_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">_defaulted</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="c1"># Restore OU long-run means</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">BankAgent</span><span class="o">.</span><span class="n">_OU_PARAMS</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">_ou_mu</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="c1"># Restore network connections from the original network snapshot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">bank_id</span><span class="p">:</span> <span class="n">connections</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">connections</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_network_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">connections</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_network_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">target_id</span><span class="p">,</span> <span class="n">strength</span> <span class="ow">in</span> <span class="n">connections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">target_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">target_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">strength</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Simulation reset to initial state.&quot;</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="BankingSystemSimulation.get_adjacency_matrix">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.get_adjacency_matrix">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.get_adjacency_matrix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the adjacency matrix of the current network.</span>
 <span class="sd">        </span>
@@ -358,8 +501,8 @@
 
     
 <div class="viewcode-block" id="BankingSystemSimulation.get_bank_metrics">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.get_bank_metrics">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_bank_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.get_bank_metrics">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_bank_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get current metrics for all banks.</span>
 <span class="sd">        </span>
@@ -379,8 +522,8 @@
 
     
 <div class="viewcode-block" id="BankingSystemSimulation.get_system_metrics">
-<a class="viewcode-back" href="../../../source/scr_financial.abm.html#scr_financial.abm.simulation.BankingSystemSimulation.get_system_metrics">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_system_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.get_system_metrics">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_system_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get current system-wide metrics.</span>
 <span class="sd">        </span>
@@ -394,12 +537,12 @@
         <span class="c1"># Add derived metrics</span>
         
         <span class="c1"># Average CET1 ratio</span>
-        <span class="n">cet1_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CET1_ratio&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-        <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;avg_CET1_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cet1_values</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">cet1_values</span><span class="p">)</span> <span class="k">if</span> <span class="n">cet1_values</span> <span class="k">else</span> <span class="mi">0</span>
-        
+        <span class="n">cet1_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;avg_CET1_ratio&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">cet1_values</span><span class="p">))</span> <span class="k">if</span> <span class="n">cet1_values</span> <span class="k">else</span> <span class="mf">0.0</span>
+
         <span class="c1"># Average LCR</span>
-        <span class="n">lcr_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LCR&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-        <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;avg_LCR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">lcr_values</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">lcr_values</span><span class="p">)</span> <span class="k">if</span> <span class="n">lcr_values</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">lcr_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;avg_LCR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">lcr_values</span><span class="p">))</span> <span class="k">if</span> <span class="n">lcr_values</span> <span class="k">else</span> <span class="mf">0.0</span>
         
         <span class="c1"># Network density</span>
         <span class="n">adj_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
@@ -421,7 +564,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Francois Petizon.</p>
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

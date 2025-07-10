@@ -3,21 +3,23 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agent-Based Model Module &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+  <title>Agent-Based Model Module &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
-      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Network Construction" href="network.html" />
+    <link rel="prev" title="Quickstart" href="../quickstart.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -39,75 +41,102 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Agent-Based Model Module</a><ul>
-<li><a class="reference internal" href="#bankagent">BankAgent</a><ul>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent"><code class="docutils literal notranslate"><span class="pre">BankAgent</span></code></a><ul>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.id"><code class="docutils literal notranslate"><span class="pre">BankAgent.id</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.state"><code class="docutils literal notranslate"><span class="pre">BankAgent.state</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.connections"><code class="docutils literal notranslate"><span class="pre">BankAgent.connections</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.memory"><code class="docutils literal notranslate"><span class="pre">BankAgent.memory</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.memory_length"><code class="docutils literal notranslate"><span class="pre">BankAgent.memory_length</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.__init__"><code class="docutils literal notranslate"><span class="pre">BankAgent.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.update_state"><code class="docutils literal notranslate"><span class="pre">BankAgent.update_state()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.assess_solvency"><code class="docutils literal notranslate"><span class="pre">BankAgent.assess_solvency()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.assess_liquidity"><code class="docutils literal notranslate"><span class="pre">BankAgent.assess_liquidity()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.calculate_lending_capacity"><code class="docutils literal notranslate"><span class="pre">BankAgent.calculate_lending_capacity()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.decide_lending_action"><code class="docutils literal notranslate"><span class="pre">BankAgent.decide_lending_action()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.decide_borrowing_action"><code class="docutils literal notranslate"><span class="pre">BankAgent.decide_borrowing_action()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.respond_to_shock"><code class="docutils literal notranslate"><span class="pre">BankAgent.respond_to_shock()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.update_connections"><code class="docutils literal notranslate"><span class="pre">BankAgent.update_connections()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.get_connection_strength"><code class="docutils literal notranslate"><span class="pre">BankAgent.get_connection_strength()</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Agent-Based Model Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bankagent">BankAgent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent"><code class="docutils literal notranslate"><span class="pre">BankAgent</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.id"><code class="docutils literal notranslate"><span class="pre">BankAgent.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.state"><code class="docutils literal notranslate"><span class="pre">BankAgent.state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.connections"><code class="docutils literal notranslate"><span class="pre">BankAgent.connections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.memory"><code class="docutils literal notranslate"><span class="pre">BankAgent.memory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.memory_length"><code class="docutils literal notranslate"><span class="pre">BankAgent.memory_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.__init__"><code class="docutils literal notranslate"><span class="pre">BankAgent.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.evolve_ratios"><code class="docutils literal notranslate"><span class="pre">BankAgent.evolve_ratios()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.apply_counterparty_loss"><code class="docutils literal notranslate"><span class="pre">BankAgent.apply_counterparty_loss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.is_defaulted"><code class="docutils literal notranslate"><span class="pre">BankAgent.is_defaulted()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.freeze"><code class="docutils literal notranslate"><span class="pre">BankAgent.freeze()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.update_state"><code class="docutils literal notranslate"><span class="pre">BankAgent.update_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.assess_solvency"><code class="docutils literal notranslate"><span class="pre">BankAgent.assess_solvency()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.assess_liquidity"><code class="docutils literal notranslate"><span class="pre">BankAgent.assess_liquidity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.calculate_lending_capacity"><code class="docutils literal notranslate"><span class="pre">BankAgent.calculate_lending_capacity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.decide_lending_action"><code class="docutils literal notranslate"><span class="pre">BankAgent.decide_lending_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.decide_borrowing_action"><code class="docutils literal notranslate"><span class="pre">BankAgent.decide_borrowing_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.respond_to_shock"><code class="docutils literal notranslate"><span class="pre">BankAgent.respond_to_shock()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.update_connections"><code class="docutils literal notranslate"><span class="pre">BankAgent.update_connections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent.get_connection_strength"><code class="docutils literal notranslate"><span class="pre">BankAgent.get_connection_strength()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#bankingsystemsimulation">BankingSystemSimulation</a><ul>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation</span></code></a><ul>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.banks"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.banks</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.network"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.network</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.time"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.time</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.history"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.history</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.__init__"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.calculate_market_sentiment"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.calculate_market_sentiment()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.apply_external_shock"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.apply_external_shock()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.simulate_interbank_lending"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.simulate_interbank_lending()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.update_network"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.update_network()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.run_simulation"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.run_simulation()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.record_state"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.record_state()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.get_adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.get_adjacency_matrix()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.get_bank_metrics"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.get_bank_metrics()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.get_system_metrics"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.get_system_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bankingsystemsimulation">BankingSystemSimulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.banks"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.banks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.network"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.network</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.time"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.history"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.history</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.__init__"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.calculate_market_sentiment"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.calculate_market_sentiment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.apply_external_shock"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.apply_external_shock()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.simulate_interbank_lending"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.simulate_interbank_lending()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.update_network"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.update_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.run_simulation"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.run_simulation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.record_state"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.record_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.reset"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.get_adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.get_adjacency_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.get_bank_metrics"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.get_bank_metrics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.simulation.BankingSystemSimulation.get_system_metrics"><code class="docutils literal notranslate"><span class="pre">BankingSystemSimulation.get_system_metrics()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#decision-models">Decision Models</a><ul>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel"><code class="docutils literal notranslate"><span class="pre">DefaultDecisionModel</span></code></a><ul>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel.decide_lending_action"><code class="docutils literal notranslate"><span class="pre">DefaultDecisionModel.decide_lending_action()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel.decide_borrowing_action"><code class="docutils literal notranslate"><span class="pre">DefaultDecisionModel.decide_borrowing_action()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel.respond_to_shock"><code class="docutils literal notranslate"><span class="pre">DefaultDecisionModel.respond_to_shock()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#decision-models">Decision Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel"><code class="docutils literal notranslate"><span class="pre">DefaultDecisionModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel.__init__"><code class="docutils literal notranslate"><span class="pre">DefaultDecisionModel.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel.decide_lending_action"><code class="docutils literal notranslate"><span class="pre">DefaultDecisionModel.decide_lending_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel.decide_borrowing_action"><code class="docutils literal notranslate"><span class="pre">DefaultDecisionModel.decide_borrowing_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel.respond_to_shock"><code class="docutils literal notranslate"><span class="pre">DefaultDecisionModel.respond_to_shock()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.StressDecisionModel"><code class="docutils literal notranslate"><span class="pre">StressDecisionModel</span></code></a><ul>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.StressDecisionModel.decide_lending_action"><code class="docutils literal notranslate"><span class="pre">StressDecisionModel.decide_lending_action()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.StressDecisionModel.respond_to_shock"><code class="docutils literal notranslate"><span class="pre">StressDecisionModel.respond_to_shock()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.abm.decision_models.StressDecisionModel"><code class="docutils literal notranslate"><span class="pre">StressDecisionModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.StressDecisionModel.decide_lending_action"><code class="docutils literal notranslate"><span class="pre">StressDecisionModel.decide_lending_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.StressDecisionModel.respond_to_shock"><code class="docutils literal notranslate"><span class="pre">StressDecisionModel.respond_to_shock()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel</span></code></a><ul>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel.__init__"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel.decide_lending_action"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel.decide_lending_action()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel.update_interaction_score"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel.update_interaction_score()</span></code></a></li>
-<li><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel.get_interaction_score"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel.get_interaction_score()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel.__init__"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel.decide_lending_action"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel.decide_lending_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel.update_interaction_score"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel.update_interaction_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.abm.decision_models.LearningDecisionModel.get_interaction_score"><code class="docutils literal notranslate"><span class="pre">LearningDecisionModel.get_interaction_score()</span></code></a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -142,25 +171,26 @@
 agent-based model and implements its decision-making behaviors.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.abm.bank_agent.</span></span><span class="sig-name descname"><span class="pre">BankAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decision_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/bank_agent.html#BankAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.abm.bank_agent.</span></span><span class="sig-name descname"><span class="pre">BankAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decision_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/bank_agent.html#BankAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Represents a bank in the agent-based model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Unique identifier for the bank</p></li>
-<li><p><strong>initial_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary containing initial bank attributes</p></li>
-<li><p><strong>decision_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a><em>, </em><em>optional</em>) – Decision model to use for agent behavior, by default DefaultDecisionModel()</p></li>
+<li><p><strong>bank_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Unique identifier for the bank.</p></li>
+<li><p><strong>initial_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary containing initial bank attributes.</p></li>
+<li><p><strong>decision_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a><em>, </em><em>optional</em>) – Decision model to use for agent behavior, by default DefaultDecisionModel().</p></li>
+<li><p><strong>stochastic</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Enable Ornstein-Uhlenbeck noise on regulatory ratios each step.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.id">
 <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.id" title="Link to this definition">¶</a></dt>
-<dd><p>Bank identifier</p>
+<dd><p>Bank identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -168,10 +198,10 @@ agent-based model and implements its decision-making behaviors.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.state">
 <span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.state" title="Link to this definition">¶</a></dt>
-<dd><p>Current state of the bank</p>
+<dd><p>Current state of the bank.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -179,10 +209,10 @@ agent-based model and implements its decision-making behaviors.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.connections">
 <span class="sig-name descname"><span class="pre">connections</span></span><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.connections" title="Link to this definition">¶</a></dt>
-<dd><p>Dictionary of connections to other banks</p>
+<dd><p>Dictionary of connections to other banks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -190,10 +220,10 @@ agent-based model and implements its decision-making behaviors.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.memory">
 <span class="sig-name descname"><span class="pre">memory</span></span><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.memory" title="Link to this definition">¶</a></dt>
-<dd><p>List of past states</p>
+<dd><p>List of past states (capped at <code class="docutils literal notranslate"><span class="pre">memory_length</span></code> entries).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -201,25 +231,81 @@ agent-based model and implements its decision-making behaviors.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.memory_length">
 <span class="sig-name descname"><span class="pre">memory_length</span></span><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.memory_length" title="Link to this definition">¶</a></dt>
-<dd><p>Maximum number of past states to remember</p>
+<dd><p>Maximum number of past states to remember (default 10).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decision_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/bank_agent.html#BankAgent.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decision_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/bank_agent.html#BankAgent.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize a bank agent with an ID and initial state.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>initial_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a><em>]</em>)</p></li>
-<li><p><strong>decision_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>bank_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>initial_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p></li>
+<li><p><strong>decision_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>stochastic</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.evolve_ratios">
+<span class="sig-name descname"><span class="pre">evolve_ratios</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/bank_agent.html#BankAgent.evolve_ratios"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.evolve_ratios" title="Link to this definition">¶</a></dt>
+<dd><p>Apply one discrete Ornstein-Uhlenbeck step to CET1, LCR, NSFR.</p>
+<p>dx = theta*(mu - x)*dt + sigma*sqrt(dt)*N(0,1)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rng</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.4)"><em>Generator</em></a>)</p></li>
+<li><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.apply_counterparty_loss">
+<span class="sig-name descname"><span class="pre">apply_counterparty_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss_amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/bank_agent.html#BankAgent.apply_counterparty_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.apply_counterparty_loss" title="Link to this definition">¶</a></dt>
+<dd><p>Apply a credit loss from a defaulted counterparty.</p>
+<p>Reduces interbank_assets, CET1 proportionally, and cash.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loss_amount</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.is_defaulted">
+<span class="sig-name descname"><span class="pre">is_defaulted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/bank_agent.html#BankAgent.is_defaulted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.is_defaulted" title="Link to this definition">¶</a></dt>
+<dd><p>Bank is in default if CET1 &lt; 0 or cash &lt; 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.abm.bank_agent.BankAgent.freeze">
+<span class="sig-name descname"><span class="pre">freeze</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/bank_agent.html#BankAgent.freeze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.bank_agent.BankAgent.freeze" title="Link to this definition">¶</a></dt>
+<dd><p>Mark bank as defaulted — no further lending/evolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -230,7 +316,7 @@ agent-based model and implements its decision-making behaviors.</p>
 <dd><p>Update the bank’s state with new information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>new_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary containing updated attributes</p>
+<dd class="field-odd"><p><strong>new_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary containing updated attributes</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -247,7 +333,7 @@ agent-based model and implements its decision-making behaviors.</p>
 <dd class="field-odd"><p>True if the bank is solvent, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -261,7 +347,7 @@ agent-based model and implements its decision-making behaviors.</p>
 <dd class="field-odd"><p>True if the bank has adequate liquidity, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -275,7 +361,7 @@ agent-based model and implements its decision-making behaviors.</p>
 <dd class="field-odd"><p>Lending capacity in currency units</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -287,15 +373,15 @@ agent-based model and implements its decision-making behaviors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>potential_borrowers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary mapping bank IDs to their states</p></li>
-<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Market sentiment indicator (0-1 scale, 1 being positive)</p></li>
+<li><p><strong>potential_borrowers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary mapping bank IDs to their states</p></li>
+<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Market sentiment indicator (0-1 scale, 1 being positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary containing lending decisions</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -307,15 +393,15 @@ agent-based model and implements its decision-making behaviors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>potential_lenders</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary mapping bank IDs to their states</p></li>
-<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Market sentiment indicator (0-1 scale, 1 being positive)</p></li>
+<li><p><strong>potential_lenders</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary mapping bank IDs to their states</p></li>
+<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Market sentiment indicator (0-1 scale, 1 being positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary containing borrowing decisions</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -326,13 +412,13 @@ agent-based model and implements its decision-making behaviors.</p>
 <dd><p>Respond to an external shock.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary containing shock parameters</p>
+<dd class="field-odd"><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary containing shock parameters</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary containing response actions</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -344,8 +430,8 @@ agent-based model and implements its decision-making behaviors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Identifier of the connected bank</p></li>
-<li><p><strong>weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – New connection weight</p></li>
+<li><p><strong>bank_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Identifier of the connected bank</p></li>
+<li><p><strong>weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – New connection weight</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -360,13 +446,13 @@ agent-based model and implements its decision-making behaviors.</p>
 <dd><p>Get connection strength with another bank.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>bank_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Identifier of the connected bank</p>
+<dd class="field-odd"><p><strong>bank_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Identifier of the connected bank</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Connection strength</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -381,15 +467,17 @@ agent-based model and implements its decision-making behaviors.</p>
 interbank lending and contagion dynamics.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="scr_financial.abm.simulation.BankingSystemSimulation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.abm.simulation.</span></span><span class="sig-name descname"><span class="pre">BankingSystemSimulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_indicators</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/simulation.html#BankingSystemSimulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.simulation.BankingSystemSimulation" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.abm.simulation.</span></span><span class="sig-name descname"><span class="pre">BankingSystemSimulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_indicators</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/simulation.html#BankingSystemSimulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.simulation.BankingSystemSimulation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Implements the agent-based simulation engine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary mapping bank IDs to their initial states</p></li>
-<li><p><strong>network_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary representing the network structure</p></li>
-<li><p><strong>system_indicators</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary of system-wide indicators</p></li>
+<li><p><strong>bank_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary mapping bank IDs to their initial states</p></li>
+<li><p><strong>network_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary representing the network structure</p></li>
+<li><p><strong>system_indicators</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary of system-wide indicators</p></li>
+<li><p><strong>stochastic</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -399,7 +487,7 @@ interbank lending and contagion dynamics.</p>
 <dd><p>Dictionary of bank agents</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -410,7 +498,7 @@ interbank lending and contagion dynamics.</p>
 <dd><p>Current network structure</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -421,7 +509,7 @@ interbank lending and contagion dynamics.</p>
 <dd><p>Current simulation time</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -432,21 +520,23 @@ interbank lending and contagion dynamics.</p>
 <dd><p>History of system states</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="scr_financial.abm.simulation.BankingSystemSimulation.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_indicators</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/simulation.html#BankingSystemSimulation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.simulation.BankingSystemSimulation.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_indicators</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/simulation.html#BankingSystemSimulation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.simulation.BankingSystemSimulation.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize the simulation with bank data, network data, and system indicators.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
-<li><p><strong>network_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>]</em><em>]</em>)</p></li>
-<li><p><strong>system_indicators</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a><em>]</em>)</p></li>
+<li><p><strong>bank_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>network_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>system_indicators</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p></li>
+<li><p><strong>stochastic</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -461,7 +551,7 @@ interbank lending and contagion dynamics.</p>
 <dd class="field-odd"><p>Market sentiment (0-1 scale, 1 being positive)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -472,7 +562,7 @@ interbank lending and contagion dynamics.</p>
 <dd><p>Apply an external shock to the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary containing shock parameters</p>
+<dd class="field-odd"><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary containing shock parameters</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -509,15 +599,15 @@ interbank lending and contagion dynamics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of simulation steps</p></li>
-<li><p><strong>shocks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>, </em><em>optional</em>) – Dictionary mapping time steps to shock parameters</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of simulation steps</p></li>
+<li><p><strong>shocks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) – Dictionary mapping time steps to shock parameters</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>History of system states</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -534,6 +624,21 @@ interbank lending and contagion dynamics.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.abm.simulation.BankingSystemSimulation.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/simulation.html#BankingSystemSimulation.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.simulation.BankingSystemSimulation.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the simulation to its initial state.</p>
+<p>Clears <code class="docutils literal notranslate"><span class="pre">history</span></code>, resets <code class="docutils literal notranslate"><span class="pre">time</span></code> to 0, and re-initialises every
+bank’s state from the <code class="docutils literal notranslate"><span class="pre">bank_data</span></code> passed at construction.
+Network connections are also restored from the original
+<code class="docutils literal notranslate"><span class="pre">network_data</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="scr_financial.abm.simulation.BankingSystemSimulation.get_adjacency_matrix">
 <span class="sig-name descname"><span class="pre">get_adjacency_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/simulation.html#BankingSystemSimulation.get_adjacency_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.simulation.BankingSystemSimulation.get_adjacency_matrix" title="Link to this definition">¶</a></dt>
 <dd><p>Get the adjacency matrix of the current network.</p>
@@ -542,7 +647,7 @@ interbank lending and contagion dynamics.</p>
 <dd class="field-odd"><p>Adjacency matrix</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -556,7 +661,7 @@ interbank lending and contagion dynamics.</p>
 <dd class="field-odd"><p>DataFrame containing bank metrics</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.3)">pandas.DataFrame</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)">pandas.DataFrame</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -570,7 +675,7 @@ interbank lending and contagion dynamics.</p>
 <dd class="field-odd"><p>Dictionary of system metrics</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -586,10 +691,23 @@ bank agents behave in different scenarios.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="scr_financial.abm.decision_models.DefaultDecisionModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.abm.decision_models.</span></span><span class="sig-name descname"><span class="pre">DefaultDecisionModel</span></span><a class="reference internal" href="../_modules/scr_financial/abm/decision_models.html#DefaultDecisionModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.decision_models.DefaultDecisionModel" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Default decision model for bank agents.</p>
-<p>This model implements simple rule-based decision making for lending,
+<p>Implements simple rule-based decision making for lending,
 borrowing, and responding to shocks.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.abm.decision_models.DefaultDecisionModel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/decision_models.html#DefaultDecisionModel.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.decision_models.DefaultDecisionModel.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialise the default decision model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="scr_financial.abm.decision_models.DefaultDecisionModel.decide_lending_action">
 <span class="sig-name descname"><span class="pre">decide_lending_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potential_borrowers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market_sentiment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/decision_models.html#DefaultDecisionModel.decide_lending_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.decision_models.DefaultDecisionModel.decide_lending_action" title="Link to this definition">¶</a></dt>
@@ -597,16 +715,16 @@ borrowing, and responding to shocks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank</strong> (<a class="reference internal" href="../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent" title="scr_financial.abm.bank_agent.BankAgent"><em>BankAgent</em></a>) – The bank agent making the decision</p></li>
-<li><p><strong>potential_borrowers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary mapping bank IDs to their states</p></li>
-<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Market sentiment indicator (0-1 scale, 1 being positive)</p></li>
+<li><p><strong>bank</strong> (<a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent" title="scr_financial.abm.bank_agent.BankAgent"><em>BankAgent</em></a>) – The bank agent making the decision</p></li>
+<li><p><strong>potential_borrowers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary mapping bank IDs to their states</p></li>
+<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Market sentiment indicator (0-1 scale, 1 being positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary containing lending decisions</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -618,16 +736,16 @@ borrowing, and responding to shocks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank</strong> (<a class="reference internal" href="../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent" title="scr_financial.abm.bank_agent.BankAgent"><em>BankAgent</em></a>) – The bank agent making the decision</p></li>
-<li><p><strong>potential_lenders</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary mapping bank IDs to their states</p></li>
-<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Market sentiment indicator (0-1 scale, 1 being positive)</p></li>
+<li><p><strong>bank</strong> (<a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent" title="scr_financial.abm.bank_agent.BankAgent"><em>BankAgent</em></a>) – The bank agent making the decision</p></li>
+<li><p><strong>potential_lenders</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary mapping bank IDs to their states</p></li>
+<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Market sentiment indicator (0-1 scale, 1 being positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary containing borrowing decisions</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -639,15 +757,15 @@ borrowing, and responding to shocks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank</strong> (<a class="reference internal" href="../source/scr_financial.abm.html#scr_financial.abm.bank_agent.BankAgent" title="scr_financial.abm.bank_agent.BankAgent"><em>BankAgent</em></a>) – The bank agent responding to the shock</p></li>
-<li><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary containing shock parameters</p></li>
+<li><p><strong>bank</strong> (<a class="reference internal" href="#scr_financial.abm.bank_agent.BankAgent" title="scr_financial.abm.bank_agent.BankAgent"><em>BankAgent</em></a>) – The bank agent responding to the shock</p></li>
+<li><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Dictionary containing shock parameters</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary containing response actions</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -657,10 +775,12 @@ borrowing, and responding to shocks.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="scr_financial.abm.decision_models.StressDecisionModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.abm.decision_models.</span></span><span class="sig-name descname"><span class="pre">StressDecisionModel</span></span><a class="reference internal" href="../_modules/scr_financial/abm/decision_models.html#StressDecisionModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.decision_models.StressDecisionModel" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../source/scr_financial.abm.html#scr_financial.abm.decision_models.DefaultDecisionModel" title="scr_financial.abm.decision_models.DefaultDecisionModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultDecisionModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel" title="scr_financial.abm.decision_models.DefaultDecisionModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultDecisionModel</span></code></a></p>
 <p>Decision model for bank agents during stress scenarios.</p>
 <p>This model extends the default model with more conservative
 behavior during market stress.</p>
+<dl class="field-list simple">
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="scr_financial.abm.decision_models.StressDecisionModel.decide_lending_action">
 <span class="sig-name descname"><span class="pre">decide_lending_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potential_borrowers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market_sentiment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/decision_models.html#StressDecisionModel.decide_lending_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.decision_models.StressDecisionModel.decide_lending_action" title="Link to this definition">¶</a></dt>
@@ -668,12 +788,12 @@ behavior during market stress.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>potential_borrowers</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
-<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
+<li><p><strong>potential_borrowers</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -684,10 +804,10 @@ behavior during market stress.</p>
 <dd><p>More aggressive response to shocks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a><em>]</em>)</p>
+<dd class="field-odd"><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -696,15 +816,29 @@ behavior during market stress.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="scr_financial.abm.decision_models.LearningDecisionModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.abm.decision_models.</span></span><span class="sig-name descname"><span class="pre">LearningDecisionModel</span></span><a class="reference internal" href="../_modules/scr_financial/abm/decision_models.html#LearningDecisionModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.decision_models.LearningDecisionModel" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../source/scr_financial.abm.html#scr_financial.abm.decision_models.DefaultDecisionModel" title="scr_financial.abm.decision_models.DefaultDecisionModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultDecisionModel</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.abm.decision_models.</span></span><span class="sig-name descname"><span class="pre">LearningDecisionModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/decision_models.html#LearningDecisionModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.decision_models.LearningDecisionModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#scr_financial.abm.decision_models.DefaultDecisionModel" title="scr_financial.abm.decision_models.DefaultDecisionModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultDecisionModel</span></code></a></p>
 <p>Decision model that learns from past interactions.</p>
 <p>This model extends the default model with learning capabilities
 based on past interactions with other banks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>learning_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="scr_financial.abm.decision_models.LearningDecisionModel.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/decision_models.html#LearningDecisionModel.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.decision_models.LearningDecisionModel.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Initialize the learning decision model.</p>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/abm/decision_models.html#LearningDecisionModel.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.abm.decision_models.LearningDecisionModel.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialise the learning decision model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>learning_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Weight given to each new outcome when updating interaction scores.
+Must be in (0, 1]. Defaults to 0.1.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -714,12 +848,12 @@ based on past interactions with other banks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>potential_borrowers</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
-<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
+<li><p><strong>potential_borrowers</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>market_sentiment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -731,9 +865,9 @@ based on past interactions with other banks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lender_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – ID of the lending bank</p></li>
-<li><p><strong>borrower_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – ID of the borrowing bank</p></li>
-<li><p><strong>outcome</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Outcome score (-1 to 1, where 1 is positive)</p></li>
+<li><p><strong>lender_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – ID of the lending bank</p></li>
+<li><p><strong>borrower_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – ID of the borrowing bank</p></li>
+<li><p><strong>outcome</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Outcome score (-1 to 1, where 1 is positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -749,15 +883,15 @@ based on past interactions with other banks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lender_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – ID of the lending bank</p></li>
-<li><p><strong>borrower_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – ID of the borrowing bank</p></li>
+<li><p><strong>lender_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – ID of the lending bank</p></li>
+<li><p><strong>borrower_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – ID of the borrowing bank</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Interaction score (-1 to 1, where 1 is positive)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -770,12 +904,15 @@ based on past interactions with other banks.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="network.html" class="btn btn-neutral float-right" title="Network Construction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Francois Petizon.</p>
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

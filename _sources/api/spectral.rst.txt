@@ -1,0 +1,7 @@
+Spectral Analysis
+=================
+
+.. automodule:: scr_financial.network.spectral
+   :members:
+   :undoc-members:
+   :show-inheritance:

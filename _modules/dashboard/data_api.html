@@ -1,0 +1,725 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dashboard.data_api &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dashboard.data_api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dashboard.data_api</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Fast, API-based financial data fetcher for the SCR dashboard.</span>
+
+<span class="sd">Data sources (no LLM required for any of these):</span>
+
+<span class="sd">  yfinance     — bank stock prices, return correlations (→ adjacency matrix A),</span>
+<span class="sd">                 market cap, balance sheet financials (total assets, equity)</span>
+<span class="sd">  ECB SDW      — sovereign bond yields (IT, DE, FR, ES, NL, SE),</span>
+<span class="sd">                 EUR/USD rate, ECB deposit facility rate</span>
+<span class="sd">  FRED         — TED spread, VIX (systemic stress proxies)</span>
+
+<span class="sd">Correlation-based edge weights</span>
+<span class="sd">-------------------------------</span>
+<span class="sd">As per the SCG proposal (§2.1), edges are defined by the Pearson correlation</span>
+<span class="sd">of bank stock daily returns over a rolling window. This is real, daily data</span>
+<span class="sd">that is:</span>
+<span class="sd">  - Updated automatically every trading day</span>
+<span class="sd">  - Directly computable without regulatory disclosures</span>
+<span class="sd">  - Already used in the SCG literature (Mantegna 1999, Tumminello 2007)</span>
+
+<span class="sd">All network fetches are parallelised via ThreadPoolExecutor for speed.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># ── Bank universe ────────────────────────────────────────────────────────────</span>
+
+<span class="n">BANK_TICKERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;DE_DBK&quot;</span><span class="p">:</span>  <span class="s2">&quot;DBK.DE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;FR_BNP&quot;</span><span class="p">:</span>  <span class="s2">&quot;BNP.PA&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ES_SAN&quot;</span><span class="p">:</span>  <span class="s2">&quot;SAN.MC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IT_UCG&quot;</span><span class="p">:</span>  <span class="s2">&quot;UCG.MI&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NL_ING&quot;</span><span class="p">:</span>  <span class="s2">&quot;INGA.AS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SE_NDA&quot;</span><span class="p">:</span>  <span class="s2">&quot;NDA-FI.HE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CH_UBS&quot;</span><span class="p">:</span>  <span class="s2">&quot;UBSG.SW&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UK_BARC&quot;</span><span class="p">:</span> <span class="s2">&quot;BARC.L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">:</span> <span class="s2">&quot;HSBA.L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;FR_ACA&quot;</span><span class="p">:</span>  <span class="s2">&quot;ACA.PA&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Sovereign yield ECB series (10Y) per country code</span>
+<span class="n">_ECB_YIELD_SERIES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;DE&quot;</span><span class="p">:</span> <span class="s2">&quot;IRS/M.DE.L.L40.CI.0000.EUR.N.Z&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;FR&quot;</span><span class="p">:</span> <span class="s2">&quot;IRS/M.FR.L.L40.CI.0000.EUR.N.Z&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IT&quot;</span><span class="p">:</span> <span class="s2">&quot;IRS/M.IT.L.L40.CI.0000.EUR.N.Z&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ES&quot;</span><span class="p">:</span> <span class="s2">&quot;IRS/M.ES.L.L40.CI.0000.EUR.N.Z&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NL&quot;</span><span class="p">:</span> <span class="s2">&quot;IRS/M.NL.L.L40.CI.0000.EUR.N.Z&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SE&quot;</span><span class="p">:</span> <span class="s2">&quot;IRS/M.SE.L.L40.CI.0000.EUR.N.Z&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_ECB_BASE</span> <span class="o">=</span> <span class="s2">&quot;https://data-api.ecb.europa.eu/service/data&quot;</span>
+<span class="n">_ECB_TIMEOUT</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># ── Helpers ──────────────────────────────────────────────────────────────────</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ecb_csv</span><span class="p">(</span><span class="n">series_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch a single ECB SDW series and return a DataFrame with TIME_PERIOD, OBS_VALUE.&quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_ECB_BASE</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">series_key</span><span class="si">}</span><span class="s2">?format=csvdata&amp;lastNObservations=</span><span class="si">{</span><span class="n">n_obs</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">_ECB_TIMEOUT</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;text/csv&quot;</span><span class="p">})</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s2">&quot;TIME_PERIOD&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s2">&quot;OBS_VALUE&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;OBS_VALUE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;OBS_VALUE&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;TIME_PERIOD&quot;</span><span class="p">,</span> <span class="s2">&quot;OBS_VALUE&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ECB fetch failed </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">series_key</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_fetch_prices</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">period</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1y&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Download adjusted close prices for a list of bank_ids in one yfinance call.&quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>  <span class="c1"># imported here to avoid hard dep at module level</span>
+    <span class="n">tickers</span> <span class="o">=</span> <span class="p">[</span><span class="n">BANK_TICKERS</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bank_ids</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">BANK_TICKERS</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tickers</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">tickers</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auto_adjust</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">prices</span> <span class="o">=</span> <span class="n">raw</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;Close&quot;</span> <span class="ow">in</span> <span class="n">raw</span> <span class="k">else</span> <span class="n">raw</span>
+        <span class="c1"># Rename columns back to bank_ids</span>
+        <span class="n">rev</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">BANK_TICKERS</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">prices</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">rev</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">prices</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">prices</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;yfinance price download failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+
+<span class="c1"># ── Core public functions ────────────────────────────────────────────────────</span>
+
+<div class="viewcode-block" id="fetch_correlation_adjacency">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.data_api.fetch_correlation_adjacency">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_correlation_adjacency</span><span class="p">(</span>
+    <span class="n">bank_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">window_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">252</span><span class="p">,</span>
+    <span class="n">min_corr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">pmfg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build the correlation-based adjacency matrix from daily bank stock returns.</span>
+
+<span class="sd">    As per §2.1 of the SCG proposal: edges are Pearson correlations of returns.</span>
+<span class="sd">    Weak edges (&lt; min_corr) are removed (threshold filtering, §2.3).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bank_ids    : list of bank IDs to include (defaults to all 10)</span>
+<span class="sd">    window_days : rolling return window in trading days</span>
+<span class="sd">    min_corr    : threshold below which edges are zeroed out</span>
+<span class="sd">    pmfg        : if True, apply Planar Maximally Filtered Graph (slower but cleaner)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict  {source_id: {target_id: weight}}  — upper-triangular correlation weights</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
+
+    <span class="n">prices</span> <span class="o">=</span> <span class="n">_fetch_prices</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">window_days</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">50</span><span class="si">}</span><span class="s2">d&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">prices</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No price data — returning empty adjacency&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">b</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">}</span>
+
+    <span class="n">returns</span> <span class="o">=</span> <span class="n">prices</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">returns</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Insufficient return history (</span><span class="si">%d</span><span class="s2"> rows)&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">returns</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">b</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">}</span>
+
+    <span class="c1"># Use most recent window_days</span>
+    <span class="n">returns</span> <span class="o">=</span> <span class="n">returns</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="n">window_days</span><span class="p">)</span>
+    <span class="n">corr</span> <span class="o">=</span> <span class="n">returns</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+
+    <span class="c1"># Threshold filtering (§2.3)</span>
+    <span class="n">adj</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">src</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">tgt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">j</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">src</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">corr</span><span class="o">.</span><span class="n">index</span> <span class="ow">or</span> <span class="n">tgt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">corr</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">corr</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="n">min_corr</span><span class="p">:</span>
+                <span class="n">adj</span><span class="p">[</span><span class="n">src</span><span class="p">][</span><span class="n">tgt</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+                <span class="n">adj</span><span class="p">[</span><span class="n">tgt</span><span class="p">][</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>  <span class="c1"># symmetric</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;Correlation adjacency: </span><span class="si">%d</span><span class="s2"> banks, </span><span class="si">%d</span><span class="s2"> edges (min_corr=</span><span class="si">%.2f</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">adj</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">min_corr</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">adj</span></div>
+
+
+
+<div class="viewcode-block" id="fetch_bank_market_features">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.data_api.fetch_bank_market_features">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_bank_market_features</span><span class="p">(</span>
+    <span class="n">bank_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch per-bank market and fundamental features from yfinance in parallel.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict  {bank_id: {feature: value}}</span>
+
+<span class="sd">    Features available:</span>
+<span class="sd">      market_cap, total_assets, common_equity, roe, price_to_book, beta,</span>
+<span class="sd">      shares_outstanding, latest_price, 1y_return, volatility_30d</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_one</span><span class="p">(</span><span class="n">bid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="n">ticker_sym</span> <span class="o">=</span> <span class="n">BANK_TICKERS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ticker_sym</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">bid</span><span class="p">,</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">Ticker</span><span class="p">(</span><span class="n">ticker_sym</span><span class="p">)</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">info</span> <span class="ow">or</span> <span class="p">{}</span>
+
+            <span class="n">feats</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;market_cap&quot;</span><span class="p">]</span>    <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;marketCap&quot;</span><span class="p">)</span>
+            <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;roe&quot;</span><span class="p">]</span>           <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;returnOnEquity&quot;</span><span class="p">)</span>
+            <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;price_to_book&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;priceToBook&quot;</span><span class="p">)</span>
+            <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span>          <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Balance sheet — quarterly, most recent</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">bs</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">quarterly_balance_sheet</span>
+                <span class="k">if</span> <span class="n">bs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">bs</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                    <span class="n">latest</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+                    <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;total_assets&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">latest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Total Assets&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">))</span>
+                    <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;common_equity&quot;</span><span class="p">]</span>  <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">latest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Common Stock Equity&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">))</span>
+                    <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;total_debt&quot;</span><span class="p">]</span>     <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">latest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Total Debt&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="c1"># 30-day volatility from price history</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">hist</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="s2">&quot;60d&quot;</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">hist</span><span class="o">.</span><span class="n">empty</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
+                    <span class="n">rets</span> <span class="o">=</span> <span class="n">hist</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+                    <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;volatility_30d&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">rets</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">252</span><span class="p">))</span>
+                    <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;latest_price&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">feats</span><span class="p">[</span><span class="s2">&quot;1y_return&quot;</span><span class="p">]</span>      <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+                        <span class="n">hist</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">hist</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">200</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="k">return</span> <span class="n">bid</span><span class="p">,</span> <span class="n">feats</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;yfinance fetch failed for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">bid</span><span class="p">,</span> <span class="p">{}</span>
+
+    <span class="n">results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span> <span class="mi">6</span><span class="p">))</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">futures</span> <span class="o">=</span> <span class="p">{</span><span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_fetch_one</span><span class="p">,</span> <span class="n">bid</span><span class="p">):</span> <span class="n">bid</span> <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">fut</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+            <span class="n">bid</span><span class="p">,</span> <span class="n">feats</span> <span class="o">=</span> <span class="n">fut</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span> <span class="o">=</span> <span class="n">feats</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;Market features fetched: </span><span class="si">%d</span><span class="s2"> banks, avg </span><span class="si">%.0f</span><span class="s2"> fields/bank&quot;</span><span class="p">,</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="k">if</span> <span class="n">results</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+
+<div class="viewcode-block" id="fetch_sovereign_spreads">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.data_api.fetch_sovereign_spreads">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_sovereign_spreads</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch 10Y sovereign bond yields from ECB SDW and compute IT-DE spread</span>
+<span class="sd">    as a systemic stress proxy.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict  {country: latest_yield_pct, ..., &#39;IT_DE_spread&#39;: float, &#39;ES_DE_spread&#39;: float}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_country</span><span class="p">(</span><span class="n">country</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">series</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">_ecb_csv</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">n_obs</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">country</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;OBS_VALUE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">country</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="n">spreads</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">futures</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_fetch_country</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span> <span class="n">c</span>
+            <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">_ECB_YIELD_SERIES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">fut</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+            <span class="n">country</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">fut</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">spreads</span><span class="p">[</span><span class="n">country</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">if</span> <span class="s2">&quot;IT&quot;</span> <span class="ow">in</span> <span class="n">spreads</span> <span class="ow">and</span> <span class="s2">&quot;DE&quot;</span> <span class="ow">in</span> <span class="n">spreads</span><span class="p">:</span>
+        <span class="n">spreads</span><span class="p">[</span><span class="s2">&quot;IT_DE_spread&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spreads</span><span class="p">[</span><span class="s2">&quot;IT&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">spreads</span><span class="p">[</span><span class="s2">&quot;DE&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;ES&quot;</span> <span class="ow">in</span> <span class="n">spreads</span> <span class="ow">and</span> <span class="s2">&quot;DE&quot;</span> <span class="ow">in</span> <span class="n">spreads</span><span class="p">:</span>
+        <span class="n">spreads</span><span class="p">[</span><span class="s2">&quot;ES_DE_spread&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spreads</span><span class="p">[</span><span class="s2">&quot;ES&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">spreads</span><span class="p">[</span><span class="s2">&quot;DE&quot;</span><span class="p">]</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Sovereign spreads: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">spreads</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+    <span class="k">return</span> <span class="n">spreads</span></div>
+
+
+
+<div class="viewcode-block" id="fetch_system_indicators">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.data_api.fetch_system_indicators">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_system_indicators</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch system-level stress indicators from free public APIs in parallel.</span>
+
+<span class="sd">    Returns a dict suitable for BankingSystemSimulation.system_indicators:</span>
+<span class="sd">      CISS          — derived from IT-DE spread and bank volatility</span>
+<span class="sd">      funding_stress — from bank stock volatility index</span>
+<span class="sd">      sovereign_stress — IT-DE 10Y spread</span>
+<span class="sd">      eurusd        — EUR/USD rate</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">indicators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_eurusd</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">_ecb_csv</span><span class="p">(</span><span class="s2">&quot;EXR/D.USD.EUR.SP00.A&quot;</span><span class="p">,</span> <span class="n">n_obs</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;eurusd&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;OBS_VALUE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s2">&quot;eurusd&quot;</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_spreads</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">fetch_sovereign_spreads</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_bank_vol</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Aggregate bank stock volatility as funding stress proxy.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
+            <span class="n">prices</span> <span class="o">=</span> <span class="n">_fetch_prices</span><span class="p">(</span><span class="n">ALL_BANKS</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="s2">&quot;90d&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">prices</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;bank_vol&quot;</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="n">rets</span> <span class="o">=</span> <span class="n">prices</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+            <span class="n">vol</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">rets</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">252</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s2">&quot;bank_vol&quot;</span><span class="p">,</span> <span class="n">vol</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;bank_vol&quot;</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">f_fx</span>    <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_fetch_eurusd</span><span class="p">)</span>
+        <span class="n">f_sp</span>    <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_fetch_spreads</span><span class="p">)</span>
+        <span class="n">f_vol</span>   <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_fetch_bank_vol</span><span class="p">)</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">eurusd</span> <span class="o">=</span> <span class="n">f_fx</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="n">spreads</span>   <span class="o">=</span> <span class="n">f_sp</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">vol</span>    <span class="o">=</span> <span class="n">f_vol</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">eurusd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;eurusd&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eurusd</span>
+
+    <span class="n">it_de</span> <span class="o">=</span> <span class="n">spreads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;IT_DE_spread&quot;</span><span class="p">)</span>
+    <span class="n">es_de</span> <span class="o">=</span> <span class="n">spreads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ES_DE_spread&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">it_de</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;sovereign_stress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">it_de</span>
+        <span class="c1"># CISS proxy: normalise IT-DE spread to 0-1 range (0 = 0bps, 1 = 500bps+)</span>
+        <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;CISS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">it_de</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">vol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;bank_vol_annualised&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vol</span>
+        <span class="c1"># Funding stress: normalise bank vol (0 = 0%, 1 = 50%+ annualised)</span>
+        <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;funding_stress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">vol</span> <span class="o">/</span> <span class="mf">0.50</span><span class="p">))</span>
+
+    <span class="c1"># Fallback if sovereign data unavailable</span>
+    <span class="n">indicators</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;CISS&quot;</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">indicators</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;funding_stress&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;System indicators: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">indicators</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+    <span class="k">return</span> <span class="n">indicators</span></div>
+
+
+
+<div class="viewcode-block" id="fetch_all">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.data_api.fetch_all">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_all</span><span class="p">(</span>
+    <span class="n">bank_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">correlation_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">252</span><span class="p">,</span>
+    <span class="n">min_corr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Full parallel fetch: adjacency matrix + node features + system indicators.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict with keys:</span>
+<span class="sd">      adjacency      : {src: {tgt: weight}}</span>
+<span class="sd">      bank_features  : {bank_id: {feature: value}}</span>
+<span class="sd">      system         : {indicator: value}</span>
+<span class="sd">      prices         : pd.DataFrame  (daily close prices)</span>
+<span class="sd">      timestamp      : str  (UTC ISO)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
+
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">f_adj</span>  <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">fetch_correlation_adjacency</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">correlation_window</span><span class="p">,</span> <span class="n">min_corr</span><span class="p">)</span>
+        <span class="n">f_feat</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">fetch_bank_market_features</span><span class="p">,</span> <span class="n">ids</span><span class="p">)</span>
+        <span class="n">f_sys</span>  <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">fetch_system_indicators</span><span class="p">)</span>
+
+        <span class="n">adj</span>   <span class="o">=</span> <span class="n">f_adj</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="n">feats</span> <span class="o">=</span> <span class="n">f_feat</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="n">sys</span>   <span class="o">=</span> <span class="n">f_sys</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+    <span class="c1"># Retrieve raw prices for GNN time-series export</span>
+    <span class="n">prices</span> <span class="o">=</span> <span class="n">_fetch_prices</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="s2">&quot;2y&quot;</span><span class="p">)</span>
+
+    <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;fetch_all completed in </span><span class="si">%.1f</span><span class="s2">s&quot;</span><span class="p">,</span> <span class="n">elapsed</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;adjacency&quot;</span><span class="p">:</span>     <span class="n">adj</span><span class="p">,</span>
+        <span class="s2">&quot;bank_features&quot;</span><span class="p">:</span> <span class="n">feats</span><span class="p">,</span>
+        <span class="s2">&quot;system&quot;</span><span class="p">:</span>        <span class="n">sys</span><span class="p">,</span>
+        <span class="s2">&quot;prices&quot;</span><span class="p">:</span>        <span class="n">prices</span><span class="p">,</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span>     <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="build_simulation_inputs_from_api">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.data_api.build_simulation_inputs_from_api">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_simulation_inputs_from_api</span><span class="p">(</span>
+    <span class="n">bank_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">correlation_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">252</span><span class="p">,</span>
+    <span class="n">min_corr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build (bank_data, network_data, system_indicators) directly from market APIs.</span>
+
+<span class="sd">    Same output format as ``data_loader.load_simulation_inputs`` — can be used</span>
+<span class="sd">    as a drop-in replacement when live data is preferred over the EBA pipeline.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">fetch_all</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">,</span> <span class="n">correlation_window</span><span class="p">,</span> <span class="n">min_corr</span><span class="p">)</span>
+    <span class="n">feats</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;bank_features&quot;</span><span class="p">]</span>
+    <span class="n">adj</span>   <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;adjacency&quot;</span><span class="p">]</span>
+    <span class="n">sys</span>   <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
+
+    <span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
+    <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="p">(</span><span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">feats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">total_assets</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total_assets&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">1e12</span>
+        <span class="n">equity</span>       <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;common_equity&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">total_assets</span> <span class="o">*</span> <span class="mf">0.06</span>
+
+        <span class="c1"># Derive regulatory-style ratios from market data where available</span>
+        <span class="n">cet1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">equity</span> <span class="ow">and</span> <span class="n">total_assets</span><span class="p">:</span>
+            <span class="c1"># CET1 ≈ equity / risk-weighted assets; RWA ≈ 35% of total assets for large banks</span>
+            <span class="n">rwa_est</span> <span class="o">=</span> <span class="n">total_assets</span> <span class="o">*</span> <span class="mf">0.35</span>
+            <span class="n">cet1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">equity</span> <span class="o">/</span> <span class="n">rwa_est</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="k">if</span> <span class="n">rwa_est</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">13.0</span>
+        <span class="n">cet1</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">6.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">cet1</span> <span class="ow">or</span> <span class="mf">13.0</span><span class="p">))</span>  <span class="c1"># clip to plausible range</span>
+
+        <span class="n">bank_data</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;CET1_ratio&quot;</span><span class="p">:</span>              <span class="n">cet1</span><span class="p">,</span>
+            <span class="s2">&quot;LCR&quot;</span><span class="p">:</span>                     <span class="mf">130.0</span><span class="p">,</span>    <span class="c1"># not in yfinance; use default</span>
+            <span class="s2">&quot;NSFR&quot;</span><span class="p">:</span>                    <span class="mf">115.0</span><span class="p">,</span>    <span class="c1"># not in yfinance; use default</span>
+            <span class="s2">&quot;total_assets&quot;</span><span class="p">:</span>            <span class="n">total_assets</span><span class="p">,</span>
+            <span class="s2">&quot;cash&quot;</span><span class="p">:</span>                    <span class="n">total_assets</span> <span class="o">*</span> <span class="mf">0.10</span><span class="p">,</span>
+            <span class="s2">&quot;interbank_assets&quot;</span><span class="p">:</span>        <span class="n">total_assets</span> <span class="o">*</span> <span class="mf">0.15</span><span class="p">,</span>
+            <span class="s2">&quot;interbank_liabilities&quot;</span><span class="p">:</span>   <span class="n">total_assets</span> <span class="o">*</span> <span class="mf">0.14</span><span class="p">,</span>
+            <span class="s2">&quot;market_cap&quot;</span><span class="p">:</span>              <span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;market_cap&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;roe&quot;</span><span class="p">:</span>                     <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;roe&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;price_to_book&quot;</span><span class="p">:</span>           <span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price_to_book&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">&quot;beta&quot;</span><span class="p">:</span>                    <span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">&quot;volatility_30d&quot;</span><span class="p">:</span>          <span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;volatility_30d&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">0.25</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="n">system_indicators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;CISS&quot;</span><span class="p">:</span>           <span class="n">sys</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CISS&quot;</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+        <span class="s2">&quot;funding_stress&quot;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;funding_stress&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+        <span class="s2">&quot;sovereign_stress&quot;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sovereign_stress&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s2">&quot;bank_vol&quot;</span><span class="p">:</span>       <span class="n">sys</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bank_vol_annualised&quot;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;API inputs ready: </span><span class="si">%d</span><span class="s2"> banks, </span><span class="si">%d</span><span class="s2"> edges, CISS=</span><span class="si">%.3f</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">bank_data</span><span class="p">),</span>
+        <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">adj</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">system_indicators</span><span class="p">[</span><span class="s2">&quot;CISS&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">bank_data</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">system_indicators</span></div>
+
+
+
+<span class="c1"># ── Daily graph snapshots for GNN training ──────────────────────────────────</span>
+
+<div class="viewcode-block" id="build_daily_graph_snapshots">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.data_api.build_daily_graph_snapshots">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_daily_graph_snapshots</span><span class="p">(</span>
+    <span class="n">bank_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lookback_years</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">corr_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="n">min_corr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">progress_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build daily graph snapshots from historical market data for GNN training.</span>
+
+<span class="sd">    Fetches multi-year daily prices once, then rolls through each trading day</span>
+<span class="sd">    constructing:</span>
+<span class="sd">      - Node features: [N, 5] per bank (volatility, return, log-price, beta_proxy, momentum)</span>
+<span class="sd">      - Edge index + weight: from rolling correlation of returns</span>
+<span class="sd">      - Spectral targets: lambda_2, spectral_gap, spectral_radius from the day&#39;s graph</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lookback_years : int</span>
+<span class="sd">        How many years of history to fetch (default 3 → ~750 trading days).</span>
+<span class="sd">    corr_window : int</span>
+<span class="sd">        Rolling window for correlation-based adjacency (trading days).</span>
+<span class="sd">    min_corr : float</span>
+<span class="sd">        Threshold for edge inclusion.</span>
+<span class="sd">    stride : int</span>
+<span class="sd">        Step between consecutive snapshots (1 = every day, 5 = weekly).</span>
+<span class="sd">    progress_callback : callable(current, total)</span>
+<span class="sd">        For UI progress updates.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of snapshot dicts compatible with GNNPredictor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">compute_laplacian</span><span class="p">,</span> <span class="n">eigendecomposition</span><span class="p">,</span> <span class="n">find_spectral_gap</span><span class="p">,</span>
+        <span class="n">analyze_spectral_properties</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
+
+    <span class="n">ids</span> <span class="o">=</span> <span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
+    <span class="n">n_banks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+
+    <span class="c1"># Fetch full price history in one call</span>
+    <span class="n">prices</span> <span class="o">=</span> <span class="n">_fetch_prices</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lookback_years</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">365</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">60</span><span class="si">}</span><span class="s2">d&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">prices</span><span class="o">.</span><span class="n">empty</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">corr_window</span> <span class="o">+</span> <span class="mi">30</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Insufficient price history for daily snapshots: </span><span class="si">%d</span><span class="s2"> rows&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">prices</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">returns</span> <span class="o">=</span> <span class="n">prices</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building daily snapshots: </span><span class="si">%d</span><span class="s2"> trading days, </span><span class="si">%d</span><span class="s2"> banks, corr_window=</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">returns</span><span class="p">),</span> <span class="n">n_banks</span><span class="p">,</span> <span class="n">corr_window</span><span class="p">)</span>
+
+    <span class="c1"># Precompute rolling stats</span>
+    <span class="n">snapshots</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">valid_dates</span> <span class="o">=</span> <span class="n">returns</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">corr_window</span><span class="p">:]</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_dates</span><span class="p">),</span> <span class="n">stride</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">date_idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_dates</span><span class="p">),</span> <span class="n">stride</span><span class="p">)):</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">valid_dates</span><span class="p">[</span><span class="n">date_idx</span><span class="p">]</span>
+        <span class="n">window_end</span> <span class="o">=</span> <span class="n">corr_window</span> <span class="o">+</span> <span class="n">date_idx</span>
+        <span class="n">ret_window</span> <span class="o">=</span> <span class="n">returns</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">window_end</span> <span class="o">-</span> <span class="n">corr_window</span><span class="p">:</span> <span class="n">window_end</span><span class="p">]</span>
+
+        <span class="c1"># Correlation adjacency</span>
+        <span class="n">corr</span> <span class="o">=</span> <span class="n">ret_window</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n_banks</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">src</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">tgt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">j</span> <span class="ow">or</span> <span class="n">src</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">corr</span><span class="o">.</span><span class="n">index</span> <span class="ow">or</span> <span class="n">tgt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">corr</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">corr</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="n">min_corr</span><span class="p">:</span>
+                    <span class="n">adj</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+                    <span class="n">adj</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+
+        <span class="c1"># Node features: [N, 5]</span>
+        <span class="c1"># [vol_30d, mean_return_30d, log_price, beta_proxy, momentum_20d]</span>
+        <span class="n">node_feats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">ret_window</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">rets_i</span> <span class="o">=</span> <span class="n">ret_window</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">node_feats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">rets_i</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">252</span><span class="p">))</span>  <span class="c1"># annualised vol</span>
+                <span class="n">node_feats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">rets_i</span><span class="p">)</span> <span class="o">*</span> <span class="mi">252</span><span class="p">)</span>  <span class="c1"># annualised return</span>
+                <span class="c1"># Log price (from cumulative return)</span>
+                <span class="n">cum_ret</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ret_window</span><span class="p">[</span><span class="n">bid</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span>
+                <span class="n">node_feats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">cum_ret</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)))</span>
+                <span class="c1"># Beta proxy: covariance with market / var(market)</span>
+                <span class="n">mkt</span> <span class="o">=</span> <span class="n">ret_window</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">rets_i</span><span class="p">,</span> <span class="n">mkt</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rets_i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="n">var_mkt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">mkt</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">mkt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-10</span> <span class="k">else</span> <span class="mf">1.0</span>
+                <span class="n">node_feats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cov</span> <span class="o">/</span> <span class="n">var_mkt</span><span class="p">)</span>
+                <span class="c1"># 20-day momentum</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rets_i</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">20</span><span class="p">:</span>
+                    <span class="n">node_feats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rets_i</span><span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">:]))</span>
+
+        <span class="c1"># Edge index / weight</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> \
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">edge_weight</span> <span class="o">=</span> <span class="n">adj</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="c1"># Spectral targets</span>
+        <span class="n">adj_sym</span> <span class="o">=</span> <span class="p">(</span><span class="n">adj</span> <span class="o">+</span> <span class="n">adj</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">compute_laplacian</span><span class="p">(</span><span class="n">adj_sym</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigendecomposition</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+        <span class="n">gap_idx</span><span class="p">,</span> <span class="n">gap_size</span> <span class="o">=</span> <span class="n">find_spectral_gap</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="n">analyze_spectral_properties</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="p">)</span>
+
+        <span class="n">lam2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">props</span><span class="p">[</span><span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">])</span>
+        <span class="n">gap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">gap_size</span><span class="p">)</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">props</span><span class="p">[</span><span class="s2">&quot;spectral_radius&quot;</span><span class="p">])</span>
+
+        <span class="n">snapshots</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;node_features&quot;</span><span class="p">:</span> <span class="n">node_feats</span><span class="p">,</span>
+            <span class="s2">&quot;edge_index&quot;</span><span class="p">:</span> <span class="n">edge_index</span><span class="p">,</span>
+            <span class="s2">&quot;edge_weight&quot;</span><span class="p">:</span> <span class="n">edge_weight</span><span class="p">,</span>
+            <span class="s2">&quot;targets&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;lambda_2&quot;</span><span class="p">:</span> <span class="n">lam2</span><span class="p">,</span> <span class="s2">&quot;spectral_gap&quot;</span><span class="p">:</span> <span class="n">gap</span><span class="p">,</span> <span class="s2">&quot;spectral_radius&quot;</span><span class="p">:</span> <span class="n">radius</span><span class="p">},</span>
+            <span class="s2">&quot;lambda_2&quot;</span><span class="p">:</span> <span class="n">lam2</span><span class="p">,</span>
+            <span class="s2">&quot;spectral_gap&quot;</span><span class="p">:</span> <span class="n">gap</span><span class="p">,</span>
+            <span class="s2">&quot;spectral_radius&quot;</span><span class="p">:</span> <span class="n">radius</span><span class="p">,</span>
+            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">count</span><span class="p">,</span>
+            <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">date</span><span class="p">())</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">),</span>
+        <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">progress_callback</span> <span class="ow">and</span> <span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">50</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">progress_callback</span><span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Built </span><span class="si">%d</span><span class="s2"> daily graph snapshots (stride=</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">snapshots</span><span class="p">),</span> <span class="n">stride</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">snapshots</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

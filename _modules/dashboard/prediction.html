@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dashboard.prediction &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dashboard.prediction</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dashboard.prediction</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Prediction helpers for the Evolution page.</span>
+
+<span class="sd">Generates GNN training data from real daily market snapshots (yfinance),</span>
+<span class="sd">trains the GNNPredictor (temporal GCN+LSTM), and builds SCG-vs-Basel comparison data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.ml.gnn_predictor</span><span class="w"> </span><span class="kn">import</span> <span class="n">GNNPredictor</span><span class="p">,</span> <span class="n">TARGET_NAMES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.risk.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_delta_covar</span><span class="p">,</span> <span class="n">compute_mes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">simulation_state</span> <span class="k">as</span> <span class="n">sim_state</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="generate_evolution_data">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.prediction.generate_evolution_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_evolution_data</span><span class="p">(</span>
+    <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;market&quot;</span><span class="p">,</span>
+    <span class="n">corr_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">progress_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate graph snapshots for GNN training.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_steps : int</span>
+<span class="sd">        For &#39;abm&#39; source: number of ABM steps.</span>
+<span class="sd">        For &#39;market&#39; source: ignored (uses all available daily data).</span>
+<span class="sd">    source : str</span>
+<span class="sd">        &#39;market&#39; — real daily data from yfinance (default, recommended)</span>
+<span class="sd">        &#39;abm&#39; — stochastic ABM simulation</span>
+<span class="sd">    corr_window : int</span>
+<span class="sd">        Rolling correlation window for market data (trading days).</span>
+<span class="sd">    stride : int</span>
+<span class="sd">        Day stride for market snapshots (1=daily, 5=weekly).</span>
+<span class="sd">    progress_callback : callable(current, total)</span>
+<span class="sd">        For UI progress updates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;market&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_generate_from_market</span><span class="p">(</span><span class="n">corr_window</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">progress_callback</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_generate_from_abm</span><span class="p">(</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">progress_callback</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_from_market</span><span class="p">(</span>
+    <span class="n">corr_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">progress_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build daily graph snapshots from real market data.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_daily_graph_snapshots</span>
+
+    <span class="n">snapshots</span> <span class="o">=</span> <span class="n">build_daily_graph_snapshots</span><span class="p">(</span>
+        <span class="n">lookback_years</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">corr_window</span><span class="o">=</span><span class="n">corr_window</span><span class="p">,</span>
+        <span class="n">min_corr</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span>
+        <span class="n">progress_callback</span><span class="o">=</span><span class="n">progress_callback</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">snapshots</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No market snapshots — falling back to ABM&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_generate_from_abm</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">progress_callback</span><span class="p">)</span>
+
+    <span class="c1"># Add scalar features for dashboard chart compatibility</span>
+    <span class="k">for</span> <span class="n">snap</span> <span class="ow">in</span> <span class="n">snapshots</span><span class="p">:</span>
+        <span class="n">snap</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;avg_cet1&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">snap</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;min_cet1&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">snap</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;ciss&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">snap</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;funding_stress&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">snap</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;n_stressed&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">snapshots</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_from_abm</span><span class="p">(</span>
+    <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+    <span class="n">progress_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run stochastic ABM and collect graph snapshots.&quot;&quot;&quot;</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">sim_state</span><span class="o">.</span><span class="n">get_simulation</span><span class="p">()</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="n">snapshots</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">snap</span> <span class="o">=</span> <span class="n">GNNPredictor</span><span class="o">.</span><span class="n">extract_graph_snapshot</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+    <span class="n">snap</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">snap</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">GNNPredictor</span><span class="o">.</span><span class="n">extract_features</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_spectral_from_sim</span><span class="p">(</span><span class="n">sim</span><span class="p">)))</span>
+    <span class="n">snap</span><span class="p">[</span><span class="s2">&quot;_bank_cet1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">bid</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">snapshots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">sim</span><span class="o">.</span><span class="n">run_simulation</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">snap</span> <span class="o">=</span> <span class="n">GNNPredictor</span><span class="o">.</span><span class="n">extract_graph_snapshot</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="n">snap</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span>
+        <span class="n">snap</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">GNNPredictor</span><span class="o">.</span><span class="n">extract_features</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_spectral_from_sim</span><span class="p">(</span><span class="n">sim</span><span class="p">)))</span>
+        <span class="n">snap</span><span class="p">[</span><span class="s2">&quot;_bank_cet1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">bid</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+                              <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">snapshots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">progress_callback</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">50</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">progress_callback</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">snapshots</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_spectral_from_sim</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute spectral data from a simulation snapshot.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">compute_laplacian</span><span class="p">,</span> <span class="n">eigendecomposition</span><span class="p">,</span> <span class="n">find_spectral_gap</span><span class="p">,</span>
+        <span class="n">analyze_spectral_properties</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
+    <span class="n">adj_sym</span> <span class="o">=</span> <span class="p">(</span><span class="n">adj</span> <span class="o">+</span> <span class="n">adj</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">compute_laplacian</span><span class="p">(</span><span class="n">adj_sym</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigendecomposition</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">gap_idx</span><span class="p">,</span> <span class="n">gap_size</span> <span class="o">=</span> <span class="n">find_spectral_gap</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="n">analyze_spectral_properties</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">props</span><span class="p">[</span><span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;gap_size&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">gap_size</span><span class="p">),</span>
+        <span class="s2">&quot;gap_index&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">gap_idx</span><span class="p">),</span>
+        <span class="s2">&quot;spectral_radius&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">props</span><span class="p">[</span><span class="s2">&quot;spectral_radius&quot;</span><span class="p">]),</span>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="train_predictor">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.prediction.train_predictor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">train_predictor</span><span class="p">(</span>
+    <span class="n">snapshots</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+    <span class="n">seq_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">hidden_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="n">num_gcn_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">num_lstm_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3e-3</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">progress_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Train a GNNPredictor on graph snapshots.</span>
+
+<span class="sd">    Returns (predictor, train_metrics, test_metrics).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">predictor</span> <span class="o">=</span> <span class="n">GNNPredictor</span><span class="p">(</span>
+        <span class="n">seq_len</span><span class="o">=</span><span class="n">seq_len</span><span class="p">,</span>
+        <span class="n">hidden_dim</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">,</span>
+        <span class="n">num_gcn_layers</span><span class="o">=</span><span class="n">num_gcn_layers</span><span class="p">,</span>
+        <span class="n">num_lstm_layers</span><span class="o">=</span><span class="n">num_lstm_layers</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">predictor</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">snapshots</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">progress_callback</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">predictor</span><span class="p">,</span> <span class="n">predictor</span><span class="o">.</span><span class="n">train_metrics</span><span class="p">,</span> <span class="n">predictor</span><span class="o">.</span><span class="n">test_metrics</span></div>
+
+
+
+<div class="viewcode-block" id="compute_scg_reconstruction_accuracy">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.prediction.compute_scg_reconstruction_accuracy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_scg_reconstruction_accuracy</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the full SCG pipeline on the current adjacency and return reconstruction accuracy.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.coarse_graining</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralCoarseGraining</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">sim_state</span><span class="o">.</span><span class="n">get_simulation</span><span class="p">()</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
+    <span class="n">bank_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sim_state</span><span class="o">.</span><span class="n">get_simulation</span><span class="p">()</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">scg</span> <span class="o">=</span> <span class="n">SpectralCoarseGraining</span><span class="o">.</span><span class="n">from_adjacency</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">bank_ids</span><span class="p">)</span>
+    <span class="n">scg</span><span class="o">.</span><span class="n">coarse_grain</span><span class="p">()</span>
+    <span class="n">scg</span><span class="o">.</span><span class="n">contract_vertices</span><span class="p">()</span>
+    <span class="n">scg</span><span class="o">.</span><span class="n">rescale</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">scg</span><span class="o">.</span><span class="n">compute_reconstruction_accuracy</span><span class="p">(</span><span class="n">time_steps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="build_scg_vs_basel_comparison">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.prediction.build_scg_vs_basel_comparison">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_scg_vs_basel_comparison</span><span class="p">(</span>
+    <span class="n">feature_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build SCG risk score vs Basel + CoVaR + MES per step.&quot;&quot;&quot;</span>
+    <span class="n">times</span><span class="p">,</span> <span class="n">scg_risk</span><span class="p">,</span> <span class="n">basel_stress</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">feature_history</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">lam2</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lambda_2&quot;</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spectral_radius&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">risk</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">lam2</span> <span class="o">/</span> <span class="n">radius</span><span class="p">)</span> <span class="k">if</span> <span class="n">radius</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span>
+        <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">scg_risk</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">risk</span><span class="p">)))</span>
+        <span class="n">basel_stress</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n_stressed&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+
+    <span class="n">delta_covar_series</span><span class="p">,</span> <span class="n">mes_series</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">bank_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">feature_history</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_bank_cet1&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">feature_history</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">bank_ids</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="s2">&quot;_bank_cet1&quot;</span> <span class="ow">in</span> <span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">feature_history</span><span class="p">):</span>
+        <span class="n">bank_cet1_ts</span> <span class="o">=</span> <span class="p">{</span><span class="n">bid</span><span class="p">:</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;_bank_cet1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">feature_history</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">}</span>
+        <span class="n">bank_returns</span> <span class="o">=</span> <span class="p">{</span><span class="n">bid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span> <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">bank_cet1_ts</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">for</span> <span class="n">t_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_history</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">t_idx</span> <span class="o">&lt;</span> <span class="n">window</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">delta_covar_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                <span class="n">mes_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">ret_window</span> <span class="o">=</span> <span class="p">{</span><span class="n">bid</span><span class="p">:</span> <span class="n">rets</span><span class="p">[</span><span class="n">t_idx</span> <span class="o">-</span> <span class="n">window</span><span class="p">:</span><span class="n">t_idx</span><span class="p">]</span>
+                          <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">rets</span> <span class="ow">in</span> <span class="n">bank_returns</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                          <span class="k">if</span> <span class="n">t_idx</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rets</span><span class="p">)}</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ret_window</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">window</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ret_window</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="n">delta_covar_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                <span class="n">mes_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">all_rets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ret_window</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+            <span class="n">sys_rets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">all_rets</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">dcovars</span> <span class="o">=</span> <span class="p">[</span><span class="n">compute_delta_covar</span><span class="p">(</span><span class="n">rets</span><span class="p">,</span> <span class="n">sys_rets</span><span class="p">)</span> <span class="k">for</span> <span class="n">rets</span> <span class="ow">in</span> <span class="n">ret_window</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+            <span class="n">mess</span> <span class="o">=</span> <span class="p">[</span><span class="n">compute_mes</span><span class="p">(</span><span class="n">rets</span><span class="p">,</span> <span class="n">sys_rets</span><span class="p">)</span> <span class="k">for</span> <span class="n">rets</span> <span class="ow">in</span> <span class="n">ret_window</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+            <span class="n">delta_covar_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dcovars</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">))))</span>
+            <span class="n">mes_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mess</span><span class="p">))</span> <span class="o">*</span> <span class="mi">5</span><span class="p">))))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">delta_covar_series</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+        <span class="n">mes_series</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">times</span><span class="p">,</span> <span class="s2">&quot;scg_risk&quot;</span><span class="p">:</span> <span class="n">scg_risk</span><span class="p">,</span> <span class="s2">&quot;basel_stress&quot;</span><span class="p">:</span> <span class="n">basel_stress</span><span class="p">,</span>
+        <span class="s2">&quot;delta_covar&quot;</span><span class="p">:</span> <span class="n">delta_covar_series</span><span class="p">,</span> <span class="s2">&quot;mes&quot;</span><span class="p">:</span> <span class="n">mes_series</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

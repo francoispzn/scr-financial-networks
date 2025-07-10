@@ -1,0 +1,24 @@
+Spectral Coarse-Graining Theory
+================================
+
+Spectral Coarse-Graining (SCG) reduces a complex network while preserving diffusion dynamics.
+
+Given adjacency matrix :math:`A`, the normalized Laplacian is:
+
+.. math::
+
+   L = D^{-1/2}(D - A)D^{-1/2}
+
+Key spectral properties:
+
+- **Algebraic connectivity** :math:`\lambda_2`: network robustness
+- **Spectral gap** :math:`\Delta = \lambda_{k+1} - \lambda_k`: cluster boundary
+- **Spectral radius** :math:`\rho`: contagion speed
+
+SCG risk score:
+
+.. math::
+
+   \text{SCG Risk} = 1 - \frac{\lambda_2}{\rho}
+
+Ranges from 0 (robust) to 1 (fragile).

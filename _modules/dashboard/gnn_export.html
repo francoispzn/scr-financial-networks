@@ -1,0 +1,407 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dashboard.gnn_export &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dashboard.gnn_export</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dashboard.gnn_export</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">GNN dataset exporter for the SCR Financial Networks dashboard.</span>
+
+<span class="sd">Builds a graph dataset from the current simulation state + LLM-fetched bank</span>
+<span class="sd">features and writes it to disk in multiple formats:</span>
+
+<span class="sd">  nodes.csv          — node feature matrix (one row per bank)</span>
+<span class="sd">  edges.csv          — directed edge list with weights</span>
+<span class="sd">  graph_data.json    — full graph as JSON (PyG-loadable via custom loader)</span>
+<span class="sd">  pyg_data.pt        — torch_geometric.data.Data object (if PyG installed)</span>
+<span class="sd">  metadata.json      — feature names, bank labels, dataset provenance</span>
+
+<span class="sd">Usage::</span>
+
+<span class="sd">    from dashboard.gnn_export import build_and_export</span>
+<span class="sd">    info = build_and_export(gnn_features, output_dir=&quot;data/gnn_datasets&quot;)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.llm</span><span class="w"> </span><span class="kn">import</span> <span class="n">GNN_NODE_FEATURES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">BANK_LABELS</span><span class="p">,</span> <span class="n">BANK_COUNTRIES</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Features derived from the simulation (not from the LLM web-fetch).</span>
+<span class="c1"># These are always available and supplement the LLM-fetched features.</span>
+<span class="n">_SIM_FEATURES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="s2">&quot;NSFR&quot;</span><span class="p">,</span> <span class="s2">&quot;total_assets&quot;</span><span class="p">]</span>
+
+<span class="c1"># Binary node labels (for supervised GNN tasks).</span>
+<span class="n">_LABEL_FIELDS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;solvent&quot;</span><span class="p">,</span> <span class="s2">&quot;liquid&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_country_encoding</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map unique country codes to integer labels.&quot;&quot;&quot;</span>
+    <span class="n">countries</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">BANK_COUNTRIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">&quot;XX&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">})</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">b</span><span class="p">:</span> <span class="n">countries</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">BANK_COUNTRIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">&quot;XX&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="build_graph_tensors">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.gnn_export.build_graph_tensors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_graph_tensors</span><span class="p">(</span>
+    <span class="n">bank_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">node_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+    <span class="n">edges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+    <span class="n">feature_cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert node/edge dicts into numpy arrays ready for GNN consumption.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    X          : float32 [N, F]  — node feature matrix (NaN-imputed with column mean)</span>
+<span class="sd">    edge_index : int64   [2, E]  — source/target index pairs</span>
+<span class="sd">    edge_attr  : float32 [E, 1]  — edge weight (normalised 0-1)</span>
+<span class="sd">    y          : int64   [N, 2]  — binary labels [solvent, liquid]</span>
+<span class="sd">    feat_names : list[str]       — feature column names (matches X columns)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">feature_cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">feature_cols</span> <span class="o">=</span> <span class="n">GNN_NODE_FEATURES</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;country_code&quot;</span><span class="p">]</span>
+
+    <span class="n">country_enc</span> <span class="o">=</span> <span class="n">_country_encoding</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">)}</span>
+
+    <span class="c1"># ── Node features ────────────────────────────────────────────────────────</span>
+    <span class="n">X_raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_cols</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">):</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">node_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">feat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">feature_cols</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">feat</span> <span class="o">==</span> <span class="s2">&quot;country_code&quot;</span><span class="p">:</span>
+                <span class="n">X_raw</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">country_enc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">X_raw</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                        <span class="k">pass</span>
+
+    <span class="c1"># Impute missing values with column median (robust to outliers)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_raw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">X_raw</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">col</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">col</span><span class="p">)]</span>
+        <span class="n">fill</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">valid</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">X_raw</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">col</span><span class="p">),</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill</span>
+
+    <span class="c1"># ── Labels ───────────────────────────────────────────────────────────────</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_LABEL_FIELDS</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">):</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">node_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">lf</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_LABEL_FIELDS</span><span class="p">):</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lf</span><span class="p">,</span> <span class="kc">True</span><span class="p">)))</span>
+
+    <span class="c1"># ── Edges ────────────────────────────────────────────────────────────────</span>
+    <span class="n">valid_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span>
+                   <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">idx</span> <span class="ow">and</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">idx</span> <span class="ow">and</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">valid_edges</span><span class="p">:</span>
+        <span class="n">max_w</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">valid_edges</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">1.0</span>
+        <span class="n">srcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">idx</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">valid_edges</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">dsts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">idx</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">valid_edges</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">srcs</span><span class="p">,</span> <span class="n">dsts</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># [2, E]</span>
+        <span class="n">edge_attr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[[</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">max_w</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">valid_edges</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+        <span class="p">)</span>  <span class="c1"># [E, 1]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">edge_attr</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X_raw</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">edge_attr</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">feature_cols</span></div>
+
+
+
+<div class="viewcode-block" id="build_and_export">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.gnn_export.build_and_export">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_and_export</span><span class="p">(</span>
+    <span class="n">gnn_features</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+    <span class="n">sim_graph</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;data/gnn_datasets&quot;</span><span class="p">,</span>
+    <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a GNN dataset from LLM-fetched features + simulation graph and save</span>
+<span class="sd">    it to *output_dir*.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gnn_features : {bank_id: {feature: value}}</span>
+<span class="sd">        Output of ``fetch_bank_features_for_gnn()``.</span>
+<span class="sd">    sim_graph : {nodes: [...], edges: [...]}</span>
+<span class="sd">        Output of ``simulation_state.get_network_graph_data()``.</span>
+<span class="sd">    output_dir : str</span>
+<span class="sd">        Directory to write dataset files into.</span>
+<span class="sd">    tag : str, optional</span>
+<span class="sd">        Short label for the export (used in filenames). Defaults to a timestamp.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict with keys: output_dir, files, n_nodes, n_edges, n_features, timestamp</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">T%H%M%SZ&quot;</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">timestamp</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">nodes_raw</span> <span class="o">=</span> <span class="n">sim_graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nodes&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">edges_raw</span> <span class="o">=</span> <span class="n">sim_graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;edges&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">bank_ids</span>  <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes_raw</span><span class="p">]</span>
+
+    <span class="c1"># Merge simulation node data with LLM-fetched features</span>
+    <span class="c1"># LLM features take precedence for shared fields (except solvent/liquid which</span>
+    <span class="c1"># come from the ABM).</span>
+    <span class="n">node_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">nodes_raw</span><span class="p">:</span>
+        <span class="n">bid</span> <span class="o">=</span> <span class="n">nd</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span>  <span class="c1"># sim fields: CET1_ratio, LCR, NSFR, total_assets, solvent, liquid</span>
+        <span class="n">llm_fields</span> <span class="o">=</span> <span class="n">gnn_features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">llm_fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">merged</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>          <span class="c1"># LLM overrides sim for financial ratios</span>
+        <span class="n">node_data</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged</span>
+
+    <span class="n">feature_cols</span> <span class="o">=</span> <span class="n">GNN_NODE_FEATURES</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;country_code&quot;</span><span class="p">]</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">edge_attr</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">feat_names</span> <span class="o">=</span> <span class="n">build_graph_tensors</span><span class="p">(</span>
+        <span class="n">bank_ids</span><span class="p">,</span> <span class="n">node_data</span><span class="p">,</span> <span class="n">edges_raw</span><span class="p">,</span> <span class="n">feature_cols</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ── Save CSVs ────────────────────────────────────────────────────────────</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+
+    <span class="n">nodes_csv</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="s2">&quot;nodes.csv&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nodes_csv</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s2">&quot;bank_id&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;country&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">feat_names</span>
+                        <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;solvent&quot;</span><span class="p">,</span> <span class="s2">&quot;liquid&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">):</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">bid</span><span class="p">,</span> <span class="n">BANK_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="n">bid</span><span class="p">),</span> <span class="n">BANK_COUNTRIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)]</span>
+                <span class="o">+</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="o">+</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span>
+            <span class="p">)</span>
+
+    <span class="n">edges_csv</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="s2">&quot;edges.csv&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">edges_csv</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s2">&quot;source_idx&quot;</span><span class="p">,</span> <span class="s2">&quot;target_idx&quot;</span><span class="p">,</span> <span class="s2">&quot;source_id&quot;</span><span class="p">,</span> <span class="s2">&quot;target_id&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;weight_norm&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">edge_index</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">edge_index</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">edge_index</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">bank_ids</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">bank_ids</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
+                             <span class="nb">float</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">])])</span>
+
+    <span class="c1"># ── Save graph JSON ───────────────────────────────────────────────────────</span>
+    <span class="n">graph_json</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;bank_ids&quot;</span><span class="p">:</span> <span class="n">bank_ids</span><span class="p">,</span>
+        <span class="s2">&quot;bank_labels&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">b</span><span class="p">:</span> <span class="n">BANK_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">},</span>
+        <span class="s2">&quot;bank_countries&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">b</span><span class="p">:</span> <span class="n">BANK_COUNTRIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">},</span>
+        <span class="s2">&quot;feature_names&quot;</span><span class="p">:</span> <span class="n">feat_names</span><span class="p">,</span>
+        <span class="s2">&quot;label_names&quot;</span><span class="p">:</span> <span class="n">_LABEL_FIELDS</span><span class="p">,</span>
+        <span class="s2">&quot;node_features&quot;</span><span class="p">:</span> <span class="n">X</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>      <span class="c1"># [N, F]</span>
+        <span class="s2">&quot;edge_index&quot;</span><span class="p">:</span> <span class="n">edge_index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>  <span class="c1"># [2, E]</span>
+        <span class="s2">&quot;edge_attr&quot;</span><span class="p">:</span> <span class="n">edge_attr</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>    <span class="c1"># [E, 1]</span>
+        <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>              <span class="c1"># [N, 2]</span>
+        <span class="s2">&quot;raw_node_data&quot;</span><span class="p">:</span> <span class="n">node_data</span><span class="p">,</span>        <span class="c1"># full unprocessed fields per bank</span>
+    <span class="p">}</span>
+    <span class="n">graph_json_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="s2">&quot;graph_data.json&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">graph_json_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">graph_json</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># ── Metadata ─────────────────────────────────────────────────────────────</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span>
+        <span class="s2">&quot;tag&quot;</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+        <span class="s2">&quot;n_nodes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">),</span>
+        <span class="s2">&quot;n_edges&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">edge_index</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="s2">&quot;n_features&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">feat_names</span><span class="p">),</span>
+        <span class="s2">&quot;feature_names&quot;</span><span class="p">:</span> <span class="n">feat_names</span><span class="p">,</span>
+        <span class="s2">&quot;label_names&quot;</span><span class="p">:</span> <span class="n">_LABEL_FIELDS</span><span class="p">,</span>
+        <span class="s2">&quot;llm_coverage&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">bid</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gnn_features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">bank_ids</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;Cerebras LLM + DuckDuckGo web search + SCR ABM simulation&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">meta_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="s2">&quot;metadata.json&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">meta_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">files</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;nodes_csv&quot;</span><span class="p">:</span> <span class="n">nodes_csv</span><span class="p">,</span>
+        <span class="s2">&quot;edges_csv&quot;</span><span class="p">:</span> <span class="n">edges_csv</span><span class="p">,</span>
+        <span class="s2">&quot;graph_json&quot;</span><span class="p">:</span> <span class="n">graph_json_path</span><span class="p">,</span>
+        <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">meta_path</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># ── PyTorch Geometric .pt (optional) ─────────────────────────────────────</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>  <span class="c1"># type: ignore</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+            <span class="n">edge_index</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">),</span>
+            <span class="n">edge_attr</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="c1"># Store metadata as graph-level attributes</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">bank_ids</span>     <span class="o">=</span> <span class="n">bank_ids</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">feat_names</span>   <span class="o">=</span> <span class="n">feat_names</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">label_names</span>  <span class="o">=</span> <span class="n">_LABEL_FIELDS</span>
+        <span class="n">pt_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="s2">&quot;pyg_data.pt&quot;</span><span class="p">)</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pt_path</span><span class="p">)</span>
+        <span class="n">files</span><span class="p">[</span><span class="s2">&quot;pyg_pt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pt_path</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Saved PyTorch Geometric Data object → </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pt_path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;torch_geometric not installed — skipping .pt export&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ── Also save numpy arrays ────────────────────────────────────────────────</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="s2">&quot;X.npy&quot;</span><span class="p">),</span> <span class="n">X</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="s2">&quot;edge_index.npy&quot;</span><span class="p">),</span> <span class="n">edge_index</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="s2">&quot;edge_attr.npy&quot;</span><span class="p">),</span> <span class="n">edge_attr</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="s2">&quot;y.npy&quot;</span><span class="p">),</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">files</span><span class="p">[</span><span class="s2">&quot;numpy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;GNN dataset exported: </span><span class="si">%d</span><span class="s2"> nodes, </span><span class="si">%d</span><span class="s2"> edges, </span><span class="si">%d</span><span class="s2"> features → </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">edge_index</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">feat_names</span><span class="p">),</span> <span class="n">out</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">,</span>
+        <span class="s2">&quot;files&quot;</span><span class="p">:</span> <span class="n">files</span><span class="p">,</span>
+        <span class="s2">&quot;n_nodes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">),</span>
+        <span class="s2">&quot;n_edges&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">edge_index</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="s2">&quot;n_features&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">feat_names</span><span class="p">),</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -3,21 +3,24 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SCR-Financial-Networks Documentation &mdash; SCR-Financial-Networks 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=92fd9be5" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+  <title>SCR-Financial-Networks Documentation &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -39,16 +42,32 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">SCR-Financial-Networks Documentation</a><ul>
-<li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/dashboard.html">Dashboard</a></li>
 </ul>
-</div>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -75,32 +94,112 @@
              
   <section id="scr-financial-networks-documentation">
 <h1>SCR-Financial-Networks Documentation<a class="headerlink" href="#scr-financial-networks-documentation" title="Link to this heading">¶</a></h1>
-<p>A Python framework for analyzing financial networks using Spectral Coarse-Graining (SCG) and Agent-Based Modeling (ABM).</p>
+<p>A Python framework for analyzing financial networks using <strong>Spectral Coarse-Graining (SCG)</strong>, <strong>Agent-Based Modeling (ABM)</strong>, and <strong>Graph Neural Networks (GNN)</strong>.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<p>This project implements a hybrid approach combining Spectral Coarse-Graining (SCG) with Agent-Based Modeling (ABM) to analyze interbank contagion dynamics among European banks. The framework enables the study of systemic risk, contagion pathways, and financial stability by preserving both macro-level network effects and micro-level bank behaviors.</p>
-<p>The methodology is based on the theoretical framework described in “Spectral Coarse-Graining to Financial Networks” and addresses the research question posed in the “Contingency BW 9-08 x10-15” preliminary report.</p>
+<p>This project implements a hybrid approach combining Spectral Coarse-Graining with Agent-Based Modeling and temporal Graph Neural Networks to analyze interbank contagion dynamics among European banks.</p>
+<p>Key capabilities:</p>
+<ul class="simple">
+<li><p><strong>Spectral Coarse-Graining</strong>: reduce complex interbank networks while preserving diffusion dynamics</p></li>
+<li><p><strong>Agent-Based Simulation</strong>: model individual bank behaviors under stress scenarios</p></li>
+<li><p><strong>Temporal GNN</strong>: predict spectral properties from graph-structured market data</p></li>
+<li><p><strong>Risk Metrics</strong>: Delta-CoVaR, MES, and SCG-based systemic risk scores</p></li>
+<li><p><strong>Interactive Dashboard</strong>: Dash UI with live GNN training and SCG-vs-Basel comparison</p></li>
+<li><p><strong>Real Market Data</strong>: yfinance stock data and ECB macro indicators</p></li>
+</ul>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+</ul>
 </div>
-</section>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
-<p>Using Conda:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the repository</span>
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/username/scr-financial-networks.git
-<span class="nb">cd</span><span class="w"> </span>scr-financial-networks
-
-<span class="c1"># Create and activate the conda environment</span>
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
-conda<span class="w"> </span>activate<span class="w"> </span>scr-financial
-
-<span class="c1"># Install the package in development mode</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-</pre></div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/abm.html">Agent-Based Model Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/abm.html#bankagent">BankAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/abm.html#bankingsystemsimulation">BankingSystemSimulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/abm.html#decision-models">Decision Models</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/network.html">Network Construction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/network.html#scr_financial.network.builder.FinancialNetworkBuilder"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/spectral.html">Spectral Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.compute_laplacian"><code class="docutils literal notranslate"><span class="pre">compute_laplacian()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.eigendecomposition"><code class="docutils literal notranslate"><span class="pre">eigendecomposition()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.find_spectral_gap"><code class="docutils literal notranslate"><span class="pre">find_spectral_gap()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.compute_diffusion_modes"><code class="docutils literal notranslate"><span class="pre">compute_diffusion_modes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.analyze_spectral_properties"><code class="docutils literal notranslate"><span class="pre">analyze_spectral_properties()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.compute_spectral_embedding"><code class="docutils literal notranslate"><span class="pre">compute_spectral_embedding()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.compute_diffusion_distance"><code class="docutils literal notranslate"><span class="pre">compute_diffusion_distance()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/ml.html">Machine Learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/ml.html#module-scr_financial.ml.gnn_predictor">GNN Predictor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ml.html#module-scr_financial.ml.scg_predictor">SCG Predictor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ml.html#module-scr_financial.ml.predictors">Base Predictors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ml.html#module-scr_financial.ml.sentiment_model">Sentiment Model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/risk.html">Risk Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/risk.html#scr_financial.risk.metrics.compute_var"><code class="docutils literal notranslate"><span class="pre">compute_var()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/risk.html#scr_financial.risk.metrics.compute_covar"><code class="docutils literal notranslate"><span class="pre">compute_covar()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/risk.html#scr_financial.risk.metrics.compute_delta_covar"><code class="docutils literal notranslate"><span class="pre">compute_delta_covar()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/risk.html#scr_financial.risk.metrics.compute_mes"><code class="docutils literal notranslate"><span class="pre">compute_mes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/risk.html#scr_financial.risk.metrics.compute_srisk"><code class="docutils literal notranslate"><span class="pre">compute_srisk()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/risk.html#scr_financial.risk.metrics.compute_system_risk_metrics"><code class="docutils literal notranslate"><span class="pre">compute_system_risk_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/risk.html#module-scr_financial.backtesting.engine">Backtesting Engine</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/data.html">Data Collection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.collectors.eba_collector.EBACollector"><code class="docutils literal notranslate"><span class="pre">EBACollector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.collectors.ecb_collector.ECBCollector"><code class="docutils literal notranslate"><span class="pre">ECBCollector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.preprocessor.DataPreprocessor"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/dashboard.html">Dashboard</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.data_loader">Data Loader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.data_api">Data API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.prediction">Prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.gnn_export">GNN Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.simulation_state">Simulation State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.api">REST API</a></li>
+</ul>
+</li>
+</ul>
 </div>
-<p>Using pip:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>scr-financial-networks
-</pre></div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/black_week_simulation.html">Black Week Simulation Example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/black_week_simulation.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/black_week_simulation.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/black_week_simulation.html#code-example">Code Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples/network_visualization.html">Network Visualization Example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/network_visualization.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/network_visualization.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/network_visualization.html#code-example">Code Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/network_visualization.html#visualization-types">Visualization Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/network_visualization.html#interpreting-the-visualizations">Interpreting the Visualizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/network_visualization.html#further-customization">Further Customization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/network_visualization.html#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </section>
 </section>
@@ -116,12 +215,14 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Francois Petizon.</p>
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

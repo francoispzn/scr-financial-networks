@@ -1,0 +1,12 @@
+Network Construction
+====================
+
+.. automodule:: scr_financial.network.builder
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: scr_financial.network.coarse_graining
+   :members:
+   :undoc-members:
+   :show-inheritance:

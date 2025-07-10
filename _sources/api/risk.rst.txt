@@ -1,0 +1,15 @@
+Risk Metrics
+============
+
+.. automodule:: scr_financial.risk.metrics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Backtesting Engine
+------------------
+
+.. automodule:: scr_financial.backtesting.engine
+   :members:
+   :undoc-members:
+   :show-inheritance:

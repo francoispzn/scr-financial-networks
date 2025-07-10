@@ -1,0 +1,22 @@
+Data Collection
+===============
+
+.. automodule:: scr_financial.data.collectors.eba_collector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: scr_financial.data.collectors.ecb_collector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: scr_financial.data.collectors.market_collector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: scr_financial.data.preprocessor
+   :members:
+   :undoc-members:
+   :show-inheritance:

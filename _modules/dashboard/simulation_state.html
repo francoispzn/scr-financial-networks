@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dashboard.simulation_state &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dashboard.simulation_state</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dashboard.simulation_state</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Global simulation state for the dashboard.</span>
+
+<span class="sd">Builds the BankingSystemSimulation from the live data pipeline</span>
+<span class="sd">(EBACollector → ECBCollector → DataPreprocessor) rather than any</span>
+<span class="sd">hard-coded demo values.  Thread safety is achieved via a module-level lock.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.abm.simulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">BankingSystemSimulation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.coarse_graining</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralCoarseGraining</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">compute_laplacian</span><span class="p">,</span>
+    <span class="n">eigendecomposition</span><span class="p">,</span>
+    <span class="n">find_spectral_gap</span><span class="p">,</span>
+    <span class="n">compute_diffusion_distance</span><span class="p">,</span>
+    <span class="n">analyze_spectral_properties</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">load_simulation_inputs</span><span class="p">,</span>
+    <span class="n">BANK_LABELS</span><span class="p">,</span>
+    <span class="n">BANK_COUNTRIES</span><span class="p">,</span>
+    <span class="n">ALL_BANKS</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.data_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_simulation_inputs_from_api</span>
+
+<span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+<span class="c1"># Spectral cache — invalidated whenever the adjacency matrix changes</span>
+<span class="n">_spectral_cache</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_spectral_cache_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="c1"># Current configuration (mutable via reload_data())</span>
+<span class="n">_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2020-01-01&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;end_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2024-12-31&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bank_list&quot;</span><span class="p">:</span> <span class="n">ALL_BANKS</span><span class="p">,</span>
+    <span class="s2">&quot;snapshot_date&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Cached raw inputs so reset() can replay without hitting the pipeline again</span>
+<span class="n">_cached_bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_cached_network_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_cached_system_indicators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">_sim</span><span class="p">:</span> <span class="n">BankingSystemSimulation</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_simulation</span><span class="p">(</span>
+    <span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">network_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+    <span class="n">system_indicators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BankingSystemSimulation</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">BankingSystemSimulation</span><span class="p">(</span>
+        <span class="n">bank_data</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">bank_data</span><span class="p">),</span>
+        <span class="n">network_data</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">network_data</span><span class="p">),</span>
+        <span class="n">system_indicators</span><span class="o">=</span><span class="n">system_indicators</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+        <span class="n">stochastic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="n">_data_source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EBA&quot;</span>  <span class="c1"># tracks which data source was used</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_initialise</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data: try live market APIs first, fall back to EBA pipeline.&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_sim</span><span class="p">,</span> <span class="n">_cached_bank_data</span><span class="p">,</span> <span class="n">_cached_network_data</span><span class="p">,</span> <span class="n">_cached_system_indicators</span>
+    <span class="k">global</span> <span class="n">_data_source</span>
+
+    <span class="c1"># Try real market data first</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">bd</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="n">si</span> <span class="o">=</span> <span class="n">build_simulation_inputs_from_api</span><span class="p">(</span>
+            <span class="n">bank_ids</span><span class="o">=</span><span class="n">_config</span><span class="p">[</span><span class="s2">&quot;bank_list&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">_data_source</span> <span class="o">=</span> <span class="s2">&quot;API&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initialised from live market APIs (yfinance + ECB).&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Live API fetch failed (</span><span class="si">%s</span><span class="s2">); falling back to EBA pipeline.&quot;</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+        <span class="n">bd</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="n">si</span> <span class="o">=</span> <span class="n">load_simulation_inputs</span><span class="p">(</span>
+            <span class="n">start_date</span><span class="o">=</span><span class="n">_config</span><span class="p">[</span><span class="s2">&quot;start_date&quot;</span><span class="p">],</span>
+            <span class="n">end_date</span><span class="o">=</span><span class="n">_config</span><span class="p">[</span><span class="s2">&quot;end_date&quot;</span><span class="p">],</span>
+            <span class="n">bank_list</span><span class="o">=</span><span class="n">_config</span><span class="p">[</span><span class="s2">&quot;bank_list&quot;</span><span class="p">],</span>
+            <span class="n">snapshot_date</span><span class="o">=</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;snapshot_date&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">_data_source</span> <span class="o">=</span> <span class="s2">&quot;EBA&quot;</span>
+
+    <span class="n">_cached_bank_data</span> <span class="o">=</span> <span class="n">bd</span>
+    <span class="n">_cached_network_data</span> <span class="o">=</span> <span class="n">nd</span>
+    <span class="n">_cached_system_indicators</span> <span class="o">=</span> <span class="n">si</span>
+    <span class="n">_sim</span> <span class="o">=</span> <span class="n">_build_simulation</span><span class="p">(</span><span class="n">bd</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="n">si</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_data_source">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.get_data_source">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_data_source</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return &#39;API&#39; or &#39;EBA&#39; depending on how data was loaded.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_data_source</span></div>
+
+
+
+<span class="n">_initialise</span><span class="p">()</span>
+
+
+<span class="c1"># ── Public API ───────────────────────────────────────────────────────────────</span>
+
+<div class="viewcode-block" id="get_config">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.get_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">_config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="reload_data">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.reload_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reload_data</span><span class="p">(</span>
+    <span class="n">start_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">end_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">snapshot_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Re-fetch data from the pipeline with updated parameters.&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_sim</span><span class="p">,</span> <span class="n">_cached_bank_data</span><span class="p">,</span> <span class="n">_cached_network_data</span><span class="p">,</span> <span class="n">_cached_system_indicators</span>
+    <span class="k">with</span> <span class="n">_lock</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">start_date</span><span class="p">:</span>
+            <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;start_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_date</span>
+        <span class="k">if</span> <span class="n">end_date</span><span class="p">:</span>
+            <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;end_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_date</span>
+        <span class="k">if</span> <span class="n">bank_list</span><span class="p">:</span>
+            <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;bank_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bank_list</span>
+        <span class="k">if</span> <span class="n">snapshot_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;snapshot_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">snapshot_date</span>
+
+        <span class="n">bd</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="n">si</span> <span class="o">=</span> <span class="n">load_simulation_inputs</span><span class="p">(</span>
+            <span class="n">start_date</span><span class="o">=</span><span class="n">_config</span><span class="p">[</span><span class="s2">&quot;start_date&quot;</span><span class="p">],</span>
+            <span class="n">end_date</span><span class="o">=</span><span class="n">_config</span><span class="p">[</span><span class="s2">&quot;end_date&quot;</span><span class="p">],</span>
+            <span class="n">bank_list</span><span class="o">=</span><span class="n">_config</span><span class="p">[</span><span class="s2">&quot;bank_list&quot;</span><span class="p">],</span>
+            <span class="n">snapshot_date</span><span class="o">=</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;snapshot_date&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">_cached_bank_data</span> <span class="o">=</span> <span class="n">bd</span>
+        <span class="n">_cached_network_data</span> <span class="o">=</span> <span class="n">nd</span>
+        <span class="n">_cached_system_indicators</span> <span class="o">=</span> <span class="n">si</span>
+        <span class="n">_sim</span> <span class="o">=</span> <span class="n">_build_simulation</span><span class="p">(</span><span class="n">bd</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="n">si</span><span class="p">)</span>
+        <span class="n">_spectral_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">_spectral_cache_key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="load_from_data">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.load_from_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_from_data</span><span class="p">(</span>
+    <span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">network_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+    <span class="n">system_indicators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Replace simulation state with externally-fetched data (e.g. from data_api).&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_sim</span><span class="p">,</span> <span class="n">_cached_bank_data</span><span class="p">,</span> <span class="n">_cached_network_data</span><span class="p">,</span> <span class="n">_cached_system_indicators</span>
+    <span class="k">global</span> <span class="n">_spectral_cache</span><span class="p">,</span> <span class="n">_spectral_cache_key</span>
+    <span class="k">with</span> <span class="n">_lock</span><span class="p">:</span>
+        <span class="n">_cached_bank_data</span> <span class="o">=</span> <span class="n">bank_data</span>
+        <span class="n">_cached_network_data</span> <span class="o">=</span> <span class="n">network_data</span>
+        <span class="n">_cached_system_indicators</span> <span class="o">=</span> <span class="n">system_indicators</span>
+        <span class="n">_sim</span> <span class="o">=</span> <span class="n">_build_simulation</span><span class="p">(</span><span class="n">bank_data</span><span class="p">,</span> <span class="n">network_data</span><span class="p">,</span> <span class="n">system_indicators</span><span class="p">)</span>
+        <span class="n">_spectral_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">_spectral_cache_key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="reset_simulation">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.reset_simulation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_simulation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reset the ABM to the loaded data snapshot without re-fetching.&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_sim</span><span class="p">,</span> <span class="n">_spectral_cache</span><span class="p">,</span> <span class="n">_spectral_cache_key</span><span class="p">,</span> <span class="n">_scg_cache</span><span class="p">,</span> <span class="n">_scg_cache_key</span>
+    <span class="k">with</span> <span class="n">_lock</span><span class="p">:</span>
+        <span class="n">_sim</span> <span class="o">=</span> <span class="n">_build_simulation</span><span class="p">(</span>
+            <span class="n">_cached_bank_data</span><span class="p">,</span> <span class="n">_cached_network_data</span><span class="p">,</span> <span class="n">_cached_system_indicators</span>
+        <span class="p">)</span>
+        <span class="n">_spectral_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">_spectral_cache_key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">_scg_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">_scg_cache_key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="get_simulation">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.get_simulation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_simulation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">BankingSystemSimulation</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">_sim</span></div>
+
+
+
+<div class="viewcode-block" id="run_steps">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.run_steps">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_steps</span><span class="p">(</span><span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">shocks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+    <span class="k">with</span> <span class="n">_lock</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_sim</span><span class="o">.</span><span class="n">run_simulation</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">shocks</span><span class="o">=</span><span class="n">shocks</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="apply_shock">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.apply_shock">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_shock</span><span class="p">(</span><span class="n">shock_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_lock</span><span class="p">:</span>
+        <span class="n">_sim</span><span class="o">.</span><span class="n">apply_external_shock</span><span class="p">(</span><span class="n">shock_params</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="apply_shock_and_record">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.apply_shock_and_record">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_shock_and_record</span><span class="p">(</span><span class="n">shock_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply shock, record state immediately, return full history.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">_lock</span><span class="p">:</span>
+        <span class="n">_sim</span><span class="o">.</span><span class="n">apply_external_shock</span><span class="p">(</span><span class="n">shock_params</span><span class="p">)</span>
+        <span class="n">_sim</span><span class="o">.</span><span class="n">record_state</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">_sim</span><span class="o">.</span><span class="n">history</span></div>
+
+
+
+<div class="viewcode-block" id="apply_llm_bank_data">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.apply_llm_bank_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_llm_bank_data</span><span class="p">(</span><span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Overwrite bank states with data fetched by the LLM.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">_lock</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">bank_id</span><span class="p">,</span> <span class="n">fields</span> <span class="ow">in</span> <span class="n">bank_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="n">_sim</span><span class="o">.</span><span class="n">banks</span><span class="p">:</span>
+                <span class="n">_sim</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ── Spectral helpers ─────────────────────────────────────────────────────────</span>
+
+<div class="viewcode-block" id="get_spectral_data">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.get_spectral_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_spectral_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">global</span> <span class="n">_spectral_cache</span><span class="p">,</span> <span class="n">_spectral_cache_key</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">_sim</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
+    <span class="n">cache_key</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">cache_key</span> <span class="o">==</span> <span class="n">_spectral_cache_key</span> <span class="ow">and</span> <span class="n">_spectral_cache</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_spectral_cache</span>
+
+    <span class="n">adj_sym</span> <span class="o">=</span> <span class="p">(</span><span class="n">adj</span> <span class="o">+</span> <span class="n">adj</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">compute_laplacian</span><span class="p">(</span><span class="n">adj_sym</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigendecomposition</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">gap_idx</span><span class="p">,</span> <span class="n">gap_size</span> <span class="o">=</span> <span class="n">find_spectral_gap</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="n">analyze_spectral_properties</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="p">)</span>
+    <span class="n">diff_dist</span> <span class="o">=</span> <span class="n">compute_diffusion_distance</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;bank_ids&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">_sim</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="s2">&quot;eigenvalues&quot;</span><span class="p">:</span> <span class="n">eigenvalues</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;gap_index&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">gap_idx</span><span class="p">),</span>
+        <span class="s2">&quot;gap_size&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">gap_size</span><span class="p">),</span>
+        <span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">props</span><span class="p">[</span><span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;spectral_radius&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">props</span><span class="p">[</span><span class="s2">&quot;spectral_radius&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;participation_ratios&quot;</span><span class="p">:</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;participation_ratios&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;diffusion_distance&quot;</span><span class="p">:</span> <span class="n">diff_dist</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+    <span class="p">}</span>
+    <span class="n">_spectral_cache_key</span> <span class="o">=</span> <span class="n">cache_key</span>
+    <span class="n">_spectral_cache</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="get_network_graph_data">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.get_network_graph_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_network_graph_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="n">bank_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_sim</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">_sim</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span><span class="o">.</span><span class="n">state</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">bid</span><span class="p">,</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">BANK_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="n">bid</span><span class="p">),</span>
+            <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="n">BANK_COUNTRIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;CET1_ratio&quot;</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s2">&quot;LCR&quot;</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s2">&quot;NSFR&quot;</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NSFR&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s2">&quot;total_assets&quot;</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total_assets&quot;</span><span class="p">,</span> <span class="mf">1e9</span><span class="p">),</span>
+            <span class="s2">&quot;solvent&quot;</span><span class="p">:</span> <span class="n">_sim</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span><span class="o">.</span><span class="n">assess_solvency</span><span class="p">(),</span>
+            <span class="s2">&quot;liquid&quot;</span><span class="p">:</span> <span class="n">_sim</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span><span class="o">.</span><span class="n">assess_liquidity</span><span class="p">(),</span>
+        <span class="p">})</span>
+
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">targets</span> <span class="ow">in</span> <span class="n">_sim</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="n">targets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">weight</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">weight</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="n">edges</span><span class="p">}</span></div>
+
+
+
+<span class="c1"># ── SCG helpers ─────────────────────────────────────────────────────────────</span>
+
+<span class="n">_scg_cache</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_scg_cache_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="get_coarse_grained_data">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.simulation_state.get_coarse_grained_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_coarse_grained_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run spectral coarse-graining on the current adjacency and return results.&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_scg_cache</span><span class="p">,</span> <span class="n">_scg_cache_key</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">_sim</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
+    <span class="n">cache_key</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">cache_key</span> <span class="o">==</span> <span class="n">_scg_cache_key</span> <span class="ow">and</span> <span class="n">_scg_cache</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_scg_cache</span>
+
+    <span class="n">bank_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_sim</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">scg</span> <span class="o">=</span> <span class="n">SpectralCoarseGraining</span><span class="o">.</span><span class="n">from_adjacency</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">bank_ids</span><span class="p">)</span>
+
+    <span class="c1"># Run pipeline</span>
+    <span class="n">scg</span><span class="o">.</span><span class="n">coarse_grain</span><span class="p">()</span>
+    <span class="n">scg</span><span class="o">.</span><span class="n">rescale</span><span class="p">()</span>
+    <span class="n">clusters</span> <span class="o">=</span> <span class="n">scg</span><span class="o">.</span><span class="n">identify_clusters</span><span class="p">()</span>
+    <span class="n">diffusion_errors</span> <span class="o">=</span> <span class="n">scg</span><span class="o">.</span><span class="n">compare_diffusion_dynamics</span><span class="p">(</span><span class="n">time_steps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+
+    <span class="c1"># Original eigenvalues for comparison</span>
+    <span class="n">orig_evals</span> <span class="o">=</span> <span class="n">scg</span><span class="o">.</span><span class="n">network_builder</span><span class="o">.</span><span class="n">eigenvalues</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="c1"># CG eigenvalues</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">la</span>
+    <span class="n">cg_evals</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">scg</span><span class="o">.</span><span class="n">coarse_grained_laplacian</span><span class="p">)</span>
+
+    <span class="c1"># CG adjacency as dense</span>
+    <span class="n">cg_adj</span> <span class="o">=</span> <span class="n">scg</span><span class="o">.</span><span class="n">coarse_grained_adjacency</span>
+
+    <span class="c1"># Cluster assignments</span>
+    <span class="n">cluster_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">bank_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> <span class="nb">int</span><span class="p">(</span><span class="n">clusters</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">))}</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;bank_ids&quot;</span><span class="p">:</span> <span class="n">bank_ids</span><span class="p">,</span>
+        <span class="s2">&quot;original_eigenvalues&quot;</span><span class="p">:</span> <span class="n">orig_evals</span><span class="p">,</span>
+        <span class="s2">&quot;cg_eigenvalues&quot;</span><span class="p">:</span> <span class="n">cg_evals</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;clusters&quot;</span><span class="p">:</span> <span class="n">cluster_map</span><span class="p">,</span>
+        <span class="s2">&quot;n_clusters&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">clusters</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;diffusion_errors&quot;</span><span class="p">:</span> <span class="n">diffusion_errors</span><span class="p">,</span>
+        <span class="s2">&quot;cg_adjacency&quot;</span><span class="p">:</span> <span class="n">cg_adj</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;cg_error&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">scg</span><span class="o">.</span><span class="n">compute_coarse_graining_error</span><span class="p">()),</span>
+    <span class="p">}</span>
+    <span class="n">_scg_cache_key</span> <span class="o">=</span> <span class="n">cache_key</span>
+    <span class="n">_scg_cache</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

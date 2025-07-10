@@ -1,0 +1,20 @@
+GNN Architecture
+================
+
+The temporal GNN predicts spectral properties from sequences of graph snapshots.
+
+.. code-block:: text
+
+   [GCNConv -> BatchNorm -> ReLU -> Dropout] x L layers
+       |
+   global_mean_pool -> graph embedding (per snapshot)
+       |
+   Stack T embeddings -> LSTM (M layers)
+       |
+   FC -> [lambda_2, spectral_gap, spectral_radius]
+
+Node features (per bank): volatility 30d, mean return 30d, log price, beta proxy, momentum 20d.
+
+Edge weights: Pearson correlation of daily returns (threshold 0.3).
+
+Training: MSE loss, Adam + cosine annealing, gradient clipping, chronological 80/20 split.

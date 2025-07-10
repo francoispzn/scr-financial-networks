@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dashboard.data_loader &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dashboard.data_loader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dashboard.data_loader</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Data loading bridge between the scr_financial data pipeline and the dashboard.</span>
+
+<span class="sd">Uses DataPreprocessor / EBACollector / ECBCollector / MarketDataCollector</span>
+<span class="sd">to build the dicts that BankingSystemSimulation expects.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.data.preprocessor</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPreprocessor</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Full bank universe supported by the collectors</span>
+<span class="n">ALL_BANKS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;DE_DBK&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_BNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ES_SAN&quot;</span><span class="p">,</span> <span class="s2">&quot;IT_UCG&quot;</span><span class="p">,</span> <span class="s2">&quot;NL_ING&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SE_NDA&quot;</span><span class="p">,</span> <span class="s2">&quot;CH_UBS&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_BARC&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_ACA&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">BANK_LABELS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;DE_DBK&quot;</span><span class="p">:</span>  <span class="s2">&quot;Deutsche Bank&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;FR_BNP&quot;</span><span class="p">:</span>  <span class="s2">&quot;BNP Paribas&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ES_SAN&quot;</span><span class="p">:</span>  <span class="s2">&quot;Santander&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IT_UCG&quot;</span><span class="p">:</span>  <span class="s2">&quot;UniCredit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NL_ING&quot;</span><span class="p">:</span>  <span class="s2">&quot;ING Group&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SE_NDA&quot;</span><span class="p">:</span>  <span class="s2">&quot;Nordea&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CH_UBS&quot;</span><span class="p">:</span>  <span class="s2">&quot;UBS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UK_BARC&quot;</span><span class="p">:</span> <span class="s2">&quot;Barclays&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">:</span> <span class="s2">&quot;HSBC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;FR_ACA&quot;</span><span class="p">:</span>  <span class="s2">&quot;Crédit Agricole&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">BANK_COUNTRIES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;DE_DBK&quot;</span><span class="p">:</span> <span class="s2">&quot;DE&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_BNP&quot;</span><span class="p">:</span> <span class="s2">&quot;FR&quot;</span><span class="p">,</span> <span class="s2">&quot;ES_SAN&quot;</span><span class="p">:</span> <span class="s2">&quot;ES&quot;</span><span class="p">,</span> <span class="s2">&quot;IT_UCG&quot;</span><span class="p">:</span> <span class="s2">&quot;IT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NL_ING&quot;</span><span class="p">:</span> <span class="s2">&quot;NL&quot;</span><span class="p">,</span> <span class="s2">&quot;SE_NDA&quot;</span><span class="p">:</span> <span class="s2">&quot;SE&quot;</span><span class="p">,</span> <span class="s2">&quot;CH_UBS&quot;</span><span class="p">:</span> <span class="s2">&quot;CH&quot;</span><span class="p">,</span> <span class="s2">&quot;UK_BARC&quot;</span><span class="p">:</span> <span class="s2">&quot;GB&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">:</span> <span class="s2">&quot;GB&quot;</span><span class="p">,</span> <span class="s2">&quot;FR_ACA&quot;</span><span class="p">:</span> <span class="s2">&quot;FR&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="load_simulation_inputs">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.data_loader.load_simulation_inputs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_simulation_inputs</span><span class="p">(</span>
+    <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;2020-01-01&quot;</span><span class="p">,</span>
+    <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;2024-12-31&quot;</span><span class="p">,</span>
+    <span class="n">bank_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">snapshot_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load bank data, network data, and system indicators from the data pipeline.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start_date, end_date : str</span>
+<span class="sd">        Date range for data collection (&#39;YYYY-MM-DD&#39;).</span>
+<span class="sd">    bank_list : list of str, optional</span>
+<span class="sd">        Bank IDs to include. Defaults to ALL_BANKS.</span>
+<span class="sd">    snapshot_date : str, optional</span>
+<span class="sd">        Date to take the snapshot at. Defaults to end_date.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bank_data : dict[bank_id -&gt; state dict]</span>
+<span class="sd">    network_data : dict[bank_id -&gt; {target_id: weight}]</span>
+<span class="sd">    system_indicators : dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">banks</span> <span class="o">=</span> <span class="n">bank_list</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
+    <span class="n">snap</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">snapshot_date</span> <span class="ow">or</span> <span class="n">end_date</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading data </span><span class="si">%s</span><span class="s2"> → </span><span class="si">%s</span><span class="s2">  snapshot=</span><span class="si">%s</span><span class="s2">  banks=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">snap</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span> <span class="n">banks</span><span class="p">)</span>
+
+    <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">DataPreprocessor</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">bank_list</span><span class="o">=</span><span class="n">banks</span><span class="p">)</span>
+
+    <span class="c1"># ── Node data ────────────────────────────────────────────────────────────</span>
+    <span class="n">preprocessor</span><span class="o">.</span><span class="n">load_bank_node_data</span><span class="p">({</span>
+        <span class="s2">&quot;solvency&quot;</span><span class="p">:</span>  <span class="s2">&quot;EBA_transparency&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;liquidity&quot;</span><span class="p">:</span> <span class="s2">&quot;EBA_aggregated&quot;</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="c1"># ── Edge data ────────────────────────────────────────────────────────────</span>
+    <span class="n">preprocessor</span><span class="o">.</span><span class="n">load_interbank_exposures</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;ECB_TARGET2&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ── System indicators ────────────────────────────────────────────────────</span>
+    <span class="n">preprocessor</span><span class="o">.</span><span class="n">load_system_indicators</span><span class="p">()</span>
+
+    <span class="c1"># ── Extract snapshot ─────────────────────────────────────────────────────</span>
+    <span class="n">tp</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">get_data_for_timepoint</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+
+    <span class="n">bank_data</span> <span class="o">=</span> <span class="n">_build_bank_data</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="n">banks</span><span class="p">)</span>
+    <span class="n">network_data</span> <span class="o">=</span> <span class="n">_build_network_data</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="n">banks</span><span class="p">)</span>
+    <span class="n">system_indicators</span> <span class="o">=</span> <span class="n">_build_system_indicators</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded </span><span class="si">%d</span><span class="s2"> banks, </span><span class="si">%d</span><span class="s2"> network edges, </span><span class="si">%d</span><span class="s2"> system indicators&quot;</span><span class="p">,</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">bank_data</span><span class="p">),</span>
+                <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">network_data</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">system_indicators</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">bank_data</span><span class="p">,</span> <span class="n">network_data</span><span class="p">,</span> <span class="n">system_indicators</span></div>
+
+
+
+<span class="c1"># ── Private helpers ──────────────────────────────────────────────────────────</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_bank_data</span><span class="p">(</span>
+    <span class="n">tp</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">banks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge solvency + liquidity node data into per-bank state dicts.&quot;&quot;&quot;</span>
+    <span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Solvency DataFrame (CET1, total_assets, …)</span>
+    <span class="n">sol_df</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="n">tp</span><span class="p">[</span><span class="s2">&quot;node_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solvency&quot;</span><span class="p">)</span>
+    <span class="c1"># Liquidity DataFrame (LCR, NSFR, …)</span>
+    <span class="n">liq_df</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="n">tp</span><span class="p">[</span><span class="s2">&quot;node_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;liquidity&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">bank_id</span> <span class="ow">in</span> <span class="n">banks</span><span class="p">:</span>
+        <span class="n">state</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">sol_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">sol_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sol_df</span><span class="o">.</span><span class="n">empty</span>
+        <span class="p">):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">sol_df</span><span class="p">[</span><span class="n">sol_df</span><span class="p">[</span><span class="s2">&quot;bank_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">bank_id</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sol_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">row</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">state</span><span class="p">[</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">))</span>
+                <span class="n">state</span><span class="p">[</span><span class="s2">&quot;total_assets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total_assets&quot;</span><span class="p">,</span> <span class="mf">1e12</span><span class="p">))</span>
+                <span class="n">state</span><span class="p">[</span><span class="s2">&quot;risk_weighted_assets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+                    <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;risk_weighted_assets&quot;</span><span class="p">,</span> <span class="mf">4e11</span><span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">liq_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">liq_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="n">liq_df</span><span class="o">.</span><span class="n">empty</span>
+        <span class="p">):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">liq_df</span><span class="p">[</span><span class="n">liq_df</span><span class="p">[</span><span class="s2">&quot;bank_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">bank_id</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">liq_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">row</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">state</span><span class="p">[</span><span class="s2">&quot;LCR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="mf">130.0</span><span class="p">))</span>
+                <span class="n">state</span><span class="p">[</span><span class="s2">&quot;NSFR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NSFR&quot;</span><span class="p">,</span> <span class="mf">110.0</span><span class="p">))</span>
+                <span class="n">state</span><span class="p">[</span><span class="s2">&quot;liquid_assets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;liquid_assets&quot;</span><span class="p">,</span> <span class="mf">1e11</span><span class="p">))</span>
+
+        <span class="c1"># Provide sensible defaults for anything still missing</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="mf">130.0</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;NSFR&quot;</span><span class="p">,</span> <span class="mf">110.0</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;total_assets&quot;</span><span class="p">,</span> <span class="mf">1e12</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;cash&quot;</span><span class="p">,</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;total_assets&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.12</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;interbank_assets&quot;</span><span class="p">,</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;total_assets&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.18</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;interbank_liabilities&quot;</span><span class="p">,</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;total_assets&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.16</span><span class="p">)</span>
+
+        <span class="n">bank_data</span><span class="p">[</span><span class="n">bank_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+
+    <span class="k">return</span> <span class="n">bank_data</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_network_data</span><span class="p">(</span>
+    <span class="n">tp</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">banks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert TARGET2 edge DataFrame into adjacency dict.&quot;&quot;&quot;</span>
+    <span class="n">network</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">banks</span><span class="p">}</span>
+    <span class="n">bank_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">banks</span><span class="p">)</span>
+
+    <span class="n">edge_df</span> <span class="o">=</span> <span class="n">tp</span><span class="p">[</span><span class="s2">&quot;edge_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;interbank_exposures&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">edge_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">edge_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="n">edge_df</span><span class="o">.</span><span class="n">empty</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">network</span>
+
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">edge_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">tgt</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">bank_set</span> <span class="ow">and</span> <span class="n">tgt</span> <span class="ow">in</span> <span class="n">bank_set</span> <span class="ow">and</span> <span class="n">src</span> <span class="o">!=</span> <span class="n">tgt</span> <span class="ow">and</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">network</span><span class="p">[</span><span class="n">src</span><span class="p">][</span><span class="n">tgt</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+
+    <span class="k">return</span> <span class="n">network</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_system_indicators</span><span class="p">(</span>
+    <span class="n">tp</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">preprocessor</span><span class="p">:</span> <span class="n">DataPreprocessor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract CISS and funding stress from system data.&quot;&quot;&quot;</span>
+    <span class="n">indicators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">ciss_data</span> <span class="o">=</span> <span class="n">tp</span><span class="p">[</span><span class="s2">&quot;system_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CISS&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ciss_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ciss_data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ciss_data</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;CISS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ciss_data</span><span class="p">[</span><span class="s2">&quot;CISS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ciss_data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+            <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;CISS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ciss_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CISS&quot;</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;CISS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;CISS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+    <span class="n">fs_data</span> <span class="o">=</span> <span class="n">tp</span><span class="p">[</span><span class="s2">&quot;system_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;funding_stress&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fs_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs_data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">fs_data</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">spread</span> <span class="o">=</span> <span class="n">fs_data</span><span class="p">[</span><span class="s2">&quot;LIBOR_OIS_spread&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;funding_stress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">spread</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;funding_stress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">indicators</span><span class="p">[</span><span class="s2">&quot;funding_stress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+    <span class="k">return</span> <span class="n">indicators</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

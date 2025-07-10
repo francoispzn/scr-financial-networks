@@ -1,0 +1,14 @@
+Installation
+============
+
+Prerequisites: Python 3.9+, Conda recommended.
+
+.. code-block:: bash
+
+   git clone https://github.com/francoispzn/scr-financial-networks.git
+   cd scr-financial-networks
+   conda env create -f environment.yml
+   conda activate systemic_risk
+   pip install -e .
+
+Dependencies: numpy, scipy, pandas, networkx, torch, torch-geometric, dash, plotly, yfinance.

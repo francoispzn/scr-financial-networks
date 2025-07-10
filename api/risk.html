@@ -1,0 +1,347 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Risk Metrics &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Collection" href="data.html" />
+    <link rel="prev" title="Machine Learning" href="ml.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ml.html">Machine Learning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Risk Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#scr_financial.risk.metrics.compute_var"><code class="docutils literal notranslate"><span class="pre">compute_var()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scr_financial.risk.metrics.compute_covar"><code class="docutils literal notranslate"><span class="pre">compute_covar()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scr_financial.risk.metrics.compute_delta_covar"><code class="docutils literal notranslate"><span class="pre">compute_delta_covar()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scr_financial.risk.metrics.compute_mes"><code class="docutils literal notranslate"><span class="pre">compute_mes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scr_financial.risk.metrics.compute_srisk"><code class="docutils literal notranslate"><span class="pre">compute_srisk()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scr_financial.risk.metrics.compute_system_risk_metrics"><code class="docutils literal notranslate"><span class="pre">compute_system_risk_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scr_financial.backtesting.engine">Backtesting Engine</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine"><code class="docutils literal notranslate"><span class="pre">BacktestEngine</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine.load_snapshots"><code class="docutils literal notranslate"><span class="pre">BacktestEngine.load_snapshots()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine.run_rolling"><code class="docutils literal notranslate"><span class="pre">BacktestEngine.run_rolling()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine.evaluate"><code class="docutils literal notranslate"><span class="pre">BacktestEngine.evaluate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine.to_dataframe"><code class="docutils literal notranslate"><span class="pre">BacktestEngine.to_dataframe()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Risk Metrics</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/risk.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-scr_financial.risk.metrics">
+<span id="risk-metrics"></span><h1>Risk Metrics<a class="headerlink" href="#module-scr_financial.risk.metrics" title="Link to this heading">¶</a></h1>
+<p>Systemic risk metrics: CoVaR, ΔCoVaR, MES, SRISK.</p>
+<p>These implement the standard tail-risk measures used as benchmarks against
+the Spectral Coarse-Graining (SCG) risk indicator.</p>
+<p class="rubric">References</p>
+<ul class="simple">
+<li><p>Adrian &amp; Brunnermeier (2016) — CoVaR</p></li>
+<li><p>Acharya et al. (2017) — MES / SRISK</p></li>
+</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.risk.metrics.compute_var">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.risk.metrics.</span></span><span class="sig-name descname"><span class="pre">compute_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/risk/metrics.html#compute_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.risk.metrics.compute_var" title="Link to this definition">¶</a></dt>
+<dd><p>Value-at-Risk at level alpha (left tail).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.risk.metrics.compute_covar">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.risk.metrics.</span></span><span class="sig-name descname"><span class="pre">compute_covar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/risk/metrics.html#compute_covar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.risk.metrics.compute_covar" title="Link to this definition">¶</a></dt>
+<dd><p>CoVaR: VaR of a bank conditional on the system being at its VaR.</p>
+<p>Uses the historical simulation approach: subset bank returns to periods
+where system return &lt;= system VaR, then take the alpha-quantile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bank_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>system_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.risk.metrics.compute_delta_covar">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.risk.metrics.</span></span><span class="sig-name descname"><span class="pre">compute_delta_covar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/risk/metrics.html#compute_delta_covar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.risk.metrics.compute_delta_covar" title="Link to this definition">¶</a></dt>
+<dd><p>ΔCoVaR: difference between CoVaR under stress and CoVaR at median.</p>
+<p>Positive ΔCoVaR means the bank contributes more risk when the system
+is stressed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bank_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>system_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.risk.metrics.compute_mes">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.risk.metrics.</span></span><span class="sig-name descname"><span class="pre">compute_mes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/risk/metrics.html#compute_mes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.risk.metrics.compute_mes" title="Link to this definition">¶</a></dt>
+<dd><p>Marginal Expected Shortfall: E[r_bank | r_system &lt; VaR_alpha(system)].</p>
+<p>Measures a bank’s expected loss conditional on a systemic tail event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bank_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>system_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.risk.metrics.compute_srisk">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.risk.metrics.</span></span><span class="sig-name descname"><span class="pre">compute_srisk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">liabilities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/risk/metrics.html#compute_srisk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.risk.metrics.compute_srisk" title="Link to this definition">¶</a></dt>
+<dd><p>SRISK: expected capital shortfall of a bank in a systemic crisis.</p>
+<p>SRISK = max(0, k*(equity + liabilities) - equity*(1 + MES))
+where k is the prudential capital ratio (default 8%).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>equity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>liabilities</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.risk.metrics.compute_system_risk_metrics">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.risk.metrics.</span></span><span class="sig-name descname"><span class="pre">compute_system_risk_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_returns_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/risk/metrics.html#compute_system_risk_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.risk.metrics.compute_system_risk_metrics" title="Link to this definition">¶</a></dt>
+<dd><p>Compute all risk metrics for a set of banks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bank_returns_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Maps bank_id → array of returns.</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Tail probability.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict mapping bank_id → {var, covar, delta_covar, mes}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="module-scr_financial.backtesting.engine">
+<span id="backtesting-engine"></span><h2>Backtesting Engine<a class="headerlink" href="#module-scr_financial.backtesting.engine" title="Link to this heading">¶</a></h2>
+<p>Rolling backtesting engine for SCG vs traditional risk metrics.</p>
+<p>Loads historical EBA snapshots, builds networks per quarter,
+computes SCG metrics alongside CoVaR/MES/Basel, and evaluates
+which model best predicts future bank distress.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.backtesting.engine.</span></span><span class="sig-name descname"><span class="pre">BacktestEngine</span></span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Rolling backtest comparing SCG, CoVaR, MES, and Basel risk indicators.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine.load_snapshots">
+<span class="sig-name descname"><span class="pre">load_snapshots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine.load_snapshots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine.load_snapshots" title="Link to this definition">¶</a></dt>
+<dd><p>Load quarterly EBA snapshots via the data loader.</p>
+<p>Returns the number of snapshots loaded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_year</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>end_year</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine.run_rolling">
+<span class="sig-name descname"><span class="pre">run_rolling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_quarters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine.run_rolling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine.run_rolling" title="Link to this definition">¶</a></dt>
+<dd><p>Run a rolling backtest across loaded snapshots.</p>
+<p>For each window, computes risk metrics at time t and checks
+whether stress materialised at t+step.</p>
+<p>Returns a DataFrame with per-quarter metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window_quarters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine.evaluate" title="Link to this definition">¶</a></dt>
+<dd><p>Evaluate predictive accuracy of each risk model.</p>
+<p>Returns a dict per model with correlation to future stress,
+and hit rate (did high risk precede stress increase?).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine.to_dataframe">
+<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine.to_dataframe" title="Link to this definition">¶</a></dt>
+<dd><p>Export results as a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ml.html" class="btn btn-neutral float-left" title="Machine Learning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="data.html" class="btn btn-neutral float-right" title="Data Collection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

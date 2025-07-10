@@ -1,0 +1,1017 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Spectral Coarse-Graining Theory" href="../theory/spectral_coarse_graining.html" />
+    <link rel="prev" title="Data Collection" href="data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Collection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dashboard</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-dashboard.data_loader">Data Loader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.data_loader.load_simulation_inputs"><code class="docutils literal notranslate"><span class="pre">load_simulation_inputs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dashboard.data_api">Data API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#correlation-based-edge-weights">Correlation-based edge weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.data_api.fetch_correlation_adjacency"><code class="docutils literal notranslate"><span class="pre">fetch_correlation_adjacency()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.data_api.fetch_bank_market_features"><code class="docutils literal notranslate"><span class="pre">fetch_bank_market_features()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.data_api.fetch_sovereign_spreads"><code class="docutils literal notranslate"><span class="pre">fetch_sovereign_spreads()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.data_api.fetch_system_indicators"><code class="docutils literal notranslate"><span class="pre">fetch_system_indicators()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.data_api.fetch_all"><code class="docutils literal notranslate"><span class="pre">fetch_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.data_api.build_simulation_inputs_from_api"><code class="docutils literal notranslate"><span class="pre">build_simulation_inputs_from_api()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.data_api.build_daily_graph_snapshots"><code class="docutils literal notranslate"><span class="pre">build_daily_graph_snapshots()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dashboard.prediction">Prediction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.prediction.generate_evolution_data"><code class="docutils literal notranslate"><span class="pre">generate_evolution_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.prediction.train_predictor"><code class="docutils literal notranslate"><span class="pre">train_predictor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.prediction.compute_scg_reconstruction_accuracy"><code class="docutils literal notranslate"><span class="pre">compute_scg_reconstruction_accuracy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.prediction.build_scg_vs_basel_comparison"><code class="docutils literal notranslate"><span class="pre">build_scg_vs_basel_comparison()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dashboard.gnn_export">GNN Export</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.gnn_export.build_graph_tensors"><code class="docutils literal notranslate"><span class="pre">build_graph_tensors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.gnn_export.build_and_export"><code class="docutils literal notranslate"><span class="pre">build_and_export()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dashboard.simulation_state">Simulation State</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.get_data_source"><code class="docutils literal notranslate"><span class="pre">get_data_source()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.reload_data"><code class="docutils literal notranslate"><span class="pre">reload_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.load_from_data"><code class="docutils literal notranslate"><span class="pre">load_from_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.reset_simulation"><code class="docutils literal notranslate"><span class="pre">reset_simulation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.get_simulation"><code class="docutils literal notranslate"><span class="pre">get_simulation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.run_steps"><code class="docutils literal notranslate"><span class="pre">run_steps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.apply_shock"><code class="docutils literal notranslate"><span class="pre">apply_shock()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.apply_shock_and_record"><code class="docutils literal notranslate"><span class="pre">apply_shock_and_record()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.apply_llm_bank_data"><code class="docutils literal notranslate"><span class="pre">apply_llm_bank_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.get_spectral_data"><code class="docutils literal notranslate"><span class="pre">get_spectral_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.get_network_graph_data"><code class="docutils literal notranslate"><span class="pre">get_network_graph_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.simulation_state.get_coarse_grained_data"><code class="docutils literal notranslate"><span class="pre">get_coarse_grained_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dashboard.api">REST API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#endpoints">Endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.RunRequest"><code class="docutils literal notranslate"><span class="pre">RunRequest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.RunRequest.steps"><code class="docutils literal notranslate"><span class="pre">RunRequest.steps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.RunRequest.shock_scenario"><code class="docutils literal notranslate"><span class="pre">RunRequest.shock_scenario</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.RunRequest.model_config"><code class="docutils literal notranslate"><span class="pre">RunRequest.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.ShockRequest"><code class="docutils literal notranslate"><span class="pre">ShockRequest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.ShockRequest.scenario"><code class="docutils literal notranslate"><span class="pre">ShockRequest.scenario</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.ShockRequest.custom_params"><code class="docutils literal notranslate"><span class="pre">ShockRequest.custom_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.ShockRequest.model_config"><code class="docutils literal notranslate"><span class="pre">ShockRequest.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.ReloadRequest"><code class="docutils literal notranslate"><span class="pre">ReloadRequest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.ReloadRequest.start_date"><code class="docutils literal notranslate"><span class="pre">ReloadRequest.start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.ReloadRequest.end_date"><code class="docutils literal notranslate"><span class="pre">ReloadRequest.end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.ReloadRequest.bank_list"><code class="docutils literal notranslate"><span class="pre">ReloadRequest.bank_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.ReloadRequest.snapshot_date"><code class="docutils literal notranslate"><span class="pre">ReloadRequest.snapshot_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.ReloadRequest.model_config"><code class="docutils literal notranslate"><span class="pre">ReloadRequest.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.LLMRequest"><code class="docutils literal notranslate"><span class="pre">LLMRequest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.LLMRequest.model"><code class="docutils literal notranslate"><span class="pre">LLMRequest.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.LLMRequest.api_key"><code class="docutils literal notranslate"><span class="pre">LLMRequest.api_key</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dashboard.api.LLMRequest.model_config"><code class="docutils literal notranslate"><span class="pre">LLMRequest.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.health"><code class="docutils literal notranslate"><span class="pre">health()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.get_state"><code class="docutils literal notranslate"><span class="pre">get_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.run_simulation"><code class="docutils literal notranslate"><span class="pre">run_simulation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.apply_shock"><code class="docutils literal notranslate"><span class="pre">apply_shock()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.reset"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.reload_data"><code class="docutils literal notranslate"><span class="pre">reload_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.get_spectral"><code class="docutils literal notranslate"><span class="pre">get_spectral()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.list_scenarios"><code class="docutils literal notranslate"><span class="pre">list_scenarios()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dashboard.api.llm_analysis"><code class="docutils literal notranslate"><span class="pre">llm_analysis()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Dashboard</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/dashboard.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dashboard">
+<h1>Dashboard<a class="headerlink" href="#dashboard" title="Link to this heading">¶</a></h1>
+<section id="module-dashboard.data_loader">
+<span id="data-loader"></span><h2>Data Loader<a class="headerlink" href="#module-dashboard.data_loader" title="Link to this heading">¶</a></h2>
+<p>Data loading bridge between the scr_financial data pipeline and the dashboard.</p>
+<p>Uses DataPreprocessor / EBACollector / ECBCollector / MarketDataCollector
+to build the dicts that BankingSystemSimulation expects.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.data_loader.load_simulation_inputs">
+<span class="sig-prename descclassname"><span class="pre">dashboard.data_loader.</span></span><span class="sig-name descname"><span class="pre">load_simulation_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2020-01-01'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2024-12-31'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/data_loader.html#load_simulation_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.data_loader.load_simulation_inputs" title="Link to this definition">¶</a></dt>
+<dd><p>Load bank data, network data, and system indicators from the data pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Date range for data collection (‘YYYY-MM-DD’).</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Date range for data collection (‘YYYY-MM-DD’).</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Bank IDs to include. Defaults to ALL_BANKS.</p></li>
+<li><p><strong>snapshot_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Date to take the snapshot at. Defaults to end_date.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>bank_data</strong> (<em>dict[bank_id -&gt; state dict]</em>)</p></li>
+<li><p><strong>network_data</strong> (<em>dict[bank_id -&gt; {target_id: weight}]</em>)</p></li>
+<li><p><strong>system_indicators</strong> (<em>dict</em>)</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><em>Tuple</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dashboard.data_api">
+<span id="data-api"></span><h2>Data API<a class="headerlink" href="#module-dashboard.data_api" title="Link to this heading">¶</a></h2>
+<p>Fast, API-based financial data fetcher for the SCR dashboard.</p>
+<p>Data sources (no LLM required for any of these):</p>
+<blockquote>
+<div><dl class="simple">
+<dt>yfinance     — bank stock prices, return correlations (→ adjacency matrix A),</dt><dd><p>market cap, balance sheet financials (total assets, equity)</p>
+</dd>
+<dt>ECB SDW      — sovereign bond yields (IT, DE, FR, ES, NL, SE),</dt><dd><p>EUR/USD rate, ECB deposit facility rate</p>
+</dd>
+</dl>
+<p>FRED         — TED spread, VIX (systemic stress proxies)</p>
+</div></blockquote>
+<section id="correlation-based-edge-weights">
+<h3>Correlation-based edge weights<a class="headerlink" href="#correlation-based-edge-weights" title="Link to this heading">¶</a></h3>
+<p>As per the SCG proposal (§2.1), edges are defined by the Pearson correlation
+of bank stock daily returns over a rolling window. This is real, daily data
+that is:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Updated automatically every trading day</p></li>
+<li><p>Directly computable without regulatory disclosures</p></li>
+<li><p>Already used in the SCG literature (Mantegna 1999, Tumminello 2007)</p></li>
+</ul>
+</div></blockquote>
+<p>All network fetches are parallelised via ThreadPoolExecutor for speed.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.data_api.fetch_correlation_adjacency">
+<span class="sig-prename descclassname"><span class="pre">dashboard.data_api.</span></span><span class="sig-name descname"><span class="pre">fetch_correlation_adjacency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">252</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_corr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pmfg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/data_api.html#fetch_correlation_adjacency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.data_api.fetch_correlation_adjacency" title="Link to this definition">¶</a></dt>
+<dd><p>Build the correlation-based adjacency matrix from daily bank stock returns.</p>
+<p>As per §2.1 of the SCG proposal: edges are Pearson correlations of returns.
+Weak edges (&lt; min_corr) are removed (threshold filtering, §2.3).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bank_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>bank IDs to include</em><em> (</em><em>defaults to all 10</em><em>)</em>)</p></li>
+<li><p><strong>window_days</strong> (<em>rolling return window in trading days</em>)</p></li>
+<li><p><strong>min_corr</strong> (<em>threshold below which edges are zeroed out</em>)</p></li>
+<li><p><strong>pmfg</strong> (<em>if True</em><em>, </em><em>apply Planar Maximally Filtered Graph</em><em> (</em><em>slower but cleaner</em><em>)</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dict  {source_id</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>{target_id: weight}}  — upper-triangular correlation weights</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.data_api.fetch_bank_market_features">
+<span class="sig-prename descclassname"><span class="pre">dashboard.data_api.</span></span><span class="sig-name descname"><span class="pre">fetch_bank_market_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/data_api.html#fetch_bank_market_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.data_api.fetch_bank_market_features" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch per-bank market and fundamental features from yfinance in parallel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>dict  {bank_id</strong> (<em>{feature: value}}</em>)</p></li>
+<li><p><em>Features available</em> – market_cap, total_assets, common_equity, roe, price_to_book, beta,
+shares_outstanding, latest_price, 1y_return, volatility_30d</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bank_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.data_api.fetch_sovereign_spreads">
+<span class="sig-prename descclassname"><span class="pre">dashboard.data_api.</span></span><span class="sig-name descname"><span class="pre">fetch_sovereign_spreads</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/data_api.html#fetch_sovereign_spreads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.data_api.fetch_sovereign_spreads" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch 10Y sovereign bond yields from ECB SDW and compute IT-DE spread
+as a systemic stress proxy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dict  {country</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>latest_yield_pct, …, ‘IT_DE_spread’: float, ‘ES_DE_spread’: float}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.data_api.fetch_system_indicators">
+<span class="sig-prename descclassname"><span class="pre">dashboard.data_api.</span></span><span class="sig-name descname"><span class="pre">fetch_system_indicators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/data_api.html#fetch_system_indicators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.data_api.fetch_system_indicators" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch system-level stress indicators from free public APIs in parallel.</p>
+<dl class="simple">
+<dt>Returns a dict suitable for BankingSystemSimulation.system_indicators:</dt><dd><p>CISS          — derived from IT-DE spread and bank volatility
+funding_stress — from bank stock volatility index
+sovereign_stress — IT-DE 10Y spread
+eurusd        — EUR/USD rate</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.data_api.fetch_all">
+<span class="sig-prename descclassname"><span class="pre">dashboard.data_api.</span></span><span class="sig-name descname"><span class="pre">fetch_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">252</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_corr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/data_api.html#fetch_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.data_api.fetch_all" title="Link to this definition">¶</a></dt>
+<dd><p>Full parallel fetch: adjacency matrix + node features + system indicators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>adjacency      : {src: {tgt: weight}}
+bank_features  : {bank_id: {feature: value}}
+system         : {indicator: value}
+prices         : pd.DataFrame  (daily close prices)
+timestamp      : str  (UTC ISO)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict with keys</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bank_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>correlation_window</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>min_corr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.data_api.build_simulation_inputs_from_api">
+<span class="sig-prename descclassname"><span class="pre">dashboard.data_api.</span></span><span class="sig-name descname"><span class="pre">build_simulation_inputs_from_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">252</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_corr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/data_api.html#build_simulation_inputs_from_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.data_api.build_simulation_inputs_from_api" title="Link to this definition">¶</a></dt>
+<dd><p>Build (bank_data, network_data, system_indicators) directly from market APIs.</p>
+<p>Same output format as <code class="docutils literal notranslate"><span class="pre">data_loader.load_simulation_inputs</span></code> — can be used
+as a drop-in replacement when live data is preferred over the EBA pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bank_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>correlation_window</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>min_corr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><em>Tuple</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.data_api.build_daily_graph_snapshots">
+<span class="sig-prename descclassname"><span class="pre">dashboard.data_api.</span></span><span class="sig-name descname"><span class="pre">build_daily_graph_snapshots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookback_years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_corr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/data_api.html#build_daily_graph_snapshots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.data_api.build_daily_graph_snapshots" title="Link to this definition">¶</a></dt>
+<dd><p>Build daily graph snapshots from historical market data for GNN training.</p>
+<p>Fetches multi-year daily prices once, then rolls through each trading day
+constructing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Node features: [N, 5] per bank (volatility, return, log-price, beta_proxy, momentum)</p></li>
+<li><p>Edge index + weight: from rolling correlation of returns</p></li>
+<li><p>Spectral targets: lambda_2, spectral_gap, spectral_radius from the day’s graph</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lookback_years</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – How many years of history to fetch (default 3 → ~750 trading days).</p></li>
+<li><p><strong>corr_window</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Rolling window for correlation-based adjacency (trading days).</p></li>
+<li><p><strong>min_corr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Threshold for edge inclusion.</p></li>
+<li><p><strong>stride</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Step between consecutive snapshots (1 = every day, 5 = weekly).</p></li>
+<li><p><strong>progress_callback</strong> (<em>callable</em><em>(</em><em>current</em><em>, </em><em>total</em><em>)</em>) – For UI progress updates.</p></li>
+<li><p><strong>bank_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a> of snapshot dicts compatible with GNNPredictor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dashboard.prediction">
+<span id="prediction"></span><h2>Prediction<a class="headerlink" href="#module-dashboard.prediction" title="Link to this heading">¶</a></h2>
+<p>Prediction helpers for the Evolution page.</p>
+<p>Generates GNN training data from real daily market snapshots (yfinance),
+trains the GNNPredictor (temporal GCN+LSTM), and builds SCG-vs-Basel comparison data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.prediction.generate_evolution_data">
+<span class="sig-prename descclassname"><span class="pre">dashboard.prediction.</span></span><span class="sig-name descname"><span class="pre">generate_evolution_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'market'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/prediction.html#generate_evolution_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.prediction.generate_evolution_data" title="Link to this definition">¶</a></dt>
+<dd><p>Generate graph snapshots for GNN training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – For ‘abm’ source: number of ABM steps.
+For ‘market’ source: ignored (uses all available daily data).</p></li>
+<li><p><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – ‘market’ — real daily data from yfinance (default, recommended)
+‘abm’ — stochastic ABM simulation</p></li>
+<li><p><strong>corr_window</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Rolling correlation window for market data (trading days).</p></li>
+<li><p><strong>stride</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Day stride for market snapshots (1=daily, 5=weekly).</p></li>
+<li><p><strong>progress_callback</strong> (<em>callable</em><em>(</em><em>current</em><em>, </em><em>total</em><em>)</em>) – For UI progress updates.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.prediction.train_predictor">
+<span class="sig-prename descclassname"><span class="pre">dashboard.prediction.</span></span><span class="sig-name descname"><span class="pre">train_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapshots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_gcn_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_lstm_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/prediction.html#train_predictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.prediction.train_predictor" title="Link to this definition">¶</a></dt>
+<dd><p>Train a GNNPredictor on graph snapshots.</p>
+<p>Returns (predictor, train_metrics, test_metrics).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>snapshots</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_gcn_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_lstm_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>progress_callback</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><em>Callable</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.prediction.compute_scg_reconstruction_accuracy">
+<span class="sig-prename descclassname"><span class="pre">dashboard.prediction.</span></span><span class="sig-name descname"><span class="pre">compute_scg_reconstruction_accuracy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/prediction.html#compute_scg_reconstruction_accuracy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.prediction.compute_scg_reconstruction_accuracy" title="Link to this definition">¶</a></dt>
+<dd><p>Run the full SCG pipeline on the current adjacency and return reconstruction accuracy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.prediction.build_scg_vs_basel_comparison">
+<span class="sig-prename descclassname"><span class="pre">dashboard.prediction.</span></span><span class="sig-name descname"><span class="pre">build_scg_vs_basel_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_history</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/prediction.html#build_scg_vs_basel_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.prediction.build_scg_vs_basel_comparison" title="Link to this definition">¶</a></dt>
+<dd><p>Build SCG risk score vs Basel + CoVaR + MES per step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feature_history</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dashboard.gnn_export">
+<span id="gnn-export"></span><h2>GNN Export<a class="headerlink" href="#module-dashboard.gnn_export" title="Link to this heading">¶</a></h2>
+<p>GNN dataset exporter for the SCR Financial Networks dashboard.</p>
+<p>Builds a graph dataset from the current simulation state + LLM-fetched bank
+features and writes it to disk in multiple formats:</p>
+<blockquote>
+<div><p>nodes.csv          — node feature matrix (one row per bank)
+edges.csv          — directed edge list with weights
+graph_data.json    — full graph as JSON (PyG-loadable via custom loader)
+pyg_data.pt        — torch_geometric.data.Data object (if PyG installed)
+metadata.json      — feature names, bank labels, dataset provenance</p>
+</div></blockquote>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.gnn_export</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_and_export</span>
+<span class="n">info</span> <span class="o">=</span> <span class="n">build_and_export</span><span class="p">(</span><span class="n">gnn_features</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;data/gnn_datasets&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.gnn_export.build_graph_tensors">
+<span class="sig-prename descclassname"><span class="pre">dashboard.gnn_export.</span></span><span class="sig-name descname"><span class="pre">build_graph_tensors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_cols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/gnn_export.html#build_graph_tensors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.gnn_export.build_graph_tensors" title="Link to this definition">¶</a></dt>
+<dd><p>Convert node/edge dicts into numpy arrays ready for GNN consumption.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>X</strong> (<em>float32 [N, F]  — node feature matrix (NaN-imputed with column mean)</em>)</p></li>
+<li><p><strong>edge_index</strong> (<em>int64   [2, E]  — source/target index pairs</em>)</p></li>
+<li><p><strong>edge_attr</strong> (<em>float32 [E, 1]  — edge weight (normalised 0-1)</em>)</p></li>
+<li><p><strong>y</strong> (<em>int64   [N, 2]  — binary labels [solvent, liquid]</em>)</p></li>
+<li><p><strong>feat_names</strong> (<em>list[str]       — feature column names (matches X columns)</em>)</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>bank_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
+<li><p><strong>node_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>edges</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>feature_cols</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><em>Tuple</em></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.gnn_export.build_and_export">
+<span class="sig-prename descclassname"><span class="pre">dashboard.gnn_export.</span></span><span class="sig-name descname"><span class="pre">build_and_export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gnn_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/gnn_datasets'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/gnn_export.html#build_and_export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.gnn_export.build_and_export" title="Link to this definition">¶</a></dt>
+<dd><p>Build a GNN dataset from LLM-fetched features + simulation graph and save
+it to <em>output_dir</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gnn_features</strong> (<em>{bank_id: {feature: value}}</em>) – Output of <code class="docutils literal notranslate"><span class="pre">fetch_bank_features_for_gnn()</span></code>.</p></li>
+<li><p><strong>sim_graph</strong> (<em>{nodes:</em><em> [</em><em>...</em><em>]</em><em>, </em><em>edges:</em><em> [</em><em>...</em><em>]</em><em>}</em>) – Output of <code class="docutils literal notranslate"><span class="pre">simulation_state.get_network_graph_data()</span></code>.</p></li>
+<li><p><strong>output_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Directory to write dataset files into.</p></li>
+<li><p><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Short label for the export (used in filenames). Defaults to a timestamp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dict with keys</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>output_dir, files, n_nodes, n_edges, n_features, timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dashboard.simulation_state">
+<span id="simulation-state"></span><h2>Simulation State<a class="headerlink" href="#module-dashboard.simulation_state" title="Link to this heading">¶</a></h2>
+<p>Global simulation state for the dashboard.</p>
+<p>Builds the BankingSystemSimulation from the live data pipeline
+(EBACollector → ECBCollector → DataPreprocessor) rather than any
+hard-coded demo values.  Thread safety is achieved via a module-level lock.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.get_data_source">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">get_data_source</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#get_data_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.get_data_source" title="Link to this definition">¶</a></dt>
+<dd><p>Return ‘API’ or ‘EBA’ depending on how data was loaded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.get_config">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.get_config" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.reload_data">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">reload_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#reload_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.reload_data" title="Link to this definition">¶</a></dt>
+<dd><p>Re-fetch data from the pipeline with updated parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>snapshot_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.load_from_data">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">load_from_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_indicators</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#load_from_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.load_from_data" title="Link to this definition">¶</a></dt>
+<dd><p>Replace simulation state with externally-fetched data (e.g. from data_api).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bank_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p></li>
+<li><p><strong>network_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>system_indicators</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.reset_simulation">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">reset_simulation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#reset_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.reset_simulation" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the ABM to the loaded data snapshot without re-fetching.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.get_simulation">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">get_simulation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#get_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.get_simulation" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="abm.html#scr_financial.abm.simulation.BankingSystemSimulation" title="scr_financial.abm.simulation.BankingSystemSimulation"><em>BankingSystemSimulation</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.run_steps">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">run_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#run_steps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.run_steps" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>shocks</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.apply_shock">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">apply_shock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shock_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#apply_shock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.apply_shock" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.apply_shock_and_record">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">apply_shock_and_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shock_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#apply_shock_and_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.apply_shock_and_record" title="Link to this definition">¶</a></dt>
+<dd><p>Apply shock, record state immediately, return full history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>shock_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.apply_llm_bank_data">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">apply_llm_bank_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#apply_llm_bank_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.apply_llm_bank_data" title="Link to this definition">¶</a></dt>
+<dd><p>Overwrite bank states with data fetched by the LLM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bank_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.get_spectral_data">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">get_spectral_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#get_spectral_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.get_spectral_data" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.get_network_graph_data">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">get_network_graph_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#get_network_graph_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.get_network_graph_data" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.simulation_state.get_coarse_grained_data">
+<span class="sig-prename descclassname"><span class="pre">dashboard.simulation_state.</span></span><span class="sig-name descname"><span class="pre">get_coarse_grained_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/simulation_state.html#get_coarse_grained_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.simulation_state.get_coarse_grained_data" title="Link to this definition">¶</a></dt>
+<dd><p>Run spectral coarse-graining on the current adjacency and return results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dashboard.api">
+<span id="rest-api"></span><h2>REST API<a class="headerlink" href="#module-dashboard.api" title="Link to this heading">¶</a></h2>
+<p>FastAPI backend for the SCR Financial Networks dashboard.</p>
+<section id="endpoints">
+<h3>Endpoints<a class="headerlink" href="#endpoints" title="Link to this heading">¶</a></h3>
+<p>GET  /health                   — liveness probe
+GET  /simulation/state         — current bank + system state
+POST /simulation/run           — run N steps
+POST /simulation/shock         — apply a named or custom shock
+POST /simulation/reset         — reset to initial state
+GET  /spectral                 — full spectral analysis
+POST /analysis/llm             — LLM narrative analysis</p>
+<p>Run with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uvicorn</span> <span class="n">dashboard</span><span class="o">.</span><span class="n">api</span><span class="p">:</span><span class="n">app</span> <span class="o">--</span><span class="n">reload</span> <span class="o">--</span><span class="n">port</span> <span class="mi">8000</span>
+</pre></div>
+</div>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="dashboard.api.RunRequest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">RunRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shock_scenario</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#RunRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.RunRequest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>shock_scenario</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.RunRequest.steps">
+<span class="sig-name descname"><span class="pre">steps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><a class="headerlink" href="#dashboard.api.RunRequest.steps" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.RunRequest.shock_scenario">
+<span class="sig-name descname"><span class="pre">shock_scenario</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#dashboard.api.RunRequest.shock_scenario" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.RunRequest.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#dashboard.api.RunRequest.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dashboard.api.ShockRequest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">ShockRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#ShockRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.ShockRequest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>custom_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.ShockRequest.scenario">
+<span class="sig-name descname"><span class="pre">scenario</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#dashboard.api.ShockRequest.scenario" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.ShockRequest.custom_params">
+<span class="sig-name descname"><span class="pre">custom_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#dashboard.api.ShockRequest.custom_params" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.ShockRequest.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#dashboard.api.ShockRequest.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dashboard.api.ReloadRequest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">ReloadRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2020-01-01'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2024-12-31'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#ReloadRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.ReloadRequest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>bank_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>snapshot_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.ReloadRequest.start_date">
+<span class="sig-name descname"><span class="pre">start_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#dashboard.api.ReloadRequest.start_date" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.ReloadRequest.end_date">
+<span class="sig-name descname"><span class="pre">end_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#dashboard.api.ReloadRequest.end_date" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.ReloadRequest.bank_list">
+<span class="sig-name descname"><span class="pre">bank_list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#dashboard.api.ReloadRequest.bank_list" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.ReloadRequest.snapshot_date">
+<span class="sig-name descname"><span class="pre">snapshot_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#dashboard.api.ReloadRequest.snapshot_date" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.ReloadRequest.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#dashboard.api.ReloadRequest.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dashboard.api.LLMRequest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">LLMRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#LLMRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.LLMRequest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>api_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.LLMRequest.model">
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#dashboard.api.LLMRequest.model" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.LLMRequest.api_key">
+<span class="sig-name descname"><span class="pre">api_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#dashboard.api.LLMRequest.api_key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dashboard.api.LLMRequest.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#dashboard.api.LLMRequest.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.health">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">health</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.health" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.get_state">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.get_state" title="Link to this definition">¶</a></dt>
+<dd><p>Return current bank states, system metrics, and network graph data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.run_simulation">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">run_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">req</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#run_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.run_simulation" title="Link to this definition">¶</a></dt>
+<dd><p>Run the simulation for <em>steps</em> steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>req</strong> (<a class="reference internal" href="#dashboard.api.RunRequest" title="dashboard.api.RunRequest"><em>RunRequest</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.apply_shock">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">apply_shock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">req</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#apply_shock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.apply_shock" title="Link to this definition">¶</a></dt>
+<dd><p>Apply a named or custom shock to the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>req</strong> (<a class="reference internal" href="#dashboard.api.ShockRequest" title="dashboard.api.ShockRequest"><em>ShockRequest</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.reset">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.reset" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.reload_data">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">reload_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">req</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#reload_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.reload_data" title="Link to this definition">¶</a></dt>
+<dd><p>Re-fetch data from the pipeline with updated parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>req</strong> (<a class="reference internal" href="#dashboard.api.ReloadRequest" title="dashboard.api.ReloadRequest"><em>ReloadRequest</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.get_config">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.get_config" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.get_spectral">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">get_spectral</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#get_spectral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.get_spectral" title="Link to this definition">¶</a></dt>
+<dd><p>Return full spectral analysis of the current network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.list_scenarios">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">list_scenarios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#list_scenarios"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.list_scenarios" title="Link to this definition">¶</a></dt>
+<dd><p>List available shock scenarios.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dashboard.api.llm_analysis">
+<span class="sig-prename descclassname"><span class="pre">dashboard.api.</span></span><span class="sig-name descname"><span class="pre">llm_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">req</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dashboard/api.html#llm_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dashboard.api.llm_analysis" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a narrative analysis of the current state using Cerebras LLM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>req</strong> (<a class="reference internal" href="#dashboard.api.LLMRequest" title="dashboard.api.LLMRequest"><em>LLMRequest</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="data.html" class="btn btn-neutral float-left" title="Data Collection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../theory/spectral_coarse_graining.html" class="btn btn-neutral float-right" title="Spectral Coarse-Graining Theory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1015 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Machine Learning &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Risk Metrics" href="risk.html" />
+    <link rel="prev" title="Spectral Analysis" href="spectral.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Machine Learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-scr_financial.ml.gnn_predictor">GNN Predictor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.GNNEncoder"><code class="docutils literal notranslate"><span class="pre">GNNEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.GNNEncoder.forward"><code class="docutils literal notranslate"><span class="pre">GNNEncoder.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.TemporalGNN"><code class="docutils literal notranslate"><span class="pre">TemporalGNN</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.TemporalGNN.forward"><code class="docutils literal notranslate"><span class="pre">TemporalGNN.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.TemporalGNN.count_parameters"><code class="docutils literal notranslate"><span class="pre">TemporalGNN.count_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.GNNPredictor"><code class="docutils literal notranslate"><span class="pre">GNNPredictor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.GNNPredictor.extract_graph_snapshot"><code class="docutils literal notranslate"><span class="pre">GNNPredictor.extract_graph_snapshot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.GNNPredictor.extract_features"><code class="docutils literal notranslate"><span class="pre">GNNPredictor.extract_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.GNNPredictor.train"><code class="docutils literal notranslate"><span class="pre">GNNPredictor.train()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.gnn_predictor.GNNPredictor.predict"><code class="docutils literal notranslate"><span class="pre">GNNPredictor.predict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scr_financial.ml.scg_predictor">SCG Predictor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.scg_predictor.SCGPredictor"><code class="docutils literal notranslate"><span class="pre">SCGPredictor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.scg_predictor.SCGPredictor.extract_features"><code class="docutils literal notranslate"><span class="pre">SCGPredictor.extract_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.scg_predictor.SCGPredictor.build_training_data"><code class="docutils literal notranslate"><span class="pre">SCGPredictor.build_training_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.scg_predictor.SCGPredictor.train"><code class="docutils literal notranslate"><span class="pre">SCGPredictor.train()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.scg_predictor.SCGPredictor.predict"><code class="docutils literal notranslate"><span class="pre">SCGPredictor.predict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scr_financial.ml.predictors">Base Predictors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.method"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor.method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.model"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.scaler_X"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor.scaler_X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.scaler_y"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor.scaler_y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.__init__"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.prepare_features"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor.prepare_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.fit"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.predict"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.predict_network_evolution"><code class="docutils literal notranslate"><span class="pre">NetworkPredictor.predict_network_evolution()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor"><code class="docutils literal notranslate"><span class="pre">MarketPredictor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor.model"><code class="docutils literal notranslate"><span class="pre">MarketPredictor.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor.scaler_X"><code class="docutils literal notranslate"><span class="pre">MarketPredictor.scaler_X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor.scaler_y"><code class="docutils literal notranslate"><span class="pre">MarketPredictor.scaler_y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor.seq_length"><code class="docutils literal notranslate"><span class="pre">MarketPredictor.seq_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor.__init__"><code class="docutils literal notranslate"><span class="pre">MarketPredictor.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor.prepare_sequences"><code class="docutils literal notranslate"><span class="pre">MarketPredictor.prepare_sequences()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor.train"><code class="docutils literal notranslate"><span class="pre">MarketPredictor.train()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor.predict"><code class="docutils literal notranslate"><span class="pre">MarketPredictor.predict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.predictors.LSTMPredictor"><code class="docutils literal notranslate"><span class="pre">LSTMPredictor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.LSTMPredictor.hidden_dim"><code class="docutils literal notranslate"><span class="pre">LSTMPredictor.hidden_dim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.LSTMPredictor.num_layers"><code class="docutils literal notranslate"><span class="pre">LSTMPredictor.num_layers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.LSTMPredictor.lstm"><code class="docutils literal notranslate"><span class="pre">LSTMPredictor.lstm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.LSTMPredictor.fc"><code class="docutils literal notranslate"><span class="pre">LSTMPredictor.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.LSTMPredictor.__init__"><code class="docutils literal notranslate"><span class="pre">LSTMPredictor.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.predictors.LSTMPredictor.forward"><code class="docutils literal notranslate"><span class="pre">LSTMPredictor.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-scr_financial.ml.sentiment_model">Sentiment Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel"><code class="docutils literal notranslate"><span class="pre">LSTMSentimentModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.hidden_dim"><code class="docutils literal notranslate"><span class="pre">LSTMSentimentModel.hidden_dim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.num_layers"><code class="docutils literal notranslate"><span class="pre">LSTMSentimentModel.num_layers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.lstm"><code class="docutils literal notranslate"><span class="pre">LSTMSentimentModel.lstm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.dropout"><code class="docutils literal notranslate"><span class="pre">LSTMSentimentModel.dropout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.fc"><code class="docutils literal notranslate"><span class="pre">LSTMSentimentModel.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.__init__"><code class="docutils literal notranslate"><span class="pre">LSTMSentimentModel.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.forward"><code class="docutils literal notranslate"><span class="pre">LSTMSentimentModel.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.sentiment_model.prepare_sentiment_data"><code class="docutils literal notranslate"><span class="pre">prepare_sentiment_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.sentiment_model.train_sentiment_model"><code class="docutils literal notranslate"><span class="pre">train_sentiment_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scr_financial.ml.sentiment_model.predict_sentiment"><code class="docutils literal notranslate"><span class="pre">predict_sentiment()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Machine Learning</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/ml.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="machine-learning">
+<h1>Machine Learning<a class="headerlink" href="#machine-learning" title="Link to this heading">¶</a></h1>
+<section id="module-scr_financial.ml.gnn_predictor">
+<span id="gnn-predictor"></span><h2>GNN Predictor<a class="headerlink" href="#module-scr_financial.ml.gnn_predictor" title="Link to this heading">¶</a></h2>
+<p>Temporal Graph Neural Network predictor for spectral metric evolution.</p>
+<p>Replaces the flat LSTM with a GCN encoder that operates on the actual
+interbank graph at each timestep, producing graph-level embeddings that
+feed into a temporal LSTM for spectral metric forecasting.</p>
+<p>Architecture: GCNConv layers → global_mean_pool → LSTM → FC → [λ₂, gap, ρ]</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.GNNEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.ml.gnn_predictor.</span></span><span class="sig-name descname"><span class="pre">GNNEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_gcn_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#GNNEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.GNNEncoder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Multi-layer GCN that produces a graph-level embedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>hidden_channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_gcn_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.GNNEncoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#GNNEncoder.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.GNNEncoder.forward" title="Link to this definition">¶</a></dt>
+<dd><p>Define the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Tensor</em>)</p></li>
+<li><p><strong>edge_index</strong> (<em>Tensor</em>)</p></li>
+<li><p><strong>edge_weight</strong> (<em>Tensor</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>batch</strong> (<em>Tensor</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tensor</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.TemporalGNN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.ml.gnn_predictor.</span></span><span class="sig-name descname"><span class="pre">TemporalGNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_gcn_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_lstm_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#TemporalGNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.TemporalGNN" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>GNN encoder + LSTM for temporal graph sequences → spectral predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_features</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>output_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_gcn_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_lstm_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.TemporalGNN.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_sequences</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#TemporalGNN.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.TemporalGNN.forward" title="Link to this definition">¶</a></dt>
+<dd><p>Define the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>graph_sequences</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><em>Data</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tensor</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.TemporalGNN.count_parameters">
+<span class="sig-name descname"><span class="pre">count_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#TemporalGNN.count_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.TemporalGNN.count_parameters" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.GNNPredictor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.ml.gnn_predictor.</span></span><span class="sig-name descname"><span class="pre">GNNPredictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_gcn_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_lstm_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#GNNPredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.GNNPredictor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Drop-in replacement for SCGPredictor using a temporal GNN.</p>
+<p>Supports a progress_callback(epoch, total_epochs, train_loss, test_loss)
+for real-time UI updates during training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_gcn_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_lstm_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.GNNPredictor.extract_graph_snapshot">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_graph_snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#GNNPredictor.extract_graph_snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.GNNPredictor.extract_graph_snapshot" title="Link to this definition">¶</a></dt>
+<dd><p>Extract graph snapshot (node features + edges + spectral targets) from sim.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.GNNPredictor.extract_features">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectral_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#GNNPredictor.extract_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.GNNPredictor.extract_features" title="Link to this definition">¶</a></dt>
+<dd><p>Compatibility shim — extract scalar features like SCGPredictor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.GNNPredictor.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapshots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#GNNPredictor.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.GNNPredictor.train" title="Link to this definition">¶</a></dt>
+<dd><p>Train the temporal GNN. Returns final train loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>progress_callback</strong> (<em>callable</em><em>(</em><em>epoch</em><em>, </em><em>total_epochs</em><em>, </em><em>train_loss</em><em>, </em><em>test_loss_or_None</em><em>)</em>) – Called every 5 epochs for UI progress updates.</p></li>
+<li><p><strong>snapshots</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>test_fraction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.gnn_predictor.GNNPredictor.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recent_snapshots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/gnn_predictor.html#GNNPredictor.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.gnn_predictor.GNNPredictor.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Autoregressively predict spectral metrics forward.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>recent_snapshots</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.ml.scg_predictor">
+<span id="scg-predictor"></span><h2>SCG Predictor<a class="headerlink" href="#module-scr_financial.ml.scg_predictor" title="Link to this heading">¶</a></h2>
+<p>SCG-aware predictor for spectral metric evolution.</p>
+<p>Wraps the existing LSTMPredictor to forecast spectral features
+(algebraic connectivity, spectral gap, spectral radius) from
+stochastic ABM trajectories.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.ml.scg_predictor.SCGPredictor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.ml.scg_predictor.</span></span><span class="sig-name descname"><span class="pre">SCGPredictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/scg_predictor.html#SCGPredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.scg_predictor.SCGPredictor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Train an LSTM on ABM-generated spectral trajectories and predict forward.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.scg_predictor.SCGPredictor.extract_features">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectral_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/scg_predictor.html#SCGPredictor.extract_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.scg_predictor.SCGPredictor.extract_features" title="Link to this definition">¶</a></dt>
+<dd><p>Extract one feature vector from the current simulation state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sim</strong> (<a class="reference internal" href="abm.html#scr_financial.abm.simulation.BankingSystemSimulation" title="scr_financial.abm.simulation.BankingSystemSimulation"><em>BankingSystemSimulation</em></a>)</p></li>
+<li><p><strong>spectral_fn</strong> (<em>callable returning spectral data dict</em><em> (</em><em>eigenvalues</em><em>, </em><em>gap_size</em><em>, </em><em>etc.</em><em>)</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.scg_predictor.SCGPredictor.build_training_data">
+<span class="sig-name descname"><span class="pre">build_training_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_history</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/scg_predictor.html#SCGPredictor.build_training_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.scg_predictor.SCGPredictor.build_training_data" title="Link to this definition">¶</a></dt>
+<dd><p>Convert a list of per-step feature dicts into (X, y) arrays.</p>
+<p>X: shape (samples, seq_len, n_features)
+y: shape (samples, n_targets)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feature_history</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><em>Tuple</em></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.scg_predictor.SCGPredictor.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/scg_predictor.html#SCGPredictor.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.scg_predictor.SCGPredictor.train" title="Link to this definition">¶</a></dt>
+<dd><p>Train the LSTM with chronological train/test split. Returns final train loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_history</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>test_fraction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.scg_predictor.SCGPredictor.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recent_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/scg_predictor.html#SCGPredictor.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.scg_predictor.SCGPredictor.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Autoregressively predict spectral metrics forward.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>recent_features</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>dicts</em>) – Must have at least <code class="docutils literal notranslate"><span class="pre">seq_len</span></code> entries.</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of future steps to predict.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a> of dicts with keys from TARGET_NAMES</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.ml.predictors">
+<span id="base-predictors"></span><h2>Base Predictors<a class="headerlink" href="#module-scr_financial.ml.predictors" title="Link to this heading">¶</a></h2>
+<p>Predictors for financial network analysis.</p>
+<p>This module provides predictors for forecasting network evolution
+and market indicators.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.ml.predictors.</span></span><span class="sig-name descname"><span class="pre">NetworkPredictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#NetworkPredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Predictor for financial network evolution.</p>
+<p>This class implements methods for predicting how the financial network
+will evolve over time based on historical data and external factors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor.method">
+<span class="sig-name descname"><span class="pre">method</span></span><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor.method" title="Link to this definition">¶</a></dt>
+<dd><p>Prediction method identifier.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor.model" title="Link to this definition">¶</a></dt>
+<dd><p>Underlying sklearn estimator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor.scaler_X">
+<span class="sig-name descname"><span class="pre">scaler_X</span></span><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor.scaler_X" title="Link to this definition">¶</a></dt>
+<dd><p>Feature scaler.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor.scaler_y">
+<span class="sig-name descname"><span class="pre">scaler_y</span></span><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor.scaler_y" title="Link to this definition">¶</a></dt>
+<dd><p>Target scaler.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#NetworkPredictor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the network predictor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Prediction method (‘rf’ for Random Forest, ‘gb’ for
+Gradient Boosting, ‘elastic’ for Elastic Net).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <em>method</em> is not one of the supported values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor.prepare_features">
+<span class="sig-name descname"><span class="pre">prepare_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network_history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_indicators</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#NetworkPredictor.prepare_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor.prepare_features" title="Link to this definition">¶</a></dt>
+<dd><p>Prepare features for network prediction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network_history</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>]</em>) – List of network states over time.</p></li>
+<li><p><strong>system_indicators</strong> (<em>DataFrame</em>) – DataFrame of system-wide indicators.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing (X, y) where X is features and y is target values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><em>Tuple</em></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#NetworkPredictor.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Fit the predictor to training data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Feature matrix.</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Target values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#NetworkPredictor.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Make predictions with the fitted model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Feature matrix.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predicted values.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If <a class="reference internal" href="#scr_financial.ml.predictors.NetworkPredictor.fit" title="scr_financial.ml.predictors.NetworkPredictor.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a> has not been called yet.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.NetworkPredictor.predict_network_evolution">
+<span class="sig-name descname"><span class="pre">predict_network_evolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_forecast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#NetworkPredictor.predict_network_evolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.NetworkPredictor.predict_network_evolution" title="Link to this definition">¶</a></dt>
+<dd><p>Predict network evolution over multiple time steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>) – Current network state.</p></li>
+<li><p><strong>system_forecast</strong> (<em>DataFrame</em>) – Forecast of system indicators.</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of steps to predict.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of predicted network states.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.MarketPredictor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.ml.predictors.</span></span><span class="sig-name descname"><span class="pre">MarketPredictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#MarketPredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.MarketPredictor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Predictor for market indicators.</p>
+<p>This class implements a deep learning model for predicting market
+indicators based on historical data and network features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>output_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.MarketPredictor.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#scr_financial.ml.predictors.MarketPredictor.model" title="Link to this definition">¶</a></dt>
+<dd><p>Underlying LSTM model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.MarketPredictor.scaler_X">
+<span class="sig-name descname"><span class="pre">scaler_X</span></span><a class="headerlink" href="#scr_financial.ml.predictors.MarketPredictor.scaler_X" title="Link to this definition">¶</a></dt>
+<dd><p>Feature scaler.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.MarketPredictor.scaler_y">
+<span class="sig-name descname"><span class="pre">scaler_y</span></span><a class="headerlink" href="#scr_financial.ml.predictors.MarketPredictor.scaler_y" title="Link to this definition">¶</a></dt>
+<dd><p>Target scaler.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.MarketPredictor.seq_length">
+<span class="sig-name descname"><span class="pre">seq_length</span></span><a class="headerlink" href="#scr_financial.ml.predictors.MarketPredictor.seq_length" title="Link to this definition">¶</a></dt>
+<dd><p>Default sequence length used during prepare_sequences.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.MarketPredictor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#MarketPredictor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.MarketPredictor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the market predictor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Input dimension (number of features).</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Hidden dimension for LSTM.</p></li>
+<li><p><strong>output_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Output dimension (number of indicators to predict).</p></li>
+<li><p><strong>num_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of LSTM layers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.MarketPredictor.prepare_sequences">
+<span class="sig-name descname"><span class="pre">prepare_sequences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_length</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#MarketPredictor.prepare_sequences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.MarketPredictor.prepare_sequences" title="Link to this definition">¶</a></dt>
+<dd><p>Prepare sequences for LSTM training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Feature matrix of shape [n_samples, n_features].</p></li>
+<li><p><strong>targets</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Target matrix of shape [n_samples, n_targets].</p></li>
+<li><p><strong>seq_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Length of sequences.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple (X, y) where X has shape [n_sequences, seq_length,
+n_features] and y has shape [n_sequences, n_targets].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><em>Tuple</em></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.MarketPredictor.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#MarketPredictor.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.MarketPredictor.train" title="Link to this definition">¶</a></dt>
+<dd><p>Train the market predictor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Sequence data of shape [n_sequences, seq_length, n_features].</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Target data of shape [n_sequences, n_targets].</p></li>
+<li><p><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Batch size for training.</p></li>
+<li><p><strong>epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of training epochs.</p></li>
+<li><p><strong>learning_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Learning rate for optimizer.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Device to train on (‘cpu’ or ‘cuda’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing training history.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.MarketPredictor.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#MarketPredictor.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.MarketPredictor.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Make predictions with the trained model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Feature matrix of shape [seq_length, n_features] or
+[n_features].</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Device to run prediction on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predicted values.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If <a class="reference internal" href="#scr_financial.ml.predictors.MarketPredictor.prepare_sequences" title="scr_financial.ml.predictors.MarketPredictor.prepare_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_sequences()</span></code></a> has not been called yet.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.LSTMPredictor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.ml.predictors.</span></span><span class="sig-name descname"><span class="pre">LSTMPredictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#LSTMPredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.LSTMPredictor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>LSTM-based predictor for time series forecasting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>output_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.LSTMPredictor.hidden_dim">
+<span class="sig-name descname"><span class="pre">hidden_dim</span></span><a class="headerlink" href="#scr_financial.ml.predictors.LSTMPredictor.hidden_dim" title="Link to this definition">¶</a></dt>
+<dd><p>Hidden dimension for LSTM.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.LSTMPredictor.num_layers">
+<span class="sig-name descname"><span class="pre">num_layers</span></span><a class="headerlink" href="#scr_financial.ml.predictors.LSTMPredictor.num_layers" title="Link to this definition">¶</a></dt>
+<dd><p>Number of LSTM layers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.LSTMPredictor.lstm">
+<span class="sig-name descname"><span class="pre">lstm</span></span><a class="headerlink" href="#scr_financial.ml.predictors.LSTMPredictor.lstm" title="Link to this definition">¶</a></dt>
+<dd><p>LSTM layer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.LSTMPredictor.fc">
+<span class="sig-name descname"><span class="pre">fc</span></span><a class="headerlink" href="#scr_financial.ml.predictors.LSTMPredictor.fc" title="Link to this definition">¶</a></dt>
+<dd><p>Fully connected output layer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.LSTMPredictor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#LSTMPredictor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.LSTMPredictor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the LSTM predictor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Input dimension (number of features).</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Hidden dimension for LSTM.</p></li>
+<li><p><strong>output_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Output dimension (number of indicators to predict).</p></li>
+<li><p><strong>num_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of LSTM layers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.predictors.LSTMPredictor.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/predictors.html#LSTMPredictor.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.predictors.LSTMPredictor.forward" title="Link to this definition">¶</a></dt>
+<dd><p>Forward pass through the model.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Hidden states are re-initialised to zeros on every forward call
+(stateless inference).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Tensor</em>) – Input tensor of shape [batch_size, seq_length, input_dim].</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Output tensor of shape [batch_size, output_dim].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Tensor</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-scr_financial.ml.sentiment_model">
+<span id="sentiment-model"></span><h2>Sentiment Model<a class="headerlink" href="#module-scr_financial.ml.sentiment_model" title="Link to this heading">¶</a></h2>
+<p>Sentiment analysis model for financial market data.</p>
+<p>This module provides an LSTM-based model for analyzing market sentiment
+from financial time series data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.LSTMSentimentModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.ml.sentiment_model.</span></span><span class="sig-name descname"><span class="pre">LSTMSentimentModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/sentiment_model.html#LSTMSentimentModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>LSTM-based sentiment analysis model for financial time series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>num_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>output_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.LSTMSentimentModel.hidden_dim">
+<span class="sig-name descname"><span class="pre">hidden_dim</span></span><a class="headerlink" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.hidden_dim" title="Link to this definition">¶</a></dt>
+<dd><p>Dimension of hidden state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.LSTMSentimentModel.num_layers">
+<span class="sig-name descname"><span class="pre">num_layers</span></span><a class="headerlink" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.num_layers" title="Link to this definition">¶</a></dt>
+<dd><p>Number of LSTM layers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.LSTMSentimentModel.lstm">
+<span class="sig-name descname"><span class="pre">lstm</span></span><a class="headerlink" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.lstm" title="Link to this definition">¶</a></dt>
+<dd><p>LSTM layer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.LSTMSentimentModel.dropout">
+<span class="sig-name descname"><span class="pre">dropout</span></span><a class="headerlink" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.dropout" title="Link to this definition">¶</a></dt>
+<dd><p>Dropout layer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.LSTMSentimentModel.fc">
+<span class="sig-name descname"><span class="pre">fc</span></span><a class="headerlink" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.fc" title="Link to this definition">¶</a></dt>
+<dd><p>Fully connected output layer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.LSTMSentimentModel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/sentiment_model.html#LSTMSentimentModel.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the LSTM sentiment model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of input features.</p></li>
+<li><p><strong>hidden_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Dimension of hidden state.</p></li>
+<li><p><strong>num_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of LSTM layers.</p></li>
+<li><p><strong>output_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Dimension of output (typically 1 for sentiment score).</p></li>
+<li><p><strong>dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Dropout probability.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.LSTMSentimentModel.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/sentiment_model.html#LSTMSentimentModel.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.sentiment_model.LSTMSentimentModel.forward" title="Link to this definition">¶</a></dt>
+<dd><p>Forward pass through the model.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Hidden states are re-initialised to zeros on every forward call
+(stateless inference).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Tensor</em>) – Input tensor of shape [batch_size, seq_len, input_dim].</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Output tensor of shape [batch_size, output_dim].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Tensor</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.prepare_sentiment_data">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.ml.sentiment_model.</span></span><span class="sig-name descname"><span class="pre">prepare_sentiment_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/sentiment_model.html#prepare_sentiment_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.sentiment_model.prepare_sentiment_data" title="Link to this definition">¶</a></dt>
+<dd><p>Prepare data for sentiment model training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Feature data of shape [n_samples, n_features].</p></li>
+<li><p><strong>target</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Target values of shape [n_samples].</p></li>
+<li><p><strong>seq_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Length of sequence for LSTM.</p></li>
+<li><p><strong>train_split</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Proportion of data to use for training.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing (X_train, y_train, X_test, y_test).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <em>seq_length</em> is not positive or <em>train_split</em> is
+    outside (0, 1).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><em>Tuple</em></a>[<em>Tensor</em>, <em>Tensor</em>, <em>Tensor</em>, <em>Tensor</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.train_sentiment_model">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.ml.sentiment_model.</span></span><span class="sig-name descname"><span class="pre">train_sentiment_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/sentiment_model.html#train_sentiment_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.sentiment_model.train_sentiment_model" title="Link to this definition">¶</a></dt>
+<dd><p>Train the sentiment model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Module</em>) – The model to train.</p></li>
+<li><p><strong>X_train</strong> (<em>Tensor</em>) – Training features.</p></li>
+<li><p><strong>y_train</strong> (<em>Tensor</em>) – Training targets.</p></li>
+<li><p><strong>X_test</strong> (<em>Tensor</em>) – Test features.</p></li>
+<li><p><strong>y_test</strong> (<em>Tensor</em>) – Test targets.</p></li>
+<li><p><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Batch size for training.</p></li>
+<li><p><strong>epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of training epochs.</p></li>
+<li><p><strong>learning_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Learning rate for optimizer.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Device to train on (‘cpu’ or ‘cuda’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing training history with keys
+<code class="docutils literal notranslate"><span class="pre">'train_loss'</span></code> and <code class="docutils literal notranslate"><span class="pre">'test_loss'</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scr_financial.ml.sentiment_model.predict_sentiment">
+<span class="sig-prename descclassname"><span class="pre">scr_financial.ml.sentiment_model.</span></span><span class="sig-name descname"><span class="pre">predict_sentiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/ml/sentiment_model.html#predict_sentiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.ml.sentiment_model.predict_sentiment" title="Link to this definition">¶</a></dt>
+<dd><p>Predict sentiment score from features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Module</em>) – Trained sentiment model.</p></li>
+<li><p><strong>features</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – Input features of shape [n_features] or
+[seq_length, n_features].</p></li>
+<li><p><strong>seq_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Length of sequence for LSTM.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Device to run prediction on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predicted sentiment score.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <em>features</em> has fewer than <em>seq_length</em> time steps.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="spectral.html" class="btn btn-neutral float-left" title="Spectral Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="risk.html" class="btn btn-neutral float-right" title="Risk Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
