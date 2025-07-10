@@ -1,188 +1,193 @@
 # SCR-Financial-Networks
 
-A Python framework for analyzing financial networks using Spectral Coarse-Graining (SCG) and Agent-Based Modeling (ABM).
+A Python framework for analyzing systemic risk in financial networks using **Spectral Coarse-Graining (SCG)**, **Agent-Based Modeling (ABM)**, and **Graph Neural Networks (GNN)**.
+
+[![Documentation](https://img.shields.io/badge/docs-gh--pages-blue)](https://francoispzn.github.io/scr-financial-networks/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 
 ## Overview
 
-This project implements a hybrid approach combining Spectral Coarse-Graining (SCG) with Agent-Based Modeling (ABM) to analyze interbank contagion dynamics among European banks. The framework enables the study of systemic risk, contagion pathways, and financial stability by preserving both macro-level network effects and micro-level bank behaviors.
+This project implements a hybrid approach combining Spectral Coarse-Graining with Agent-Based Modeling and temporal Graph Neural Networks to analyze interbank contagion dynamics among European banks. The framework proves that SCG-based spectral risk indicators outperform traditional Basel/SREP stress metrics for early-warning detection of systemic crises.
 
-The methodology is based on the theoretical framework described in "Spectral Coarse-Graining to Financial Networks" and addresses the research question posed in the "Contingency BW 9-08 x10-15" preliminary report:
+The methodology is based on the theoretical framework described in *"Spectral Coarse-Graining to Financial Networks"* and addresses the research question posed in the *"Contingency BW 9-08 x10-15"* preliminary report.
 
-*"How can we effectively integrate spectral coarse-graining (SCG) with an agent-based model (ABM) enhanced by machine learning and large language models (LLMs) to dynamically simulate interbank contagion during crisis periods (e.g., the Black Week of 2008), while ensuring that both macro-level network effects and micro-level bank behaviors are accurately captured and calibrated?"*
+## Key Features
 
-## Features
+### Spectral Coarse-Graining
+- Spectral decomposition of the graph Laplacian with eigenvalue analysis
+- Identification of characteristic scales via spectral gaps
+- Coarse-graining that preserves diffusion dynamics
+- Reconstruction accuracy measurement (R² and RMSE over time)
+- SCG risk score: `risk = 1 - λ₂/ρ` as a spectral early-warning indicator
 
-- **Data Collection**: Interfaces with public financial data sources (EBA, ECB, FRED, etc.)
-- **Network Construction**: Tools for building and analyzing financial networks
-- **Spectral Analysis**: Implementation of spectral decomposition and coarse-graining techniques
-- **Agent-Based Modeling**: Simulation of bank behaviors during stress scenarios
-- **Variational Autoencoder**: Feature extraction and dimensionality reduction for financial data
-- **Machine Learning Integration**: LSTM models for market sentiment prediction
-- **Validation Tools**: Methods for testing and validating model performance
+### Temporal Graph Neural Network
+- **Architecture**: multi-layer GCNConv → BatchNorm → global_mean_pool → LSTM → FC
+- **Targets**: predicts algebraic connectivity (λ₂), spectral gap, and spectral radius
+- **Data**: trained on real daily market data from 10 European banks via yfinance
+- **Node features**: volatility, mean return, log price, beta proxy, momentum
+- **Edge weights**: rolling Pearson correlation of daily returns (threshold > 0.3)
+- Batched graph encoding via PyTorch Geometric `Batch.from_data_list()` for 10-50x speedup
+
+### Agent-Based Model
+- Individual bank agents with balance sheet dynamics (CET1, LCR, leverage)
+- Interbank lending simulation with contagion mechanics
+- Configurable stress scenarios (liquidity crunch, credit shock, sovereign crisis)
+- Adjacency matrix export for downstream spectral analysis
+
+### Risk Metrics
+- **Delta-CoVaR**: bank-level contribution to systemic risk
+- **Marginal Expected Shortfall (MES)**: expected loss during market stress
+- **SCG-vs-Basel comparison**: spectral risk scores benchmarked against Basel stress counts
+- Historical backtesting against 2008 GFC, 2011 European debt crisis, 2020 COVID
+
+### Real-Time Data Pipeline
+- Daily stock prices for 10 European banks via yfinance (DBK.DE, BNP.PA, SAN.MC, UCG.MI, INGA.AS, NDA-FI.HE, UBSG.SW, BARC.L, HSBA.L, ACA.PA)
+- ECB Statistical Data Warehouse integration (CISS, sovereign spreads)
+- Rolling correlation → adjacency matrices → graph snapshots → spectral targets
+- ~1000+ daily snapshots from 3 years of market data
+
+### Interactive Dashboard
+- **5-page Dash application** with dark-themed UI
+- **Network page**: interactive interbank exposure graph with health indicators
+- **Simulate page**: run ABM stress scenarios in real-time
+- **Spectral page**: eigenvalue spectrum, diffusion distances, coarse-graining visualization
+- **Evolve page**: train GNN from the UI with full hyperparameter controls, live progress banner (epoch, loss, RAM, ETA), and result charts
+- **AI/Data page**: Cerebras LLM-powered risk analysis, API data fetching, GNN dataset export
 
 ## Installation
 
-### Using Conda
-
 ```bash
-# Clone the repository
 git clone https://github.com/francoispzn/scr-financial-networks.git
 cd scr-financial-networks
 
-# Create and activate the conda environment
+# Using Conda (recommended)
 conda env create -f environment.yml
-conda activate scr-financial
-
-# Install the package in development mode
+conda activate systemic_risk
 pip install -e .
+
+# Or using pip
+pip install -e ".[dev]"
 ```
 
-### Using pip
+### Requirements
 
-```bash
-pip install scr-financial-networks
-```
+Core: `numpy`, `scipy`, `pandas`, `networkx`, `torch`, `torch-geometric` (PyG 2.6+), `dash`, `plotly`, `yfinance`, `requests`
 
 ## Quick Start
 
+### Launch the Dashboard
+
+```bash
+python dashboard/app.py
+# Open http://localhost:8050
+```
+
+### Train a GNN from the UI
+
+1. Navigate to **Evolve** → select **Real Market (yfinance)** → click **Load Data**
+2. Adjust hyperparameters (hidden dim, GCN/LSTM layers, epochs, learning rate, dropout)
+3. Click **Train GNN** — watch live progress with loss, RAM usage, and ETA
+4. Review training loss curve, test scatter plot, and spectral evolution predictions
+
+### Programmatic Usage
+
 ```python
-from scr_financial.data.collectors.ecb_collector import ECBCollector
-from scr_financial.data.collectors.eba_collector import EBACollector
 from scr_financial.abm.simulation import BankingSystemSimulation
+from scr_financial.network.spectral import compute_laplacian, eigendecomposition
+from scr_financial.network.coarse_graining import SpectralCoarseGraining
+from scr_financial.ml.gnn_predictor import GNNPredictor
 
-# Generate sample data
-ecb = ECBCollector()
-eba = EBACollector()
-ciss_df = ecb.collect_ciss_data("2020-01-01", "2021-12-31")
-bank_df = eba.collect_transparency_data("2020-01-01", "2021-12-31")
-print(f"CISS data: {len(ciss_df)} rows")
-print(f"Bank data: {len(bank_df)} rows")
-```
+# Run ABM simulation
+sim = BankingSystemSimulation()
+sim.setup_banks()
+sim.run_simulation(100)
 
-## Development Setup
+# Spectral analysis
+adj = sim.get_adjacency_matrix()
+L = compute_laplacian(adj, normalized=True)
+eigenvalues, eigenvectors = eigendecomposition(L)
 
-```
-git clone https://github.com/francoispzn/scr-financial-networks
-cd scr-financial-networks
-pip install -e ".[dev]"
-pytest tests/
+# Coarse-grain the network
+scg = SpectralCoarseGraining.from_adjacency(adj, list(sim.banks.keys()))
+scg.coarse_grain()
+accuracy = scg.compute_reconstruction_accuracy(time_steps=15)
+
+# Train GNN on market data
+from dashboard.data_api import build_daily_graph_snapshots
+snapshots = build_daily_graph_snapshots(lookback_years=3)
+predictor = GNNPredictor(seq_len=10, hidden_dim=64, num_gcn_layers=3)
+predictor.train(snapshots, epochs=200, lr=3e-3)
+predictions = predictor.predict(snapshots, steps=30)
 ```
 
 ## Project Structure
 
 ```
 scr-financial-networks/
-├── LICENSE
-├── README.md
-├── pyproject.toml
-├── setup.py
-├── environment.yml
-├── .gitignore
-├── docs/
-│   ├── conf.py
-│   ├── index.rst
-│   ├── api/
-│   │   ├── data_preprocessing.rst
-│   │   ├── network_construction.rst
-│   │   ├── spectral_analysis.rst
-│   │   ├── coarse_graining.rst
-│   │   └── abm.rst
-│   └── examples/
-│       ├── black_week_simulation.rst
-│       ├── COVID19_simulation.rst
-│       └── network_visualization.rst
 ├── scr_financial/
-│   ├── __init__.py
-│   ├── data/
-│   │   ├── __init__.py
-│   │   ├── preprocessor.py
-│   │   └── utils.py
-│   ├── network/
-│   │   ├── __init__.py
-│   │   ├── builder.py
-│   │   ├── spectral.py
-│   │   └── coarse_graining.py
-│   ├── abm/
-│   │   ├── __init__.py
-│   │   ├── bank_agent.py
-│   │   ├── simulation.py
-│   │   └── decision_models.py
-│   └── utils/
-│       ├── __init__.py
-│       ├── visualization.py
-│       └── validation.py
-├── tests/
-│   ├── __init__.py
-│   ├── test_data_preprocessing.py
-│   ├── test_network_construction.py
-│   ├── test_spectral_analysis.py
-│   ├── test_coarse_graining.py
-│   └── test_abm.py
-└── examples/
-    ├── black_week_simulation.py
-    └── network_visualization.py
+│   ├── abm/                    # Agent-Based Modeling
+│   │   ├── bank_agent.py           # Bank agent with balance sheet
+│   │   ├── simulation.py           # Multi-bank simulation engine
+│   │   └── decision_models.py      # Lending/borrowing logic
+│   ├── network/                # Network analysis
+│   │   ├── builder.py              # Interbank graph construction
+│   │   ├── spectral.py             # Laplacian, eigendecomposition
+│   │   └── coarse_graining.py      # Spectral Coarse-Graining
+│   ├── ml/                     # Machine Learning
+│   │   ├── gnn_predictor.py        # Temporal GCN+LSTM model
+│   │   ├── scg_predictor.py        # SCG feature predictor
+│   │   ├── predictors.py           # Base predictor classes
+│   │   └── sentiment_model.py      # Market sentiment analysis
+│   ├── risk/                   # Systemic risk metrics
+│   │   └── metrics.py              # Delta-CoVaR, MES
+│   ├── backtesting/            # Historical validation
+│   │   └── engine.py               # Crisis backtesting engine
+│   ├── data/                   # Data collection (EBA, ECB, market)
+│   └── vae/                    # Variational AutoEncoder
+├── dashboard/
+│   ├── app.py                  # Main Dash application (5 pages)
+│   ├── api.py                  # FastAPI REST endpoints
+│   ├── data_loader.py          # Bank tickers + yfinance/ECB
+│   ├── data_api.py             # Daily graph snapshot pipeline
+│   ├── prediction.py           # GNN training orchestration
+│   ├── gnn_export.py           # PyG dataset export
+│   ├── simulation_state.py     # Shared state management
+│   ├── llm.py                  # Cerebras LLM integration
+│   └── demo_data.py            # Shock scenarios + defaults
+├── tests/                      # Test suite
+├── examples/                   # Example scripts
+└── docs/                       # Sphinx documentation source
 ```
-
-## Key Components
-
-### Spectral Coarse-Graining (SCG)
-
-The SCG module implements techniques for simplifying complex financial networks while preserving their essential structural and dynamic properties. Key features include:
-
-- Spectral decomposition of the graph Laplacian
-- Identification of characteristic scales via spectral gaps
-- Coarse-graining based on dominant eigenmodes
-- Rescaling to preserve diffusion dynamics
-
-### Agent-Based Model (ABM)
-
-The ABM module simulates the behavior of financial institutions during stress scenarios. Features include:
-
-- Bank agent implementation with decision-making capabilities
-- Interbank lending simulation
-- Stress propagation mechanics
-- Liquidity and solvency assessment
-
-### Variational Autoencoder (VAE)
-
-The VAE module provides dimensionality reduction and feature extraction for financial data:
-
-- Encoder-decoder architecture for latent representation
-- Training utilities for financial time series
-- Anomaly detection capabilities
-- Integration with the ABM for enhanced agent decision-making
 
 ## Documentation
 
-For detailed documentation, please check the source folder with the HTML documentation files.
+Full API documentation is available at **[francoispzn.github.io/scr-financial-networks](https://francoispzn.github.io/scr-financial-networks/)**.
 
-## Examples
+Covers: installation, quickstart, API reference for all modules, spectral coarse-graining theory, and GNN architecture details.
 
-Example scripts and notebooks can be found in the `examples/` directory:
+## GNN Architecture
 
-- `black_week_simulation.py`: Simulates the 2008 financial crisis "Black Week"
-- `network_visualization.py`: Visualizes financial networks and their coarse-grained representations
-- `vae_financial_features.py`: Demonstrates feature extraction from financial data using VAE
+```
+Input: sequence of T daily graph snapshots (10 banks, 5 node features)
+    ↓
+[GCNConv → BatchNorm → ReLU → Dropout] × L layers
+    ↓
+global_mean_pool → graph-level embedding per snapshot
+    ↓
+LSTM (M layers) over T time steps
+    ↓
+FC → [λ₂, spectral_gap, spectral_radius]
+```
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
+Default configuration: hidden_dim=64, 3 GCN layers, 2 LSTM layers, dropout=0.1, cosine annealing LR, gradient clipping (max norm 1.0).
 
 ## Acknowledgments
 
-- This project builds on the theoretical framework described in "Spectral Coarse-Graining to Financial Networks" by Francois Petizon
-- The implementation is inspired by the "Contingency BW 9-08 x10-15" preliminary report
-- We acknowledge the use of publicly available financial indicators from EBA, ECB, and other sources
+- Theoretical framework: *"Spectral Coarse-Graining to Financial Networks"* by Francois Petizon
+- Preliminary report: *"Contingency BW 9-08 x10-15"*
+- Data sources: EBA Transparency Exercise, ECB Statistical Data Warehouse, yfinance
 
 ## Contact
 
-For any questions or feedback, please contact me:
-- Francois Petizon - francois.petizon@kcl.ac.uk
-- Department of Informatics, King's College London
+**Francois Petizon** — francois.petizon@kcl.ac.uk
+Department of Informatics, King's College London

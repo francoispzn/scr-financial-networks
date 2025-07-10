@@ -12,9 +12,9 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 project = 'SCR-Financial-Networks'
-copyright = '2025, Francois Petizon'
+copyright = '2025-2026, Francois Petizon'
 author = 'Francois Petizon'
-release = '0.1.0'
+release = '0.2.0'
 
 # -- General configuration ---------------------------------------------------
 extensions = [

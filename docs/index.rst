@@ -1,50 +1,55 @@
 SCR-Financial-Networks Documentation
-===================================
+=====================================
 
-A Python framework for analyzing financial networks using Spectral Coarse-Graining (SCG) and Agent-Based Modeling (ABM).
+A Python framework for analyzing financial networks using **Spectral Coarse-Graining (SCG)**, **Agent-Based Modeling (ABM)**, and **Graph Neural Networks (GNN)**.
 
 Overview
 --------
 
-This project implements a hybrid approach combining Spectral Coarse-Graining (SCG) with Agent-Based Modeling (ABM) to analyze interbank contagion dynamics among European banks. The framework enables the study of systemic risk, contagion pathways, and financial stability by preserving both macro-level network effects and micro-level bank behaviors.
+This project implements a hybrid approach combining Spectral Coarse-Graining with Agent-Based Modeling and temporal Graph Neural Networks to analyze interbank contagion dynamics among European banks.
 
-The methodology is based on the theoretical framework described in "Spectral Coarse-Graining to Financial Networks" and addresses the research question posed in the "Contingency BW 9-08 x10-15" preliminary report.
+Key capabilities:
+
+- **Spectral Coarse-Graining**: reduce complex interbank networks while preserving diffusion dynamics
+- **Agent-Based Simulation**: model individual bank behaviors under stress scenarios
+- **Temporal GNN**: predict spectral properties from graph-structured market data
+- **Risk Metrics**: Delta-CoVaR, MES, and SCG-based systemic risk scores
+- **Interactive Dashboard**: Dash UI with live GNN training and SCG-vs-Basel comparison
+- **Real Market Data**: yfinance stock data and ECB macro indicators
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Getting Started
 
    installation
    quickstart
-   examples/index
-   api/index
-   theory/index
-   contributing
-   changelog
 
-Installation
------------
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
 
-Using Conda:
+   api/abm
+   api/network
+   api/spectral
+   api/ml
+   api/risk
+   api/data
+   api/dashboard
 
-.. code-block:: bash
+.. toctree::
+   :maxdepth: 2
+   :caption: Theory
 
-   # Clone the repository
-   git clone https://github.com/username/scr-financial-networks.git
-   cd scr-financial-networks
+   theory/spectral_coarse_graining
+   theory/gnn_architecture
 
-   # Create and activate the conda environment
-   conda env create -f environment.yml
-   conda activate scr-financial
+.. toctree::
+   :maxdepth: 2
+   :caption: Examples
 
-   # Install the package in development mode
-   pip install -e .
+   examples/black_week_simulation
+   examples/network_visualization
 
-Using pip:
-
-.. code-block:: bash
-
-   pip install scr-financial-networks
 
 Indices and tables
 ==================
