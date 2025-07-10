@@ -160,8 +160,9 @@ class FinancialNetworkBuilder:
     
     def find_spectral_gap(self) -> Tuple[int, float]:
         """
-        Identify the spectral gap for coarse-graining.
-        
+        Identify the spectral gap for coarse-graining using the
+        Erdos-Renyi null model test (Schmidt et al. 2025).
+
         Returns
         -------
         tuple
@@ -169,15 +170,10 @@ class FinancialNetworkBuilder:
         """
         if self.eigenvalues is None:
             raise ValueError("Spectral analysis not performed. Call spectral_analysis first.")
-        
-        # Compute differences between consecutive eigenvalues
-        gaps = np.diff(self.eigenvalues)
-        
-        # Find the largest gap after the first few eigenvalues
-        # Skip the first eigenvalue (which is 0 for connected graphs)
-        k = np.argmax(gaps[1:]) + 1
-        
-        return k, gaps[k]
+
+        from .spectral import find_spectral_gap as _find_gap
+        adj = np.asarray(self.adjacency_matrix.todense()) if self.adjacency_matrix is not None else None
+        return _find_gap(self.eigenvalues, adjacency_matrix=adj)
     
     def get_node_attribute_matrix(self, attribute: str) -> np.ndarray:
         """

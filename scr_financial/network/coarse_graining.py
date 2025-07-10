@@ -49,9 +49,9 @@ class _AdjacencyAdapter:
     def find_spectral_gap(self) -> Tuple[int, float]:
         if self.eigenvalues is None:
             self.spectral_analysis()
-        gaps = np.diff(self.eigenvalues)
-        k = np.argmax(gaps[1:]) + 1
-        return k, gaps[k]
+        from .spectral import find_spectral_gap as _find_gap
+        adj_dense = np.asarray(self.adjacency_matrix.todense())
+        return _find_gap(self.eigenvalues, adjacency_matrix=adj_dense)
 
 
 class SpectralCoarseGraining:

@@ -122,75 +122,103 @@ def run_scg_validation():
 # ──────────────────────────────────────────────────────────────────────────────
 
 def run_gat_training():
-    logger.info("=== Experiment 2: GAT Training ===")
-    from scr_financial.abm.simulation import BankingSystemSimulation
+    """Train GAT on real market data (yfinance) with dynamic adjacency.
+
+    Uses build_daily_graph_snapshots() which produces ~200+ snapshots from
+    3 years of daily stock data with rolling correlation adjacency — giving
+    genuine temporal variation in both node features and spectral targets.
+
+    Runs N_SEEDS independent training runs with different seeds to compute
+    confidence intervals on test metrics.
+    """
+    logger.info("=== Experiment 2: GAT Training (yfinance data) ===")
+    from dashboard.data_api import build_daily_graph_snapshots
     from scr_financial.ml.gnn_predictor import GNNPredictor
 
-    # Build simulation and generate snapshots
-    rng = np.random.default_rng(123)
-    bank_names = ["DE_DBK", "FR_BNP", "ES_SAN", "IT_UCG", "NL_ING",
-                  "SE_NDA", "CH_UBS", "UK_BARC", "UK_HSBC", "FR_ACA"]
-    bank_data = {}
-    for name in bank_names:
-        bank_data[name] = {
-            "CET1_ratio": rng.uniform(10, 16),
-            "LCR": rng.uniform(110, 180),
-            "NSFR": rng.uniform(100, 140),
-            "total_assets": rng.uniform(5e11, 2.5e12),
-            "cash": rng.uniform(2e10, 8e10),
-            "interbank_assets": rng.uniform(5e9, 5e10),
-            "interbank_liabilities": rng.uniform(5e9, 5e10),
+    # Fetch real market data: 3 years, weekly stride for ~200 snapshots
+    logger.info("Fetching yfinance data (3 years, stride=5)...")
+    snapshots = build_daily_graph_snapshots(
+        lookback_years=3,
+        corr_window=60,
+        min_corr=0.3,
+        stride=5,  # Weekly sampling
+    )
+    logger.info("Got %d snapshots from real market data", len(snapshots))
+
+    # Check spectral target variance (the root cause of previous R²=0)
+    targets_arr = np.array([[s["targets"][k] for k in ["lambda_2", "spectral_gap", "spectral_radius"]]
+                            for s in snapshots])
+    logger.info("Target variance: lambda_2=%.6f, gap=%.6f, radius=%.6f",
+                np.var(targets_arr[:, 0]), np.var(targets_arr[:, 1]), np.var(targets_arr[:, 2]))
+
+    # Multi-seed training for statistical robustness
+    N_SEEDS = 5
+    all_runs = []
+
+    for seed_i in range(N_SEEDS):
+        np.random.seed(seed_i * 42)
+        import torch
+        torch.manual_seed(seed_i * 42)
+
+        # Use smaller model to avoid overparameterization
+        # ~200 snapshots → ~190 sequences → hidden=32 keeps params reasonable
+        predictor = GNNPredictor(
+            seq_len=10, hidden_dim=32, num_gat_layers=2, heads=4, dropout=0.2,
+        )
+        t0 = time.time()
+        final_loss = predictor.train(
+            snapshots, epochs=200, lr=3e-3, patience=30,
+        )
+        train_time = time.time() - t0
+
+        run_result = {
+            "seed": seed_i,
+            "n_params": predictor.model.count_parameters() if predictor.model else 0,
+            "final_train_loss": float(final_loss),
+            "train_mse": predictor.train_metrics.get("mse", 0),
+            "train_r2": predictor.train_metrics.get("r2", 0),
+            "test_mse": predictor.test_metrics.get("mse", 0),
+            "test_r2": predictor.test_metrics.get("r2", 0),
+            "test_r2_per_target": predictor.test_metrics.get("r2_per_target", {}),
+            "training_time_seconds": round(train_time, 1),
+            "epochs_trained": predictor.training_history[-1]["epoch"] if predictor.training_history else 0,
         }
-    network = {}
-    for i, bid in enumerate(bank_names):
-        network[bid] = {}
-        for j, oid in enumerate(bank_names):
-            if i != j:
-                network[bid][oid] = rng.uniform(0.15, 0.65)
+        all_runs.append(run_result)
+        logger.info("  Seed %d: test_r2=%.4f, test_mse=%.6f, epochs=%d, time=%.1fs",
+                     seed_i, run_result["test_r2"], run_result["test_mse"],
+                     run_result["epochs_trained"], train_time)
 
-    sim = BankingSystemSimulation(bank_data, network, {"CISS": 0.3, "funding_stress": 0.1}, seed=123)
-
-    # Generate 200 snapshots with occasional shocks for variance
-    snapshots = []
-    for step in range(200):
-        sim.run_simulation(1)
-        # Inject shocks every 40 steps for spectral variation
-        if step > 0 and step % 40 == 0:
-            target = bank_names[step % len(bank_names)]
-            sim.apply_external_shock({target: {"CET1_ratio": -3.0, "LCR": -20.0}})
-        snap = GNNPredictor.extract_graph_snapshot(sim)
-        snapshots.append(snap)
-
-    # Train GAT predictor
-    predictor = GNNPredictor(seq_len=10, hidden_dim=64, num_gat_layers=3, heads=4, dropout=0.1)
-    t0 = time.time()
-    final_loss = predictor.train(snapshots, epochs=150, lr=3e-3)
-    train_time = time.time() - t0
+    # Aggregate across seeds
+    test_r2s = [r["test_r2"] for r in all_runs]
+    test_mses = [r["test_mse"] for r in all_runs]
 
     results = {
+        "data_source": "yfinance (3yr, stride=5)",
         "n_snapshots": len(snapshots),
-        "seq_len": predictor.seq_len,
-        "hidden_dim": predictor.hidden_dim,
-        "num_gat_layers": predictor.num_gat_layers,
-        "heads": predictor.heads,
-        "n_params": predictor.model.count_parameters() if predictor.model else 0,
-        "epochs": 150,
-        "final_train_loss": float(final_loss),
-        "train_metrics": predictor.train_metrics,
-        "test_metrics": predictor.test_metrics,
-        "training_time_seconds": round(train_time, 1),
-        "training_history": predictor.training_history[-10:],  # Last 10 checkpoints
+        "target_variance": {
+            "lambda_2": float(np.var(targets_arr[:, 0])),
+            "spectral_gap": float(np.var(targets_arr[:, 1])),
+            "spectral_radius": float(np.var(targets_arr[:, 2])),
+        },
+        "model_config": {
+            "seq_len": 10, "hidden_dim": 32, "num_gat_layers": 2,
+            "heads": 4, "dropout": 0.2, "epochs": 200, "patience": 30,
+        },
+        "n_seeds": N_SEEDS,
+        "per_seed_results": all_runs,
+        "aggregate": {
+            "test_r2_mean": float(np.mean(test_r2s)),
+            "test_r2_std": float(np.std(test_r2s)),
+            "test_r2_95ci": [float(np.percentile(test_r2s, 2.5)), float(np.percentile(test_r2s, 97.5))],
+            "test_mse_mean": float(np.mean(test_mses)),
+            "test_mse_std": float(np.std(test_mses)),
+            "n_params": all_runs[0]["n_params"],
+        },
     }
 
-    # Prediction test
-    preds = predictor.predict(snapshots, steps=20)
-    results["prediction_sample"] = preds[:5]
-
-    logger.info("GAT results: test_mse=%.6f, test_r2=%.4f, time=%.1fs, params=%d",
-                predictor.test_metrics.get("mse", 0),
-                predictor.test_metrics.get("r2", 0),
-                train_time,
-                results["n_params"])
+    logger.info("GAT aggregate: test_r2=%.4f +/- %.4f, test_mse=%.6f +/- %.6f",
+                results["aggregate"]["test_r2_mean"], results["aggregate"]["test_r2_std"],
+                results["aggregate"]["test_mse_mean"], results["aggregate"]["test_mse_std"])
     return results
 
 
@@ -296,96 +324,106 @@ def run_abm_stress_test():
 # ──────────────────────────────────────────────────────────────────────────────
 
 def run_backtesting():
-    logger.info("=== Experiment 4: Backtesting ===")
-    from scr_financial.abm.simulation import BankingSystemSimulation
+    """Backtesting using real market data with dynamic adjacency.
+
+    Uses yfinance snapshots (monthly sampling) so that spectral properties
+    genuinely evolve over time. Compares SCG risk indicator vs simple
+    volatility-based stress measures for predicting future realized volatility.
+    """
+    logger.info("=== Experiment 4: Backtesting (real market data) ===")
+    from dashboard.data_api import build_daily_graph_snapshots
     from scr_financial.network.spectral import compute_laplacian, eigendecomposition, find_spectral_gap
 
-    rng = np.random.default_rng(42)
-    bank_names = ["DE_DBK", "FR_BNP", "ES_SAN", "IT_UCG", "NL_ING",
-                  "SE_NDA", "CH_UBS", "UK_BARC", "UK_HSBC", "FR_ACA"]
+    # Monthly snapshots for backtesting (~36 months from 3 years)
+    logger.info("Fetching yfinance data for backtesting (3yr, monthly stride)...")
+    snapshots = build_daily_graph_snapshots(
+        lookback_years=3,
+        corr_window=60,
+        min_corr=0.3,
+        stride=21,  # ~monthly (21 trading days)
+    )
+    logger.info("Got %d monthly snapshots", len(snapshots))
 
-    bank_data = {}
-    for name in bank_names:
-        bank_data[name] = {
-            "CET1_ratio": rng.uniform(10, 16),
-            "LCR": rng.uniform(110, 180),
-            "NSFR": rng.uniform(100, 140),
-            "total_assets": rng.uniform(5e11, 2.5e12),
-            "cash": rng.uniform(2e10, 8e10),
-            "interbank_assets": rng.uniform(5e9, 5e10),
-            "interbank_liabilities": rng.uniform(5e9, 5e10),
-        }
-    network = {}
-    for i, bid in enumerate(bank_names):
-        network[bid] = {}
-        for j, oid in enumerate(bank_names):
-            if i != j:
-                network[bid][oid] = rng.uniform(0.15, 0.65)
+    # Compute SCG risk and volatility stress for each snapshot
+    monthly_data = []
+    for i, snap in enumerate(snapshots):
+        targets = snap["targets"]
+        lam2 = targets["lambda_2"]
+        rho = targets["spectral_radius"]
+        scg_risk = float(1.0 - lam2 / rho) if rho > 1e-8 else 1.0
 
-    sim = BankingSystemSimulation(bank_data, network, {"CISS": 0.3}, seed=42)
+        # Volatility-based stress: average node volatility feature
+        vol = float(np.mean(snap["node_features"][:, 0]))  # Feature 0 = volatility_30d
 
-    # Generate 40 quarterly snapshots (10 years)
-    quarterly_data = []
-    for q in range(40):
-        sim.run_simulation(5)
-        # Periodic shocks
-        if q in [8, 9, 20, 21, 30]:  # Crisis periods
-            target = bank_names[q % len(bank_names)]
-            sim.apply_external_shock({target: {"CET1_ratio": -5.0, "LCR": -30.0}})
-
-        adj = sim.get_adjacency_matrix()
-        adj_sym = (adj + adj.T) / 2.0
-        L = compute_laplacian(adj_sym, normalized=True)
-        eigenvalues, _ = eigendecomposition(L)
-        gap_idx, gap_size = find_spectral_gap(eigenvalues)
-
-        cet1s = [b.state.get("CET1_ratio", 10) for b in sim.banks.values()]
-        n_stressed = sum(1 for c in cet1s if c < 8.0)
-
-        quarterly_data.append({
-            "quarter": q,
-            "lambda_2": float(eigenvalues[1]) if len(eigenvalues) > 1 else 0,
-            "spectral_gap": float(gap_size),
-            "spectral_radius": float(eigenvalues[-1]),
-            "scg_risk": float(1 - eigenvalues[1] / eigenvalues[-1]) if eigenvalues[-1] > 0 and len(eigenvalues) > 1 else 1.0,
-            "avg_cet1": float(np.mean(cet1s)),
-            "min_cet1": float(np.min(cet1s)),
-            "n_stressed": n_stressed,
-            "n_banks": len(bank_names),
-            "basel_stress": float(n_stressed / len(bank_names)),
+        monthly_data.append({
+            "month": i,
+            "date": snap.get("date", f"month_{i}"),
+            "lambda_2": float(lam2),
+            "spectral_gap": float(targets["spectral_gap"]),
+            "spectral_radius": float(rho),
+            "scg_risk": scg_risk,
+            "avg_volatility": vol,
+            "n_edges": snap["edge_index"].shape[1] // 2 if snap["edge_index"].shape[1] > 0 else 0,
         })
 
-    # Rolling backtest: does SCG risk at time t predict stress at t+1?
-    window = 4
-    correlations = {"scg_risk_vs_future_stress": [], "basel_vs_future_stress": []}
-    for i in range(window, len(quarterly_data) - 1):
-        current_scg = np.mean([quarterly_data[j]["scg_risk"] for j in range(i - window, i)])
-        current_basel = np.mean([quarterly_data[j]["basel_stress"] for j in range(i - window, i)])
-        future_stress = quarterly_data[i + 1]["n_stressed"]
-        correlations["scg_risk_vs_future_stress"].append((current_scg, future_stress))
-        correlations["basel_vs_future_stress"].append((current_basel, future_stress))
+    # Rolling backtest: does SCG risk at time t predict future volatility at t+h?
+    window = 3  # 3-month lookback
+    horizon = 1  # 1-month ahead prediction
 
-    # Compute Pearson correlations
-    scg_pairs = np.array(correlations["scg_risk_vs_future_stress"])
-    basel_pairs = np.array(correlations["basel_vs_future_stress"])
-
-    def safe_corr(pairs):
-        if len(pairs) < 3 or pairs[:, 0].std() < 1e-8 or pairs[:, 1].std() < 1e-8:
+    def safe_corr(x, y):
+        if len(x) < 5 or np.std(x) < 1e-10 or np.std(y) < 1e-10:
             return 0.0
-        return float(np.corrcoef(pairs[:, 0], pairs[:, 1])[0, 1])
+        return float(np.corrcoef(x, y)[0, 1])
+
+    scg_risk_series = np.array([d["scg_risk"] for d in monthly_data])
+    vol_series = np.array([d["avg_volatility"] for d in monthly_data])
+    lam2_series = np.array([d["lambda_2"] for d in monthly_data])
+    gap_series = np.array([d["spectral_gap"] for d in monthly_data])
+
+    # Predictive correlations: current indicator → future volatility
+    n = len(monthly_data)
+    pairs_scg, pairs_vol, pairs_lam2 = [], [], []
+    for t in range(window, n - horizon):
+        future_vol = vol_series[t + horizon]
+        # Rolling average of current indicators
+        current_scg = np.mean(scg_risk_series[t - window:t])
+        current_vol = np.mean(vol_series[t - window:t])
+        current_lam2 = np.mean(lam2_series[t - window:t])
+        pairs_scg.append((current_scg, future_vol))
+        pairs_vol.append((current_vol, future_vol))
+        pairs_lam2.append((current_lam2, future_vol))
+
+    pairs_scg = np.array(pairs_scg)
+    pairs_vol = np.array(pairs_vol)
+    pairs_lam2 = np.array(pairs_lam2)
 
     results = {
-        "n_quarters": len(quarterly_data),
+        "data_source": "yfinance (3yr, monthly stride)",
+        "n_months": len(monthly_data),
         "rolling_window": window,
-        "scg_risk_correlation_to_future_stress": safe_corr(scg_pairs),
-        "basel_stress_correlation_to_future_stress": safe_corr(basel_pairs),
-        "quarterly_summary": quarterly_data[:5] + quarterly_data[-5:],  # First and last 5
-        "crisis_quarters": [q["quarter"] for q in quarterly_data if q["n_stressed"] > 0],
+        "prediction_horizon": horizon,
+        "scg_risk_stats": {
+            "mean": float(np.mean(scg_risk_series)),
+            "std": float(np.std(scg_risk_series)),
+            "min": float(np.min(scg_risk_series)),
+            "max": float(np.max(scg_risk_series)),
+        },
+        "lambda_2_stats": {
+            "mean": float(np.mean(lam2_series)),
+            "std": float(np.std(lam2_series)),
+        },
+        "predictive_correlations": {
+            "scg_risk_to_future_vol": safe_corr(pairs_scg[:, 0], pairs_scg[:, 1]),
+            "current_vol_to_future_vol": safe_corr(pairs_vol[:, 0], pairs_vol[:, 1]),
+            "lambda2_to_future_vol": safe_corr(pairs_lam2[:, 0], pairs_lam2[:, 1]),
+        },
+        "monthly_sample": monthly_data[:5] + monthly_data[-5:],
     }
 
-    logger.info("Backtest: SCG corr=%.4f, Basel corr=%.4f",
-                results["scg_risk_correlation_to_future_stress"],
-                results["basel_stress_correlation_to_future_stress"])
+    logger.info("Backtest: SCG→vol=%.4f, vol→vol=%.4f, λ₂→vol=%.4f",
+                results["predictive_correlations"]["scg_risk_to_future_vol"],
+                results["predictive_correlations"]["current_vol_to_future_vol"],
+                results["predictive_correlations"]["lambda2_to_future_vol"])
     return results
 
 

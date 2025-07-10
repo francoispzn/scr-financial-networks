@@ -85,6 +85,7 @@ def find_spectral_gap(
     eigenvalues: np.ndarray,
     min_index: int = 1,
     max_index: Optional[int] = None,
+    adjacency_matrix: Optional[np.ndarray] = None,
 ) -> Tuple[int, float]:
     """
     Identify the spectral gap in the eigenvalue spectrum using the
@@ -104,6 +105,9 @@ def find_spectral_gap(
         min_index: Minimum gap index to consider. Defaults to 1.
         max_index: Maximum gap index to consider. Defaults to None (half
             of spectrum).
+        adjacency_matrix: Optional adjacency matrix for computing exact
+            average degree for the ER null model. If None, the degree is
+            estimated from the eigenvalue spectrum.
 
     Returns:
         Tuple of (gap index, gap size).
@@ -123,7 +127,10 @@ def find_spectral_gap(
 
     # ── Schmidt null model: Erdos-Renyi ensemble ─────────────────────
     n = len(eigenvalues)
-    candidate = _find_gap_via_er_null_model(eigenvalues, n, min_index, max_index)
+    candidate = _find_gap_via_er_null_model(
+        eigenvalues, n, min_index, max_index,
+        adjacency_matrix=adjacency_matrix,
+    )
     if candidate is not None:
         return candidate
 
@@ -144,6 +151,7 @@ def _find_gap_via_er_null_model(
     n_ensemble: int = 1000,
     alpha: float = 0.01,
     seed: int = 42,
+    adjacency_matrix: Optional[np.ndarray] = None,
 ) -> Optional[Tuple[int, float]]:
     """Erdos-Renyi null model gap test (Schmidt et al. 2025, Section II).
 
@@ -160,6 +168,9 @@ def _find_gap_via_er_null_model(
             10^3 for speed, adjustable).
         alpha: Significance threshold.
         seed: Random seed for reproducibility.
+        adjacency_matrix: If provided, the exact average degree is computed
+            from this matrix (p = k_avg / (n-1)). Otherwise estimated
+            from the eigenvalue spectrum.
 
     Returns:
         (gap_index, gap_size) for the first significant gap, or None.
@@ -167,22 +178,17 @@ def _find_gap_via_er_null_model(
     rng = np.random.default_rng(seed)
     gaps_obs = np.diff(eigenvalues)
 
-    # Estimate average degree from the unnormalized Laplacian diagonal
-    # For normalized Laplacian eigenvalues, k_avg can be estimated from
-    # the trace: for normalized L, trace = n, so we use the spectral
-    # radius as a proxy.  A simpler approach: assume we know k_avg from
-    # the sum of the adjacency.  Since we may not have A here, estimate
-    # from Chung's bound: k_avg ≈ n * (1 - eigenvalues[-1]) for
-    # normalized Laplacian is unreliable.  Instead, we use a moderate
-    # connectivity (p = 0.3 for dense financial graphs).
-    #
-    # Better: use the spectral sum.  For a connected ER(n,p),
-    # avg degree k = (n-1)*p.  We estimate p from the spectrum:
-    # For normalized Laplacian of ER: eigenvalues cluster around 1.
-    # The variance of eigenvalues decreases with density.
-    # A robust heuristic: p ≈ 1/(1 + variance(eigenvalues)*n)
-    ev_var = float(np.var(eigenvalues[1:]))  # skip lambda_0 = 0
-    p_est = min(0.9, max(0.1, 1.0 / (1.0 + ev_var * n)))
+    # Compute ER connection probability from adjacency if available
+    if adjacency_matrix is not None:
+        adj_bin = (adjacency_matrix > 0).astype(float)
+        np.fill_diagonal(adj_bin, 0)
+        k_avg = float(adj_bin.sum() / n) if n > 0 else 1.0
+        p_est = min(0.95, max(0.05, k_avg / max(n - 1, 1)))
+        logger.debug("ER null model: using exact density p=%.3f (k_avg=%.1f)", p_est, k_avg)
+    else:
+        # Heuristic from eigenvalue spectrum
+        ev_var = float(np.var(eigenvalues[1:]))
+        p_est = min(0.9, max(0.1, 1.0 / (1.0 + ev_var * n)))
 
     # Collect gap distributions from ER ensemble
     gap_distributions: List[List[float]] = [[] for _ in range(len(gaps_obs))]
