@@ -1,0 +1,142 @@
+{
+  "mild_liquidity": {
+    "n_runs": 100,
+    "three_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 13.01,
+      "mean_min_cet1": 10.28
+    },
+    "one_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 13.02,
+      "mean_min_cet1": 10.25
+    },
+    "amplification_ratio": 0.0
+  },
+  "moderate_liquidity": {
+    "n_runs": 100,
+    "three_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.93,
+      "mean_min_cet1": 10.12
+    },
+    "one_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.95,
+      "mean_min_cet1": 10.15
+    },
+    "amplification_ratio": 0.0
+  },
+  "severe_liquidity": {
+    "n_runs": 100,
+    "three_channel": {
+      "mean_defaults": 1.0,
+      "std_defaults": 3.0,
+      "max_defaults": 10,
+      "default_rate": 0.1,
+      "mean_final_cet1": 11.11,
+      "mean_min_cet1": 7.32
+    },
+    "one_channel": {
+      "mean_defaults": 0.1,
+      "std_defaults": 0.3,
+      "max_defaults": 1,
+      "default_rate": 0.1,
+      "mean_final_cet1": 12.87,
+      "mean_min_cet1": 9.89
+    },
+    "amplification_ratio": 10.0
+  },
+  "single_capital_shock": {
+    "n_runs": 100,
+    "three_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.76,
+      "mean_min_cet1": 9.46
+    },
+    "one_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.76,
+      "mean_min_cet1": 9.45
+    },
+    "amplification_ratio": 0.0
+  },
+  "dual_capital_shock": {
+    "n_runs": 100,
+    "three_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.55,
+      "mean_min_cet1": 9.08
+    },
+    "one_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.55,
+      "mean_min_cet1": 9.07
+    },
+    "amplification_ratio": 0.0
+  },
+  "broad_market_stress": {
+    "n_runs": 100,
+    "three_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.7,
+      "mean_min_cet1": 9.9
+    },
+    "one_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.69,
+      "mean_min_cet1": 9.84
+    },
+    "amplification_ratio": 0.0
+  },
+  "systemic_crisis": {
+    "n_runs": 100,
+    "three_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.27,
+      "mean_min_cet1": 9.32
+    },
+    "one_channel": {
+      "mean_defaults": 0.0,
+      "std_defaults": 0.0,
+      "max_defaults": 0,
+      "default_rate": 0.0,
+      "mean_final_cet1": 12.27,
+      "mean_min_cet1": 9.37
+    },
+    "amplification_ratio": 0.0
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "total_time_seconds": 363.6,
+  "n_scg_configs": 5,
+  "n_gat_configs": 6,
+  "n_abm_scenarios": 7,
+  "n_backtest_thresholds": 4,
+  "n_spectral_snapshots": 1096,
+  "figures_generated": 9
+}
