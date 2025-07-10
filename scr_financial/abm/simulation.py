@@ -231,6 +231,8 @@ class BankingSystemSimulation:
         dciss = 0.03 * (ciss_mu - ciss) + 0.01 * self.rng.standard_normal()
         self.system_indicators["CISS"] = float(np.clip(ciss + dciss, 0.0, 1.0))
 
+    # ── Channel 1: Credit contagion ──────────────────────────────────────
+
     def _propagate_defaults(self) -> None:
         """Iterative contagion cascade: defaulted banks impose losses on counterparties."""
         newly_defaulted = {
@@ -244,7 +246,7 @@ class BankingSystemSimulation:
             # Freeze all newly-defaulted banks
             for bid in newly_defaulted:
                 self.banks[bid].freeze()
-                logger.warning("Bank %s defaulted at t=%d", bid, self.time)
+                logger.warning("Bank %s defaulted at t=%d (credit channel)", bid, self.time)
 
             next_round: set = set()
             for bid in newly_defaulted:
@@ -259,6 +261,111 @@ class BankingSystemSimulation:
                         if other_bank.is_defaulted():
                             next_round.add(other_id)
             newly_defaulted = next_round
+
+    # ── Channel 2: Funding liquidity stress ───────────────────────────────
+
+    _FUNDING_LCR_THRESHOLD = 100.0   # LCR below which funding stress triggers
+    _FUNDING_SENSITIVITY = 0.05      # Sensitivity parameter for withdrawal probability
+    _FUNDING_WITHDRAWAL_RATE = 0.03  # Max fraction of cash drained per stressed counterparty
+
+    def _propagate_funding_stress(self) -> None:
+        """Funding liquidity channel: banks with low LCR face counterparty withdrawals.
+
+        When a bank's LCR drops below the regulatory minimum (100%), its
+        counterparties withdraw short-term funding proportionally to the gap.
+        This drains cash and can trigger a liquidity spiral.
+        """
+        for bid, bank in self.banks.items():
+            if bank._defaulted:
+                continue
+            lcr = bank.state.get("LCR", 130.0)
+            if lcr >= self._FUNDING_LCR_THRESHOLD:
+                continue
+
+            # Withdrawal probability increases with LCR gap (sigmoid)
+            lcr_gap = self._FUNDING_LCR_THRESHOLD - lcr
+            withdrawal_prob = 1.0 / (1.0 + np.exp(-self._FUNDING_SENSITIVITY * lcr_gap))
+
+            for other_id, other_bank in self.banks.items():
+                if other_bank._defaulted or other_id == bid:
+                    continue
+                exposure = other_bank.connections.get(bid, 0.0)
+                if exposure <= 0:
+                    continue
+
+                # Stochastic withdrawal decision
+                if self.rng.random() < withdrawal_prob:
+                    withdrawal = exposure * self._FUNDING_WITHDRAWAL_RATE
+                    cash = bank.state.get("cash", 0.0)
+                    bank.state["cash"] = cash - withdrawal
+
+                    # LCR deteriorates further as liquid assets drain
+                    total_assets = bank.state.get("total_assets", 1e9)
+                    if total_assets > 0:
+                        lcr_hit = (withdrawal / total_assets) * 100.0
+                        bank.state["LCR"] = max(0.0, bank.state.get("LCR", 130.0) - lcr_hit)
+
+                    if bank.is_defaulted() and not bank._defaulted:
+                        bank.freeze()
+                        logger.warning("Bank %s defaulted at t=%d (funding channel)", bid, self.time)
+                        break  # This bank is done
+
+    # ── Channel 3: Fire-sale / asset correlation ──────────────────────────
+
+    _FIRE_SALE_HAIRCUT = 0.02   # Base haircut per correlated default
+    _FIRE_SALE_AMPLIFIER = 1.5  # Amplification when multiple banks default simultaneously
+
+    def _propagate_fire_sales(self) -> None:
+        """Asset correlation channel: defaults cause mark-to-market losses on correlated assets.
+
+        When banks default, surviving banks holding correlated assets suffer
+        mark-to-market losses proportional to correlation strength and the
+        number of simultaneous defaults. This captures the fire-sale externality.
+        """
+        defaulted_ids = [
+            bid for bid, bank in self.banks.items() if bank._defaulted
+        ]
+        if not defaulted_ids:
+            return
+
+        # Amplification factor increases with simultaneous defaults
+        n_defaults = len(defaulted_ids)
+        amplifier = 1.0 + (n_defaults - 1) * (self._FIRE_SALE_AMPLIFIER - 1.0) / max(len(self.banks) - 1, 1)
+
+        adj = self.get_adjacency_matrix()
+        bank_ids = list(self.banks.keys())
+        id_to_idx = {bid: i for i, bid in enumerate(bank_ids)}
+
+        for bid, bank in self.banks.items():
+            if bank._defaulted:
+                continue
+            idx = id_to_idx[bid]
+            total_haircut = 0.0
+            for def_id in defaulted_ids:
+                def_idx = id_to_idx.get(def_id)
+                if def_idx is None:
+                    continue
+                correlation = adj[idx, def_idx]
+                if correlation > 0:
+                    total_haircut += correlation * self._FIRE_SALE_HAIRCUT * amplifier
+
+            if total_haircut > 0:
+                # Cap haircut to prevent unrealistic total wipeouts
+                total_haircut = min(total_haircut, 0.15)
+
+                # Mark-to-market loss on total assets
+                ta = bank.state.get("total_assets", 1e9)
+                asset_loss = ta * total_haircut
+                bank.state["total_assets"] = ta - asset_loss
+
+                # CET1 hit proportional to loss
+                rwa_est = ta * 0.35
+                if rwa_est > 0:
+                    bank.state["CET1_ratio"] = bank.state.get("CET1_ratio", 0.0) - (asset_loss / rwa_est) * 100
+
+                if bank.is_defaulted() and not bank._defaulted:
+                    bank.freeze()
+                    logger.warning("Bank %s defaulted at t=%d (fire-sale channel)", bid, self.time)
 
     def run_simulation(self, steps: int, shocks: Optional[Dict[int, Dict[str, Any]]] = None) -> List[Dict[str, Any]]:
         """
@@ -300,8 +407,10 @@ class BankingSystemSimulation:
             # Run interbank lending simulation
             self.simulate_interbank_lending()
 
-            # Propagate any defaults through the network
-            self._propagate_defaults()
+            # 3-channel contagion cascade
+            self._propagate_defaults()        # Channel 1: credit losses
+            self._propagate_funding_stress()   # Channel 2: liquidity withdrawals
+            self._propagate_fire_sales()       # Channel 3: asset correlation losses
 
             # Record system state
             self.record_state()
