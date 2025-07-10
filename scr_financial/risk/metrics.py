@@ -88,10 +88,21 @@ def compute_srisk(
 ) -> float:
     """SRISK: expected capital shortfall of a bank in a systemic crisis.
 
-    SRISK = max(0, k*(equity + liabilities) - equity*(1 + MES))
-    where k is the prudential capital ratio (default 8%).
+    Following Brownlees & Engle (2017):
+        SRISK = max(0, k*D - (1-k)*W*(1 - LRMES))
+
+    where D = liabilities (book value of debt), W = equity (market cap),
+    k = prudential capital ratio (default 8%), and LRMES is the long-run
+    marginal expected shortfall. Since MES is typically negative for losses,
+    we use (1 + MES) as the equity decline factor, giving:
+        SRISK = max(0, k*D - (1-k)*W*(1 + MES))
+
+    Reference:
+        Brownlees, C. & Engle, R. (2017). SRISK: A Conditional Capital
+        Shortfall Measure of Systemic Risk. Review of Financial Studies,
+        30(1), 48-79.
     """
-    return max(0.0, k * (equity + liabilities) - equity * (1.0 + mes))
+    return max(0.0, k * liabilities - (1.0 - k) * equity * (1.0 + mes))
 
 
 def compute_system_risk_metrics(
