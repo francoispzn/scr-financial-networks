@@ -27,6 +27,7 @@ from pydantic import BaseModel, Field
 
 from . import simulation_state as state
 from .demo_data import SHOCK_SCENARIOS
+from .data_loader import ALL_BANKS
 from .llm import analyze_system_state, build_snapshot
 
 logger = logging.getLogger(__name__)
@@ -59,6 +60,13 @@ class ShockRequest(BaseModel):
     custom_params: Optional[Dict[str, Any]] = Field(
         None, description="Custom shock parameters (bank_id → {field: delta})"
     )
+
+
+class ReloadRequest(BaseModel):
+    start_date: str = Field("2020-01-01", description="Start date YYYY-MM-DD")
+    end_date: str = Field("2024-12-31", description="End date YYYY-MM-DD")
+    bank_list: Optional[List[str]] = Field(None, description="Bank IDs to include")
+    snapshot_date: Optional[str] = Field(None, description="Snapshot date YYYY-MM-DD")
 
 
 class LLMRequest(BaseModel):
@@ -131,6 +139,29 @@ def apply_shock(req: ShockRequest) -> Dict[str, str]:
 def reset() -> Dict[str, str]:
     state.reset_simulation()
     return {"status": "reset"}
+
+
+@app.post("/simulation/reload")
+def reload_data(req: ReloadRequest) -> Dict[str, Any]:
+    """Re-fetch data from the pipeline with updated parameters."""
+    banks = req.bank_list or ALL_BANKS
+    state.reload_data(
+        start_date=req.start_date,
+        end_date=req.end_date,
+        bank_list=banks,
+        snapshot_date=req.snapshot_date,
+    )
+    sim = state.get_simulation()
+    return {
+        "status": "reloaded",
+        "banks": list(sim.banks.keys()),
+        "config": state.get_config(),
+    }
+
+
+@app.get("/config")
+def get_config() -> Dict[str, Any]:
+    return state.get_config()
 
 
 @app.get("/spectral")
