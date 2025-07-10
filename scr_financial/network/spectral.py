@@ -125,11 +125,18 @@ def find_spectral_gap(
     if len(gaps) < 2:
         return min_index if min_index < len(gaps) else 0, float(gaps[0]) if len(gaps) > 0 else 0.0
 
+    # Detect whether eigenvalues are from normalized or combinatorial Laplacian.
+    # Normalized Laplacian has eigenvalues in [0, 2]; combinatorial can be much larger.
+    # Schmidt uses combinatorial (D - A), so default to normalized=False unless
+    # eigenvalues are clearly in normalized range.
+    is_normalized = bool(len(eigenvalues) > 1 and eigenvalues[-1] <= 2.01)
+
     # ── Schmidt null model: Erdos-Renyi ensemble ─────────────────────
     n = len(eigenvalues)
     candidate = _find_gap_via_er_null_model(
         eigenvalues, n, min_index, max_index,
         adjacency_matrix=adjacency_matrix,
+        normalized=is_normalized,
     )
     if candidate is not None:
         return candidate
@@ -152,6 +159,7 @@ def _find_gap_via_er_null_model(
     alpha: float = 0.01,
     seed: int = 42,
     adjacency_matrix: Optional[np.ndarray] = None,
+    normalized: bool = False,
 ) -> Optional[Tuple[int, float]]:
     """Erdos-Renyi null model gap test (Schmidt et al. 2025, Section II).
 
@@ -171,6 +179,9 @@ def _find_gap_via_er_null_model(
         adjacency_matrix: If provided, the exact average degree is computed
             from this matrix (p = k_avg / (n-1)). Otherwise estimated
             from the eigenvalue spectrum.
+        normalized: If True, use normalized Laplacian (I - D^{-1/2}AD^{-1/2})
+            for the ER ensemble. If False (default), use combinatorial
+            Laplacian (D - A) matching Schmidt et al.
 
     Returns:
         (gap_index, gap_size) for the first significant gap, or None.
@@ -205,10 +216,14 @@ def _find_gap_via_er_null_model(
         else:
             continue
 
-        # Compute normalized Laplacian eigenvalues
-        D_inv_sqrt = np.diag(1.0 / np.sqrt(np.maximum(degrees, 1e-10)))
-        I = np.eye(n)
-        L_er = I - D_inv_sqrt @ adj_er @ D_inv_sqrt
+        # Compute Laplacian eigenvalues (must match the type used for observed spectrum)
+        if normalized:
+            D_inv_sqrt = np.diag(1.0 / np.sqrt(np.maximum(degrees, 1e-10)))
+            I = np.eye(n)
+            L_er = I - D_inv_sqrt @ adj_er @ D_inv_sqrt
+        else:
+            # Combinatorial Laplacian (Schmidt et al.): L = D - A
+            L_er = np.diag(degrees) - adj_er
         ev_er = la.eigh(L_er, eigvals_only=True)
         gaps_er = np.diff(ev_er)
 
