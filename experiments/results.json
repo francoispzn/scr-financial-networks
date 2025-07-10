@@ -1,0 +1,351 @@
+{
+  "scg_validation": {
+    "n_banks": 10,
+    "n_clusters": 2,
+    "coarse_graining_error": 1.0,
+    "eigenvalues_original": [
+      0.0,
+      0.9635347431682614,
+      1.0385788848958057,
+      1.0453229235157624,
+      1.095898518649617,
+      1.1229807324770735,
+      1.136368958728017,
+      1.1480302700020255,
+      1.203180177276961,
+      1.2461047912864784
+    ],
+    "eigenvalues_coarsened": [
+      0.0,
+      2.0
+    ],
+    "spectral_gap_index": 3,
+    "spectral_gap_size": 0.05057559513385468,
+    "algebraic_connectivity": 0.9635347431682614,
+    "spectral_radius": 1.2461047912864784,
+    "reconstruction_r2": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "reconstruction_rmse": [
+      1.7013737703438406e-16,
+      3.3260399276858184e-16,
+      5.644354094141655e-16,
+      6.489405532402124e-16,
+      7.859779188766372e-16,
+      1.1154927511056041e-15,
+      9.317361116389074e-16,
+      1.2992307566624325e-15,
+      1.539702876026599e-15,
+      1.5499631457970845e-15,
+      2.0318474769256266e-15,
+      2.234543629719006e-15,
+      2.118584195800086e-15,
+      1.859338739087719e-15,
+      1.860286267882053e-15
+    ],
+    "density_original": 1.0
+  },
+  "gat_training": {
+    "data_source": "yfinance (3yr, stride=5)",
+    "n_snapshots": 220,
+    "target_variance": {
+      "lambda_2": 0.025185935310063117,
+      "spectral_gap": 0.013313600372292235,
+      "spectral_radius": 0.010579490058124964
+    },
+    "model_config": {
+      "seq_len": 10,
+      "hidden_dim": 32,
+      "num_gat_layers": 2,
+      "heads": 4,
+      "dropout": 0.2,
+      "epochs": 200,
+      "patience": 30
+    },
+    "n_seeds": 5,
+    "per_seed_results": [
+      {
+        "seed": 0,
+        "n_params": 18979,
+        "final_train_loss": 0.18136479333043098,
+        "train_mse": 0.008508844301104546,
+        "train_r2": 0.5136139988899231,
+        "test_mse": 0.006577400024980307,
+        "test_r2": 0.24225844939549765,
+        "test_r2_per_target": {
+          "lambda_2": 0.47208160161972046,
+          "spectral_gap": -0.1437152624130249,
+          "spectral_radius": 0.39840900897979736
+        },
+        "training_time_seconds": 4.0,
+        "epochs_trained": 35
+      },
+      {
+        "seed": 1,
+        "n_params": 18979,
+        "final_train_loss": 0.2061265967786312,
+        "train_mse": 0.007423441857099533,
+        "train_r2": 0.5865625540415446,
+        "test_mse": 0.005114153493195772,
+        "test_r2": 0.4258591930071513,
+        "test_r2_per_target": {
+          "lambda_2": 0.5352396368980408,
+          "spectral_gap": 0.18667328357696533,
+          "spectral_radius": 0.5556646585464478
+        },
+        "training_time_seconds": 3.9,
+        "epochs_trained": 35
+      },
+      {
+        "seed": 2,
+        "n_params": 18979,
+        "final_train_loss": 0.1871208002169927,
+        "train_mse": 0.008545472286641598,
+        "train_r2": 0.5270676612854004,
+        "test_mse": 0.005720571149140596,
+        "test_r2": 0.36806321144104004,
+        "test_r2_per_target": {
+          "lambda_2": 0.43954765796661377,
+          "spectral_gap": 0.1346379518508911,
+          "spectral_radius": 0.5300040245056152
+        },
+        "training_time_seconds": 3.8,
+        "epochs_trained": 35
+      },
+      {
+        "seed": 3,
+        "n_params": 18979,
+        "final_train_loss": 0.39607400074601173,
+        "train_mse": 0.008370502851903439,
+        "train_r2": 0.5417616963386536,
+        "test_mse": 0.005580482073128223,
+        "test_r2": 0.3803790807723999,
+        "test_r2_per_target": {
+          "lambda_2": 0.504294753074646,
+          "spectral_gap": 0.22700083255767822,
+          "spectral_radius": 0.4098416566848755
+        },
+        "training_time_seconds": 3.8,
+        "epochs_trained": 35
+      },
+      {
+        "seed": 4,
+        "n_params": 18979,
+        "final_train_loss": 0.17213509728511175,
+        "train_mse": 0.010065772570669651,
+        "train_r2": 0.46269545952479046,
+        "test_mse": 0.008997870609164238,
+        "test_r2": 0.03141212463378906,
+        "test_r2_per_target": {
+          "lambda_2": 0.0834580659866333,
+          "spectral_gap": -0.10816192626953125,
+          "spectral_radius": 0.11894023418426514
+        },
+        "training_time_seconds": 3.9,
+        "epochs_trained": 35
+      }
+    ],
+    "aggregate": {
+      "test_r2_mean": 0.2895944118499756,
+      "test_r2_std": 0.1427347792082245,
+      "test_r2_95ci": [
+        0.05249675710995992,
+        0.42131118178367616
+      ],
+      "test_mse_mean": 0.0063980954699218275,
+      "test_mse_std": 0.0013832583829171807,
+      "n_params": 18979
+    }
+  },
+  "abm_stress_test": {
+    "liquidity_crisis": {
+      "n_runs": 50,
+      "three_channel": {
+        "mean_defaults": 1.2,
+        "std_defaults": 3.2496153618543846,
+        "max_defaults": 10,
+        "mean_final_cet1": 10.677926670252532,
+        "default_rate": 0.12
+      },
+      "one_channel": {
+        "mean_defaults": 0.12,
+        "std_defaults": 0.3249615361854384,
+        "max_defaults": 1,
+        "mean_final_cet1": 12.788413341593088,
+        "default_rate": 0.12
+      }
+    },
+    "capital_shock": {
+      "n_runs": 50,
+      "three_channel": {
+        "mean_defaults": 0.0,
+        "std_defaults": 0.0,
+        "max_defaults": 0,
+        "mean_final_cet1": 12.476352133836588,
+        "default_rate": 0.0
+      },
+      "one_channel": {
+        "mean_defaults": 0.0,
+        "std_defaults": 0.0,
+        "max_defaults": 0,
+        "mean_final_cet1": 12.478650940585053,
+        "default_rate": 0.0
+      }
+    },
+    "market_stress": {
+      "n_runs": 50,
+      "three_channel": {
+        "mean_defaults": 0.0,
+        "std_defaults": 0.0,
+        "max_defaults": 0,
+        "mean_final_cet1": 12.612099292334248,
+        "default_rate": 0.0
+      },
+      "one_channel": {
+        "mean_defaults": 0.0,
+        "std_defaults": 0.0,
+        "max_defaults": 0,
+        "mean_final_cet1": 12.624564650390086,
+        "default_rate": 0.0
+      }
+    }
+  },
+  "backtesting": {
+    "data_source": "yfinance (3yr, monthly stride)",
+    "n_months": 53,
+    "rolling_window": 3,
+    "prediction_horizon": 1,
+    "scg_risk_stats": {
+      "mean": 0.22689198497805046,
+      "std": 0.18187584317243485,
+      "min": 0.04220190887104047,
+      "max": 0.662857082093175
+    },
+    "lambda_2_stats": {
+      "mean": 0.9304218903008424,
+      "std": 0.16159512324453296
+    },
+    "predictive_correlations": {
+      "scg_risk_to_future_vol": -0.055452223787749354,
+      "current_vol_to_future_vol": 0.3572781172087058,
+      "lambda2_to_future_vol": 0.024989283613016475
+    },
+    "monthly_sample": [
+      {
+        "month": 0,
+        "date": "2021-12-29",
+        "lambda_2": 0.9939166134925894,
+        "spectral_gap": 0.008935306009414612,
+        "spectral_radius": 1.1705968039350465,
+        "scg_risk": 0.15093172119429488,
+        "avg_volatility": 0.2592758536338806,
+        "n_edges": 44
+      },
+      {
+        "month": 1,
+        "date": "2022-01-27",
+        "lambda_2": 1.0665776812502108,
+        "spectral_gap": 0.01743885814541879,
+        "spectral_radius": 1.1352832773445347,
+        "scg_risk": 0.060518460427804954,
+        "avg_volatility": 0.28411784768104553,
+        "n_edges": 45
+      },
+      {
+        "month": 2,
+        "date": "2022-02-25",
+        "lambda_2": 1.0562291671630042,
+        "spectral_gap": 0.00533322049791729,
+        "spectral_radius": 1.1334536444658432,
+        "scg_risk": 0.068132011997043,
+        "avg_volatility": 0.3255956768989563,
+        "n_edges": 45
+      },
+      {
+        "month": 3,
+        "date": "2022-03-28",
+        "lambda_2": 1.0789456774159492,
+        "spectral_gap": 0.010290006613809188,
+        "spectral_radius": 1.1264855165290553,
+        "scg_risk": 0.04220190887104047,
+        "avg_volatility": 0.47898903489112854,
+        "n_edges": 45
+      },
+      {
+        "month": 4,
+        "date": "2022-04-28",
+        "lambda_2": 1.0652901423142054,
+        "spectral_gap": 0.002213965621940872,
+        "spectral_radius": 1.1300558961669847,
+        "scg_risk": 0.057311991444367494,
+        "avg_volatility": 0.49001866579055786,
+        "n_edges": 45
+      },
+      {
+        "month": 48,
+        "date": "2025-12-02",
+        "lambda_2": 0.8393266385391343,
+        "spectral_gap": 0.16585434046719305,
+        "spectral_radius": 1.3272774862100545,
+        "scg_risk": 0.3676328821520426,
+        "avg_volatility": 0.23549416661262512,
+        "n_edges": 40
+      },
+      {
+        "month": 49,
+        "date": "2026-01-05",
+        "lambda_2": 0.7852746316875243,
+        "spectral_gap": 0.19734226581580316,
+        "spectral_radius": 1.3862045933849432,
+        "scg_risk": 0.43350740905425866,
+        "avg_volatility": 0.23059909045696259,
+        "n_edges": 35
+      },
+      {
+        "month": 50,
+        "date": "2026-02-03",
+        "lambda_2": 0.9908993929028981,
+        "spectral_gap": 0.005031208154525624,
+        "spectral_radius": 1.185335358278969,
+        "scg_risk": 0.16403456120500737,
+        "avg_volatility": 0.21109619736671448,
+        "n_edges": 44
+      },
+      {
+        "month": 51,
+        "date": "2026-03-04",
+        "lambda_2": 1.0547970168311196,
+        "spectral_gap": 0.017738048379965843,
+        "spectral_radius": 1.143525622763061,
+        "scg_risk": 0.07759214499938327,
+        "avg_volatility": 0.2661042809486389,
+        "n_edges": 45
+      },
+      {
+        "month": 52,
+        "date": "2026-04-02",
+        "lambda_2": 1.079631648686434,
+        "spectral_gap": 0.006369427442207476,
+        "spectral_radius": 1.1289987648426771,
+        "scg_risk": 0.04372645718803991,
+        "avg_volatility": 0.3198349177837372,
+        "n_edges": 45
+      }
+    ]
+  },
+  "total_time_seconds": 45.4
+}
