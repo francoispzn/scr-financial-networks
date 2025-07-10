@@ -5,18 +5,34 @@ This module provides various decision-making models that determine how
 bank agents behave in different scenarios.
 """
 
-from typing import Dict, List, Optional, Union, Any
+import logging
+from typing import Any, Dict
+
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
+# Regulatory thresholds
+_MIN_CET1_FOR_LENDING = 6.0   # Minimum CET1 ratio (%) a borrower must have to receive lending
+_TARGET_CET1_NORMALISER = 15.0  # CET1 denominator used when scoring borrower health (0-1)
+_LCR_NO_BORROW_THRESHOLD = 120.0  # LCR level above which a bank has no need to borrow
+_LCR_TARGET = 120.0            # LCR level we try to restore via borrowing
+_MIN_LCR_FOR_LENDER = 110.0   # Minimum LCR a lender must have to be considered
+_LCR_NORMALISER = 150.0       # LCR denominator used when scoring lender health (0-1)
+_STRESS_SENTIMENT_CUTOFF = 0.3  # Below this market sentiment StressDecisionModel stops lending
 
 
 class DefaultDecisionModel:
     """
     Default decision model for bank agents.
-    
-    This model implements simple rule-based decision making for lending,
+
+    Implements simple rule-based decision making for lending,
     borrowing, and responding to shocks.
     """
-    
+
+    def __init__(self) -> None:
+        """Initialise the default decision model."""
+
     def decide_lending_action(
         self, 
         bank, 
@@ -45,24 +61,24 @@ class DefaultDecisionModel:
             return {"action": "reduce_lending", "amount": 0}
             
         lending_capacity = bank.calculate_lending_capacity()
-        
+
         # Adjust for market sentiment (0-1 scale, 1 being positive)
         adjusted_capacity = lending_capacity * market_sentiment
-        
+
         # Allocate lending to potential borrowers based on their creditworthiness
         allocations = {}
         for borrower_id, borrower_data in potential_borrowers.items():
             # Skip self
             if borrower_id == bank.id:
                 continue
-                
+
             # Skip if borrower has solvency issues
-            if borrower_data.get('CET1_ratio', 0) < 6.0:  # Higher threshold for lending
+            if borrower_data.get('CET1_ratio', 0) < _MIN_CET1_FOR_LENDING:
                 continue
-                
+
             # Allocate based on existing relationship and borrower health
             relationship_strength = bank.get_connection_strength(borrower_id)
-            borrower_health = min(1, borrower_data.get('CET1_ratio', 0) / 15)  # Normalize to 0-1
+            borrower_health = min(1.0, borrower_data.get('CET1_ratio', 0) / _TARGET_CET1_NORMALISER)
             
             # Allocation formula
             base_allocation = adjusted_capacity * 0.1  # Base allocation is 10% of capacity
@@ -100,36 +116,36 @@ class DefaultDecisionModel:
             Dictionary containing borrowing decisions
         """
         # Determine borrowing need based on liquidity
-        if bank.state.get('LCR', 120) > 120:
-            # No need to borrow if LCR is high
+        if bank.state.get('LCR', _LCR_NO_BORROW_THRESHOLD) > _LCR_NO_BORROW_THRESHOLD:
+            # No need to borrow if LCR is sufficiently high
             return {"action": "no_borrowing"}
-        
+
         # Calculate borrowing need
         if 'LCR' in bank.state:
-            # Target LCR of 120%
-            lcr_gap = max(0, 120 - bank.state['LCR'])
-            borrowing_need = lcr_gap * bank.state.get('net_cash_outflows', 1e9) / 100
+            # Target LCR of 120 %
+            lcr_gap = max(0.0, _LCR_TARGET - bank.state['LCR'])
+            borrowing_need = lcr_gap * bank.state.get('net_cash_outflows', 0.0) / 100.0
         else:
-            # Default borrowing need
-            borrowing_need = 0.05 * bank.state.get('total_assets', 1e9)
-        
-        # Adjust for market sentiment
-        adjusted_need = borrowing_need * (2 - market_sentiment)  # Borrow more in bad times
-        
+            # Fallback: borrow 5 % of total assets
+            borrowing_need = 0.05 * bank.state.get('total_assets', 0.0)
+
+        # Adjust for market sentiment — borrow more in bad times
+        adjusted_need = borrowing_need * (2.0 - market_sentiment)
+
         # Identify potential sources
         sources = {}
         for lender_id, lender_data in potential_lenders.items():
             # Skip self
             if lender_id == bank.id:
                 continue
-                
-            # Skip if lender has liquidity issues
-            if lender_data.get('LCR', 0) < 110:  # Only borrow from liquid banks
+
+            # Skip lenders with insufficient liquidity
+            if lender_data.get('LCR', 0) < _MIN_LCR_FOR_LENDER:
                 continue
-                
+
             # Allocate based on existing relationship and lender health
             relationship_strength = bank.get_connection_strength(lender_id)
-            lender_health = min(1, lender_data.get('LCR', 0) / 150)  # Normalize to 0-1
+            lender_health = min(1.0, lender_data.get('LCR', 0) / _LCR_NORMALISER)
             
             # Allocation formula
             base_request = adjusted_need * 0.2  # Request 20% of need from each lender
@@ -143,67 +159,74 @@ class DefaultDecisionModel:
         
         return {"action": "borrow", "sources": sources, "total_need": borrowing_need}
     
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
+
     def respond_to_shock(self, bank, shock_params: Dict[str, Any]) -> Dict[str, Any]:
         """
         Respond to an external shock.
-        
+
         Parameters
         ----------
         bank : BankAgent
             The bank agent responding to the shock
         shock_params : dict
             Dictionary containing shock parameters
-            
+
         Returns
         -------
         dict
             Dictionary containing response actions
         """
         response = {"actions": []}
-        
+
         # Check if solvency is affected
         if 'CET1_ratio' in shock_params:
             if shock_params['CET1_ratio'] < 0:
-                # Negative shock to capital ratio
-                # Reduce lending to preserve capital
-                reduction_targets = {}
-                
-                # Reduce connections proportionally to shock magnitude
-                reduction_factor = min(0.8, abs(shock_params['CET1_ratio']) / 10)
-                
-                for target_id, strength in bank.connections.items():
-                    reduction_targets[target_id] = reduction_factor
-                
+                # Negative shock to capital ratio — reduce lending to preserve capital
+                reduction_factor = min(0.8, abs(shock_params['CET1_ratio']) / 10.0)
+                if not bank.connections:
+                    logger.warning(
+                        "Bank %s has NO connections; capital-shock lending-reduction"
+                        " has no targets.",
+                        bank.id,
+                    )
+                reduction_targets = {tid: reduction_factor for tid in bank.connections}
                 response["actions"].append({
                     "type": "reduce_lending",
                     "targets": reduction_targets,
-                    "reason": "capital_preservation"
+                    "reason": "capital_preservation",
                 })
-        
+                logger.debug(
+                    "Bank %s reducing lending by %.1f%% due to capital shock",
+                    bank.id, reduction_factor * 100,
+                )
+
         # Check if liquidity is affected
         if 'LCR' in shock_params:
             if shock_params['LCR'] < 0:
-                # Negative shock to liquidity
-                # Reduce lending and seek additional funding
-                reduction_targets = {}
-                
-                # Reduce connections proportionally to shock magnitude
-                reduction_factor = min(0.9, abs(shock_params['LCR']) / 50)
-                
-                for target_id, strength in bank.connections.items():
-                    reduction_targets[target_id] = reduction_factor
-                
+                # Negative shock to liquidity — reduce lending and seek funding
+                reduction_factor = min(0.9, abs(shock_params['LCR']) / 50.0)
+                if not bank.connections:
+                    logger.warning(
+                        "Bank %s has NO connections; liquidity-shock lending-reduction"
+                        " has no targets.",
+                        bank.id,
+                    )
+                reduction_targets = {tid: reduction_factor for tid in bank.connections}
                 response["actions"].append({
                     "type": "reduce_lending",
                     "targets": reduction_targets,
-                    "reason": "liquidity_preservation"
+                    "reason": "liquidity_preservation",
                 })
-                
                 response["actions"].append({
                     "type": "seek_funding",
-                    "amount": bank.state.get('total_assets', 1e9) * 0.05,
-                    "reason": "liquidity_restoration"
+                    "amount": bank.state.get('total_assets', 0.0) * 0.05,
+                    "reason": "liquidity_restoration",
                 })
+                logger.debug(
+                    "Bank %s seeking funding after liquidity shock", bank.id
+                )
         
         return response
 
@@ -217,16 +240,14 @@ class StressDecisionModel(DefaultDecisionModel):
     """
     
     def decide_lending_action(
-        self, 
-        bank, 
-        potential_borrowers: Dict[str, Dict[str, Any]], 
-        market_sentiment: float
+        self,
+        bank,
+        potential_borrowers: Dict[str, Dict[str, Any]],
+        market_sentiment: float,
     ) -> Dict[str, Any]:
-        """
-        More conservative lending during stress.
-        """
+        """More conservative lending during stress."""
         # If market sentiment is very low, reduce lending drastically
-        if market_sentiment < 0.3:
+        if market_sentiment < _STRESS_SENTIMENT_CUTOFF:
             return {"action": "reduce_lending", "amount": 0}
         
         # Otherwise use default model but with reduced capacity
@@ -265,11 +286,20 @@ class LearningDecisionModel(DefaultDecisionModel):
     based on past interactions with other banks.
     """
     
-    def __init__(self):
-        """Initialize the learning decision model."""
+    def __init__(self, learning_rate: float = 0.1) -> None:
+        """Initialise the learning decision model.
+
+        Parameters
+        ----------
+        learning_rate:
+            Weight given to each new outcome when updating interaction scores.
+            Must be in (0, 1]. Defaults to 0.1.
+        """
         super().__init__()
-        self.interaction_history = {}
-        self.learning_rate = 0.1
+        if not (0.0 < learning_rate <= 1.0):
+            raise ValueError(f"learning_rate must be in (0, 1], got {learning_rate}")
+        self.interaction_history: Dict[tuple, float] = {}
+        self.learning_rate = learning_rate
     
     def decide_lending_action(
         self, 
@@ -292,8 +322,9 @@ class LearningDecisionModel(DefaultDecisionModel):
                 adjustment_factor = 1 + score  # Range: 0 to 2
                 decision["allocations"][borrower_id] *= adjustment_factor
                 
-                # Remove allocation if factor is too low
-                if adjustment_factor < 0.2:
+                # Remove allocation only when the factor reaches zero (score == -1),
+                # i.e. the interaction history is maximally negative.
+                if adjustment_factor <= 0:
                     del decision["allocations"][borrower_id]
         
         return decision
@@ -337,3 +368,6 @@ class LearningDecisionModel(DefaultDecisionModel):
         """
         key = (lender_id, borrower_id)
         return self.interaction_history.get(key, 0)
+
+    def __repr__(self) -> str:
+        return f"LearningDecisionModel(learning_rate={self.learning_rate!r})"

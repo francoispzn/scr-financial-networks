@@ -5,6 +5,8 @@ This module provides the FinancialNetworkBuilder class for constructing
 financial networks from preprocessed data.
 """
 
+import logging
+
 import networkx as nx
 import numpy as np
 import pandas as pd
@@ -13,6 +15,8 @@ import scipy.linalg as la
 from typing import Dict, List, Optional, Tuple, Union
 
 from ..data.preprocessor import DataPreprocessor
+
+logger = logging.getLogger(__name__)
 
 
 class FinancialNetworkBuilder:
@@ -98,12 +102,18 @@ class FinancialNetworkBuilder:
                     if bank_id in G.nodes():
                         G.nodes[bank_id][category] = value
         
+        # Validate that the graph has nodes
+        if G.number_of_nodes() == 0:
+            raise ValueError(
+                "No nodes found in network for the given time point and edge weight type"
+            )
+
         # Store the graph
         self.G = G
-        
+
         # Create adjacency matrix
         self.adjacency_matrix = nx.to_scipy_sparse_array(G, weight='weight')
-        
+
         return G
     
     def compute_laplacian(self, normalized: bool = True) -> sp.csr_matrix:
@@ -143,7 +153,7 @@ class FinancialNetworkBuilder:
             raise ValueError("Laplacian not computed. Call compute_laplacian first.")
         
         # For small networks, we can use dense eigendecomposition
-        L_dense = self.laplacian.todense()
+        L_dense = np.asarray(self.laplacian.todense())
         self.eigenvalues, self.eigenvectors = la.eigh(L_dense)
         
         return self.eigenvalues, self.eigenvectors
@@ -229,9 +239,13 @@ class FinancialNetworkBuilder:
         
         # Eigenvector centrality
         try:
-            centrality_measures['eigenvector'] = nx.eigenvector_centrality(self.G, weight='weight')
-        except:
-            # May not converge for some networks
+            centrality_measures['eigenvector'] = nx.eigenvector_centrality(
+                self.G, weight='weight'
+            )
+        except nx.PowerIterationFailedConvergence:
+            logger.warning(
+                "Eigenvector centrality did not converge for graph; returning zeros."
+            )
             centrality_measures['eigenvector'] = {node: 0 for node in self.G.nodes()}
         
         # Betweenness centrality
@@ -267,7 +281,9 @@ class FinancialNetworkBuilder:
                 import community as community_louvain
                 return community_louvain.best_partition(self.G.to_undirected(), weight='weight')
             except ImportError:
-                print("python-louvain package not installed. Using spectral clustering instead.")
+                logger.warning(
+                    "python-louvain package not installed. Using spectral clustering instead."
+                )
                 method = 'spectral'
         
         if method == 'spectral':

@@ -5,37 +5,50 @@ This module provides the BankAgent class which represents a bank in the
 agent-based model and implements its decision-making behaviors.
 """
 
+import logging
+from typing import Any, Dict, List, Optional
+
 import numpy as np
-from typing import Dict, List, Optional, Union, Any, Callable
 
 from .decision_models import DefaultDecisionModel
+
+logger = logging.getLogger(__name__)
+
+# Regulatory thresholds (Basel III / CRD IV)
+_MIN_CET1_SOLVENCY = 4.5   # Minimum CET1 ratio (%) required for solvency
+_MIN_LCR_LIQUIDITY = 100.0  # Minimum LCR (%) required for adequate liquidity
+_LENDING_CAPACITY_FRACTION = 0.10   # Fraction of total assets usable as base lending capacity
+_EXCESS_CAPITAL_NORMALISER = 4.0    # Divisor to scale excess CET1 into a capacity factor
+_CET1_LENDING_THRESHOLD = 8.0       # CET1 % above which capital is considered "excess"
 
 
 class BankAgent:
     """
     Represents a bank in the agent-based model.
-    
+
     Parameters
     ----------
     bank_id : str
-        Unique identifier for the bank
+        Unique identifier for the bank.
     initial_state : dict
-        Dictionary containing initial bank attributes
+        Dictionary containing initial bank attributes.
     decision_model : object, optional
-        Decision model to use for agent behavior, by default DefaultDecisionModel()
-    
+        Decision model to use for agent behavior, by default DefaultDecisionModel().
+
     Attributes
     ----------
     id : str
-        Bank identifier
+        Bank identifier.
     state : dict
-        Current state of the bank
+        Current state of the bank.
     connections : dict
-        Dictionary of connections to other banks
+        Dictionary of connections to other banks.
     memory : list
-        List of past states
+        List of past states (capped at ``memory_length`` entries).
     memory_length : int
-        Maximum number of past states to remember
+        Maximum number of past states to remember (default 10).
+        Can be overridden after initialisation, e.g.
+        ``agent.memory_length = 20``.
     """
     
     def __init__(
@@ -70,12 +83,8 @@ class BankAgent:
         if len(self.memory) > self.memory_length:
             self.memory = self.memory[-self.memory_length:]
         
-        # Update state
-        for key, value in new_state.items():
-            if key in self.state:
-                self.state[key] = value
-            else:
-                self.state[key] = value
+        # Update state (merge new values; add new keys if they don't exist yet)
+        self.state.update(new_state)
     
     def assess_solvency(self) -> bool:
         """
@@ -118,7 +127,7 @@ class BankAgent:
         if 'total_assets' in self.state:
             base_capacity = self.state['total_assets'] * 0.1  # 10% of assets
         else:
-            base_capacity = 1e9  # Default value
+            base_capacity = 0.0  # No total_assets known — cannot fabricate a capacity
         
         # Adjust for liquidity
         liquidity_factor = 1.0
@@ -155,11 +164,13 @@ class BankAgent:
             Dictionary containing lending decisions
         """
         # Use decision model to make lending decisions
-        return self.decision_model.decide_lending_action(
-            self, 
-            potential_borrowers, 
-            market_sentiment
+        action = self.decision_model.decide_lending_action(
+            self,
+            potential_borrowers,
+            market_sentiment,
         )
+        logger.debug("BankAgent %s lending action: %s", self.id, action.get("action"))
+        return action
     
     def decide_borrowing_action(
         self, 
@@ -182,11 +193,13 @@ class BankAgent:
             Dictionary containing borrowing decisions
         """
         # Use decision model to make borrowing decisions
-        return self.decision_model.decide_borrowing_action(
-            self, 
-            potential_lenders, 
-            market_sentiment
+        action = self.decision_model.decide_borrowing_action(
+            self,
+            potential_lenders,
+            market_sentiment,
         )
+        logger.debug("BankAgent %s borrowing action: %s", self.id, action.get("action"))
+        return action
     
     def respond_to_shock(self, shock_params: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -233,3 +246,10 @@ class BankAgent:
             Connection strength
         """
         return self.connections.get(bank_id, 0.0)
+
+    def __repr__(self) -> str:
+        return (
+            f"BankAgent(id={self.id!r},"
+            f" solvent={self.assess_solvency()},"
+            f" liquid={self.assess_liquidity()})"
+        )
