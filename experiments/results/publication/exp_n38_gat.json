@@ -1,0 +1,26 @@
+{
+  "n_banks": 41,
+  "n_snapshots": 178,
+  "threshold": 0.7,
+  "target_autocorr": {
+    "lambda_2": 0.9546186030772437,
+    "spectral_gap": 0.7601616692086355,
+    "spectral_radius": 0.9139496548235861
+  },
+  "edge_stats": {
+    "mean": 106.98876404494382,
+    "std": 129.96524983967117
+  },
+  "simple_split": {
+    "train_r2": 0.8284645279248556,
+    "test_r2": -0.000823974609375
+  },
+  "walk_forward": {
+    "test_r2_mean": -0.10870391130447388,
+    "test_r2_std": 0.20875998613120827,
+    "test_r2_median": -0.14669130245844522,
+    "test_mse_mean": 0.04248732724227011,
+    "test_mse_std": 0.02237024430804067,
+    "n_folds_completed": 4
+  }
+}
