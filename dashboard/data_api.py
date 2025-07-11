@@ -38,19 +38,17 @@ import requests
 logger = logging.getLogger(__name__)
 
 # ── Bank universe ────────────────────────────────────────────────────────────
+# Configurable via scr_financial.config.loader; defaults to eu_10.
 
+from scr_financial.config.loader import load_universe
+
+_default_universe = load_universe("eu_10")
+
+# {bank_id: yahoo_ticker} — built from the config universe
 BANK_TICKERS: Dict[str, str] = {
-    "DE_DBK":  "DBK.DE",
-    "FR_BNP":  "BNP.PA",
-    "ES_SAN":  "SAN.MC",
-    "IT_UCG":  "UCG.MI",
-    "NL_ING":  "INGA.AS",
-    "SE_NDA":  "NDA-FI.HE",
-    "CH_UBS":  "UBSG.SW",
-    "UK_BARC": "BARC.L",
-    "UK_HSBC": "HSBA.L",
-    "FR_ACA":  "ACA.PA",
+    b.id: b.ticker for b in _default_universe.banks
 }
+ALL_BANKS: List[str] = _default_universe.ids
 
 # Sovereign yield ECB series (10Y) per country code
 _ECB_YIELD_SERIES: Dict[str, str] = {
@@ -126,7 +124,6 @@ def fetch_correlation_adjacency(
     -------
     dict  {source_id: {target_id: weight}}  — upper-triangular correlation weights
     """
-    from dashboard.data_loader import ALL_BANKS
     ids = bank_ids or ALL_BANKS
 
     prices = _fetch_prices(ids, period=f"{window_days + 50}d")
@@ -178,7 +175,6 @@ def fetch_bank_market_features(
       shares_outstanding, latest_price, 1y_return, volatility_30d
     """
     import yfinance as yf
-    from dashboard.data_loader import ALL_BANKS
     ids = bank_ids or ALL_BANKS
 
     def _fetch_one(bid: str) -> Tuple[str, Dict[str, Any]]:
@@ -300,7 +296,7 @@ def fetch_system_indicators() -> Dict[str, float]:
         """Aggregate bank stock volatility as funding stress proxy."""
         try:
             import yfinance as yf
-            from dashboard.data_loader import ALL_BANKS
+            # ALL_BANKS available at module level
             prices = _fetch_prices(ALL_BANKS, period="90d")
             if prices.empty:
                 return "bank_vol", None
@@ -359,7 +355,6 @@ def fetch_all(
       prices         : pd.DataFrame  (daily close prices)
       timestamp      : str  (UTC ISO)
     """
-    from dashboard.data_loader import ALL_BANKS
     ids = bank_ids or ALL_BANKS
 
     t0 = time.time()
@@ -404,7 +399,7 @@ def build_simulation_inputs_from_api(
     sys   = data["system"]
 
     bank_data: Dict[str, Any] = {}
-    from dashboard.data_loader import ALL_BANKS
+    # ALL_BANKS available at module level
     for bid in (bank_ids or ALL_BANKS):
         f = feats.get(bid, {})
         total_assets = f.get("total_assets") or 1e12
@@ -458,6 +453,8 @@ def build_daily_graph_snapshots(
     min_corr: float = 0.3,
     stride: int = 1,
     progress_callback: Optional[Any] = None,
+    universe: Optional[str] = None,
+    rmt_denoise: bool = False,
 ) -> List[Dict[str, Any]]:
     """
     Build daily graph snapshots from historical market data for GNN training.
@@ -480,6 +477,12 @@ def build_daily_graph_snapshots(
         Step between consecutive snapshots (1 = every day, 5 = weekly).
     progress_callback : callable(current, total)
         For UI progress updates.
+    universe : str, optional
+        Name of a bank universe from config (e.g. 'eu_10', 'eu_50').
+        Overrides bank_ids when provided.
+    rmt_denoise : bool
+        If True, apply Marchenko-Pastur denoising to the correlation matrix
+        before thresholding (uses constant method from scr_financial.network.rmt).
 
     Returns
     -------
@@ -489,9 +492,18 @@ def build_daily_graph_snapshots(
         compute_laplacian, eigendecomposition, find_spectral_gap,
         analyze_spectral_properties,
     )
-    from dashboard.data_loader import ALL_BANKS
 
-    ids = bank_ids or ALL_BANKS
+    # Resolve bank universe ------------------------------------------------
+    if universe is not None:
+        univ = load_universe(universe)
+        ids = univ.ids
+        # Temporarily patch BANK_TICKERS so _fetch_prices can resolve them
+        _extra_tickers = {b.id: b.ticker for b in univ.banks}
+        for k, v in _extra_tickers.items():
+            if k not in BANK_TICKERS:
+                BANK_TICKERS[k] = v
+    else:
+        ids = bank_ids or ALL_BANKS
     n_banks = len(ids)
 
     # Fetch full price history in one call
@@ -516,6 +528,16 @@ def build_daily_graph_snapshots(
 
         # Correlation adjacency
         corr = ret_window.corr()
+
+        # Optional RMT denoising (Marchenko-Pastur)
+        if rmt_denoise:
+            from scr_financial.network.rmt import denoise_correlation
+            corr_vals = corr.reindex(index=ids, columns=ids).values
+            corr_vals = np.nan_to_num(corr_vals, nan=0.0)
+            np.fill_diagonal(corr_vals, 1.0)
+            corr_vals = denoise_correlation(corr_vals, T=len(ret_window))
+            corr = pd.DataFrame(corr_vals, index=ids, columns=ids)
+
         n = n_banks
         adj = np.zeros((n, n), dtype=np.float32)
         for i, src in enumerate(ids):
