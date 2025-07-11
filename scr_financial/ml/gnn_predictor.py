@@ -81,9 +81,15 @@ class TemporalGNN(nn.Module):
 
     def __init__(self, node_features: int, hidden_dim: int = 64,
                  output_dim: int = 3, num_gat_layers: int = 3,
-                 num_lstm_layers: int = 2, heads: int = 4, dropout: float = 0.1):
+                 num_lstm_layers: int = 2, heads: int = 4, dropout: float = 0.1,
+                 encoder_type: str = "gat"):
         super().__init__()
-        self.gnn = GNNEncoder(node_features, hidden_dim, num_gat_layers, heads, dropout)
+        if encoder_type == "gat":
+            self.gnn = GNNEncoder(node_features, hidden_dim, num_gat_layers, heads, dropout)
+        else:
+            from scr_financial.ml.gnn_variants import create_encoder
+            self.gnn = create_encoder(encoder_type, node_features, hidden_dim,
+                                       num_layers=num_gat_layers, heads=heads, dropout=dropout)
         self.lstm = nn.LSTM(hidden_dim, hidden_dim, num_lstm_layers,
                             batch_first=True, dropout=dropout if num_lstm_layers > 1 else 0.0)
         self.fc = nn.Sequential(
@@ -126,13 +132,15 @@ class GNNPredictor:
 
     def __init__(self, seq_len: int = 10, hidden_dim: int = 64,
                  num_gat_layers: int = 3, num_lstm_layers: int = 2,
-                 heads: int = 4, dropout: float = 0.1):
+                 heads: int = 4, dropout: float = 0.1,
+                 encoder_type: str = "gat"):
         self.seq_len = seq_len
         self.hidden_dim = hidden_dim
         self.num_gat_layers = num_gat_layers
         self.num_lstm_layers = num_lstm_layers
         self.heads = heads
         self.dropout = dropout
+        self.encoder_type = encoder_type
         self.model: Optional[TemporalGNN] = None
         self._trained = False
         self.train_metrics: Dict[str, Any] = {}
@@ -298,6 +306,7 @@ class GNNPredictor:
         self.model = TemporalGNN(
             n_feat, self.hidden_dim, len(TARGET_NAMES),
             self.num_gat_layers, self.num_lstm_layers, self.heads, self.dropout,
+            encoder_type=self.encoder_type,
         )
         n_params = self.model.count_parameters()
         logger.info("TemporalGNN: %d params, %d GAT layers (%d heads), %d LSTM layers, hidden=%d",
