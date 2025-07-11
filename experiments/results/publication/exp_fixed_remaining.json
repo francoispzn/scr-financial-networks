@@ -1,0 +1,34 @@
+{
+  "country_features": {
+    "n_countries": 19,
+    "avg_within_corr": 0.6368,
+    "avg_cross_corr": 0.4296,
+    "r2_with_country": 0.8872,
+    "r2_without": 0.8754,
+    "helps": "True"
+  },
+  "garch_features": {
+    "var_ratio_ac": 0.8535,
+    "r2_with_garch": 0.8704,
+    "r2_without": 0.8754,
+    "helps": "False"
+  },
+  "resilience": {
+    "avg_vulnerability": 0.001615,
+    "vuln_predicts_vol_r": -0.2201,
+    "vuln_predicts_vol_p": 0.2512
+  },
+  "attention_dynamics": {
+    "entropy_mean": 5.2984,
+    "entropy_vol_corr": 0.7594,
+    "entropy_vol_p": 0.0,
+    "interpretation": "Low entropy=concentrated attention on few banks. During stress, attention should concentrate."
+  },
+  "ultimate_classifier": {
+    "n_features_base": 16,
+    "n_features_ultimate": 22,
+    "base_auc_wf": 0.8771,
+    "ultimate_auc_wf": 0.9097,
+    "improvement": 0.0327
+  }
+}
