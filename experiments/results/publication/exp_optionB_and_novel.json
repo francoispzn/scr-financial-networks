@@ -1,0 +1,41 @@
+{
+  "walk_forward_gnn_broadcast": {
+    "tiny_15feat": {
+      "r2_mean": -0.0904,
+      "r2_std": 0.3505,
+      "r2_per_fold": [
+        -0.2896,
+        0.2494,
+        0.2433,
+        -0.5646
+      ],
+      "params": 1363
+    },
+    "small_15feat": {
+      "r2_mean": 0.2135,
+      "r2_std": 0.3483,
+      "r2_per_fold": [
+        0.1017,
+        0.6047,
+        0.4486,
+        -0.3009
+      ],
+      "params": 4835
+    },
+    "medium_15feat": {
+      "r2_mean": 0.1301,
+      "r2_std": 0.254,
+      "r2_per_fold": [
+        0.0816,
+        0.5494,
+        0.0193,
+        -0.1298
+      ],
+      "params": 5171
+    }
+  },
+  "multitask_embedding": {
+    "regression_test_r2": 0.6814,
+    "embedding_classification_auc_mean": 0.9457
+  }
+}
