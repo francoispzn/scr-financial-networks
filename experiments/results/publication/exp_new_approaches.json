@@ -1,0 +1,10 @@
+{
+  "horizon_persistence": {},
+  "gnn_20d": {
+    "r2": 0.0423
+  },
+  "anomaly": {
+    "corr": 0.0204,
+    "anomalies": 13
+  }
+}
