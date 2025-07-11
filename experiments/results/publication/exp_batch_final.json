@@ -1,0 +1,199 @@
+{
+  "multi_target_classification": {
+    "high_vol_5d": {
+      "pos_rate": 0.19063545150501673,
+      "n_positive": 57,
+      "GB_auc_mean": 0.9594,
+      "GB_auc_std": 0.0023,
+      "RF_auc_mean": 0.9431,
+      "RF_auc_std": 0.0173,
+      "LR_auc_mean": 0.8958,
+      "LR_auc_std": 0.0292
+    },
+    "conn_drop_05std": {
+      "pos_rate": 0.12040133779264214,
+      "n_positive": 36,
+      "GB_auc_mean": 0.9263,
+      "GB_auc_std": 0.084,
+      "RF_auc_mean": 0.9461,
+      "RF_auc_std": 0.0546,
+      "LR_auc_mean": 0.8302,
+      "LR_auc_std": 0.119
+    },
+    "corr_spike_5d": {
+      "pos_rate": 0.046822742474916385,
+      "n_positive": 14,
+      "GB_auc_mean": 0.3946,
+      "GB_auc_std": 0.0982,
+      "RF_auc_mean": 0.6991,
+      "RF_auc_std": 0.0455,
+      "LR_auc_mean": 0.7917,
+      "LR_auc_std": 0.0489
+    }
+  },
+  "stacking_ensemble": {
+    "persist": {
+      "r2_mean": 0.2827,
+      "r2_std": 0.6085,
+      "r2_per_fold": [
+        -0.5632,
+        0.5688,
+        0.8425
+      ]
+    },
+    "ar1": {
+      "r2_mean": 0.3204,
+      "r2_std": 0.5669,
+      "r2_per_fold": [
+        -0.468,
+        0.5882,
+        0.8409
+      ]
+    },
+    "gb": {
+      "r2_mean": -0.3956,
+      "r2_std": 1.003,
+      "r2_per_fold": [
+        -1.6028,
+        -0.4371,
+        0.8531
+      ]
+    },
+    "stack": {
+      "r2_mean": 0.2186,
+      "r2_std": 0.5292,
+      "r2_per_fold": [
+        -0.4449,
+        0.2505,
+        0.8501
+      ]
+    }
+  },
+  "residual_correction": {
+    "persist_plus_mlp": {
+      "r2_mean": -0.4558,
+      "r2_std": 0.9869
+    },
+    "ar_plus_mlp": {
+      "r2_mean": -0.3273,
+      "r2_std": 0.8718
+    },
+    "persist": {
+      "r2_mean": 0.2827,
+      "r2_std": 0.6085
+    },
+    "ar": {
+      "r2_mean": 0.3188,
+      "r2_std": 0.5699
+    }
+  },
+  "window_threshold_grid": [
+    {
+      "window": 30,
+      "threshold": 0.5,
+      "n_edges": 804,
+      "density": 0.98,
+      "lambda_2": 0.9301
+    },
+    {
+      "window": 30,
+      "threshold": 0.6,
+      "n_edges": 767,
+      "density": 0.935,
+      "lambda_2": 0.8834
+    },
+    {
+      "window": 30,
+      "threshold": 0.7,
+      "n_edges": 680,
+      "density": 0.829,
+      "lambda_2": 0.8299
+    },
+    {
+      "window": 60,
+      "threshold": 0.5,
+      "n_edges": 769,
+      "density": 0.938,
+      "lambda_2": 0.8762
+    },
+    {
+      "window": 60,
+      "threshold": 0.6,
+      "n_edges": 627,
+      "density": 0.765,
+      "lambda_2": 0.7709
+    },
+    {
+      "window": 60,
+      "threshold": 0.7,
+      "n_edges": 378,
+      "density": 0.461,
+      "lambda_2": 0.5809
+    },
+    {
+      "window": 90,
+      "threshold": 0.5,
+      "n_edges": 753,
+      "density": 0.918,
+      "lambda_2": 0.8494
+    },
+    {
+      "window": 90,
+      "threshold": 0.6,
+      "n_edges": 587,
+      "density": 0.716,
+      "lambda_2": 0.7832
+    },
+    {
+      "window": 90,
+      "threshold": 0.7,
+      "n_edges": 275,
+      "density": 0.335,
+      "lambda_2": 0.2308
+    }
+  ],
+  "virtual_sensors": {
+    "systemic_stress": {
+      "autocorrelation": 0.9853,
+      "corr_with_future_lam2": 0.7672,
+      "p_value": 0.0,
+      "mean": 0.1483,
+      "std": 0.0828
+    },
+    "absorption_ratio": {
+      "autocorrelation": 0.9652,
+      "corr_with_future_lam2": -0.7465,
+      "p_value": 0.0,
+      "mean": 0.1954,
+      "std": 0.0329
+    },
+    "dispersion_index": {
+      "autocorrelation": 0.9754,
+      "corr_with_future_lam2": -0.8358,
+      "p_value": 0.0,
+      "mean": 0.1624,
+      "std": 0.0291
+    },
+    "tail_dependence": {
+      "autocorrelation": 0.9689,
+      "corr_with_future_lam2": 0.8496,
+      "p_value": 0.0,
+      "mean": 0.0407,
+      "std": 0.055
+    },
+    "corr_mean": {
+      "autocorrelation": 0.9818,
+      "corr_with_future_lam2": 0.7012,
+      "p_value": 0.0,
+      "mean": 0.4501,
+      "std": 0.1495
+    },
+    "avg_vol": {
+      "autocorrelation": 0.989,
+      "corr_with_future_lam2": 0.6557,
+      "p_value": 0.0,
+      "mean": 0.3102,
+      "std": 0.077
+    }
+  }
+}
