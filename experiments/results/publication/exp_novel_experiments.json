@@ -1,0 +1,242 @@
+{
+  "novel1_multiscale_risk": {
+    "n_profiles": 31,
+    "stress_prediction_auc": 0.5,
+    "sample_profile": {
+      "k1_risk": 0.0,
+      "k1_r2": 1.0,
+      "k2_risk": 0.0,
+      "k2_r2": 1.0,
+      "k3_risk": 0.0,
+      "k3_r2": 1.0,
+      "k4_risk": 0.0,
+      "k4_r2": 1.0,
+      "k5_risk": 0.0,
+      "k5_r2": 1.0,
+      "risk_gradient": 0.0,
+      "risk_concentration": 0.0,
+      "lam2": 0.9007100103665531,
+      "avg_vol": 0.4865464409832432
+    },
+    "description": "Multi-scale SCG risk profiling \u2014 coarse-grain at k=1..5, track how reconstruction error varies. Risk gradient predicts future stress."
+  },
+  "novel2_attention_systemic": {
+    "top10_by_attention": [
+      [
+        "ISP.MI",
+        0.946
+      ],
+      [
+        "CABK.MC",
+        0.9385
+      ],
+      [
+        "SAN.MC",
+        0.9377
+      ],
+      [
+        "UCG.MI",
+        0.9302
+      ],
+      [
+        "KBC.BR",
+        0.9232
+      ],
+      [
+        "INGA.AS",
+        0.9164
+      ],
+      [
+        "SWED-A.ST",
+        0.9118
+      ],
+      [
+        "BARC.L",
+        0.9094
+      ],
+      [
+        "NDA-FI.HE",
+        0.9028
+      ],
+      [
+        "SEB-A.ST",
+        0.9008
+      ]
+    ],
+    "attention_vs_degree_corr": 0.4453,
+    "attention_vs_degree_p": 0.0051,
+    "description": "GAT attention weights as data-driven systemic importance measure. Alternative to DebtRank that learns from market data."
+  },
+  "novel3_spectral_transitions": {
+    "n_regimes": 5,
+    "transition_matrix": [
+      [
+        0.429,
+        0.286,
+        0.214,
+        0.071,
+        0.0
+      ],
+      [
+        0.386,
+        0.298,
+        0.246,
+        0.07,
+        0.0
+      ],
+      [
+        0.302,
+        0.226,
+        0.358,
+        0.113,
+        0.0
+      ],
+      [
+        0.035,
+        0.14,
+        0.088,
+        0.596,
+        0.14
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.119,
+        0.881
+      ]
+    ],
+    "stationary_distribution": [
+      0.2303,
+      0.1875,
+      0.1743,
+      0.1875,
+      0.2204
+    ],
+    "regime_change_rate": 0.477,
+    "regime_change_prediction_auc": 0.7085,
+    "description": "Spectral lambda_2 modeled as 5-state Markov process. Transition probabilities estimated from data. Graph features predict regime changes."
+  },
+  "novel4_edge_contagion": {
+    "n_edge_samples": 31815,
+    "positive_rate": 0.0802,
+    "contagion_prediction_auc": 0.6371,
+    "description": "Predict which bank PAIRS will see correlation increase (contagion spreading). Edge-level prediction from graph features."
+  },
+  "novel5_scg_abm": {
+    "fixed_lgd_defaults": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "spectral_adapted_defaults": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "fixed_mean": 0.0,
+    "adapted_mean": 0.0,
+    "amplification": 0.0,
+    "description": "SCG-informed ABM: use lambda_2 to dynamically set contagion speed. Higher connectivity = faster contagion propagation."
+  },
+  "novel6_spectral_trajectories": {
+    "top10_most_mobile": [
+      [
+        "ETE.AT",
+        {
+          "mean_displacement": 0.464823,
+          "max_displacement": 1.279749,
+          "total_path_length": 27.8894
+        }
+      ],
+      [
+        "EUROB.AT",
+        {
+          "mean_displacement": 0.432621,
+          "max_displacement": 1.176741,
+          "total_path_length": 25.9572
+        }
+      ],
+      [
+        "CABK.MC",
+        {
+          "mean_displacement": 0.232706,
+          "max_displacement": 0.718281,
+          "total_path_length": 13.9624
+        }
+      ],
+      [
+        "ACA.PA",
+        {
+          "mean_displacement": 0.203858,
+          "max_displacement": 0.681725,
+          "total_path_length": 12.2315
+        }
+      ],
+      [
+        "BNP.PA",
+        {
+          "mean_displacement": 0.202925,
+          "max_displacement": 0.670216,
+          "total_path_length": 12.1755
+        }
+      ],
+      [
+        "GLE.PA",
+        {
+          "mean_displacement": 0.194874,
+          "max_displacement": 0.705019,
+          "total_path_length": 11.6924
+        }
+      ],
+      [
+        "BBVA.MC",
+        {
+          "mean_displacement": 0.187487,
+          "max_displacement": 0.705747,
+          "total_path_length": 11.2492
+        }
+      ],
+      [
+        "BKT.MC",
+        {
+          "mean_displacement": 0.184659,
+          "max_displacement": 0.6886,
+          "total_path_length": 11.0795
+        }
+      ],
+      [
+        "ISP.MI",
+        {
+          "mean_displacement": 0.184592,
+          "max_displacement": 0.601564,
+          "total_path_length": 11.0755
+        }
+      ],
+      [
+        "BARC.L",
+        {
+          "mean_displacement": 0.183357,
+          "max_displacement": 0.488223,
+          "total_path_length": 11.0014
+        }
+      ]
+    ],
+    "n_banks_tracked": 20,
+    "description": "Track each bank position in spectral embedding over time. High spectral mobility = changing systemic role. Novel measure of bank-level systemic importance dynamics."
+  }
+}
