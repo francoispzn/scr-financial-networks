@@ -1,0 +1,6 @@
+{
+  "roll_var_autocorr": 0.9646,
+  "var_ratio_autocorr": 0.819,
+  "surprise_autocorr": -0.0711,
+  "roll_var_r_future_lam2": 0.4262
+}

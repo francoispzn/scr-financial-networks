@@ -1,0 +1,52 @@
+{
+  "systemic_stress": {
+    "autocorr": 0.9859,
+    "r_future_lam2": 0.809,
+    "p_value": 0.0
+  },
+  "absorption_ratio": {
+    "autocorr": 0.9697,
+    "r_future_lam2": -0.7477,
+    "p_value": 0.0
+  },
+  "tail_dependence": {
+    "autocorr": 0.9695,
+    "r_future_lam2": 0.8853,
+    "p_value": 0.0
+  },
+  "corr_std": {
+    "autocorr": 0.9736,
+    "r_future_lam2": -0.858,
+    "p_value": 0.0
+  },
+  "avg_vol": {
+    "autocorr": 0.989,
+    "r_future_lam2": 0.6931,
+    "p_value": 0.0
+  },
+  "corr_mean": {
+    "autocorr": 0.983,
+    "r_future_lam2": 0.7363,
+    "p_value": 0.0
+  },
+  "effective_dim": {
+    "autocorr": 0.9592,
+    "r_future_lam2": 0.6541,
+    "p_value": 0.0
+  },
+  "lead_lag_mean": {
+    "autocorr": 0.9122,
+    "r_future_lam2": 0.3009,
+    "p_value": 0.0
+  },
+  "country_vol_spread": {
+    "autocorr": 0.9684,
+    "r_future_lam2": 0.4354,
+    "p_value": 0.0
+  },
+  "ev_entropy": {
+    "autocorr": 0.9558,
+    "r_future_lam2": 0.6354,
+    "p_value": 0.0
+  }
+}

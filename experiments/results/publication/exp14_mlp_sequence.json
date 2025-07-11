@@ -1,0 +1,6 @@
+{
+  "mlp_r2": 0.4882,
+  "persist_r2": 0.8927,
+  "seq_len": 20,
+  "n_features": 820
+}

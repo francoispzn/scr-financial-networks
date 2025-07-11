@@ -1,0 +1,7 @@
+{
+  "trend_autocorr": 0.9943,
+  "noise_autocorr": 0.9465,
+  "trend_persist_r2": 0.9876,
+  "noise_persist_r2": 0.9111,
+  "trend_var_frac": 0.6142
+}

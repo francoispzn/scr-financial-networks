@@ -1,0 +1,62 @@
+{
+  "high_vol_5d": {
+    "pos_rate": 0.203,
+    "n_pos": 60,
+    "GB_auc": 0.8571,
+    "GB_auc_std": 0.1371,
+    "RF_auc": 0.9523,
+    "RF_auc_std": 0.0292,
+    "LR_auc": 0.9436,
+    "LR_auc_std": 0.0467
+  },
+  "high_vol_10d": {
+    "pos_rate": 0.186,
+    "n_pos": 55,
+    "GB_auc": 0.7214,
+    "GB_auc_std": 0.1595,
+    "RF_auc": 0.8707,
+    "RF_auc_std": 0.0412,
+    "LR_auc": 0.865,
+    "LR_auc_std": 0.054
+  },
+  "conn_drop_5d": {
+    "pos_rate": 0.081,
+    "n_pos": 24,
+    "GB_auc": 0.8082,
+    "GB_auc_std": 0.037,
+    "RF_auc": 0.845,
+    "RF_auc_std": 0.0223,
+    "LR_auc": 0.8658,
+    "LR_auc_std": 0.0723
+  },
+  "conn_drop_10d": {
+    "pos_rate": 0.135,
+    "n_pos": 40,
+    "GB_auc": 0.7727,
+    "GB_auc_std": 0.1366,
+    "RF_auc": 0.8639,
+    "RF_auc_std": 0.048,
+    "LR_auc": 0.8445,
+    "LR_auc_std": 0.0576
+  },
+  "density_inc_5d": {
+    "pos_rate": 0.132,
+    "n_pos": 39,
+    "GB_auc": 0.5574,
+    "GB_auc_std": 0.0953,
+    "RF_auc": 0.6459,
+    "RF_auc_std": 0.0912,
+    "LR_auc": 0.5295,
+    "LR_auc_std": 0.2239
+  },
+  "corr_spike_5d": {
+    "pos_rate": 0.047,
+    "n_pos": 14,
+    "GB_auc": 0.5563,
+    "GB_auc_std": 0.1543,
+    "RF_auc": 0.6512,
+    "RF_auc_std": 0.1417,
+    "LR_auc": 0.6304,
+    "LR_auc_std": 0.0679
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "n_tickers_attempted": 50,
+  "n_tickers_valid": 42,
+  "n_trading_days": 947,
+  "currencies": [
+    "SEK",
+    "CZK",
+    "DKK",
+    "EUR",
+    "PLN",
+    "GBP",
+    "CHF",
+    "NOK",
+    "HUF"
+  ],
+  "countries": [
+    "Poland",
+    "Switzerland",
+    "Austria",
+    "Greece",
+    "Italy",
+    "Portugal",
+    "Germany",
+    "Spain",
+    "France",
+    "Finland",
+    "Belgium",
+    "UK",
+    "Ireland",
+    "Netherlands",
+    "Norway",
+    "Denmark",
+    "Sweden",
+    "Hungary",
+    "Czech Republic"
+  ],
+  "failed_tickers": [
+    "ACA.PA",
+    "AIBG.IR",
+    "BPER.MI",
+    "KN.PA",
+    "ARL.DE",
+    "ALPHA.AT",
+    "CSGN.SW",
+    "DPB.F"
+  ],
+  "date_range": "2021-12-23 00:00:00 to 2026-04-09 00:00:00"
+}

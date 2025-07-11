@@ -1,0 +1,31 @@
+{
+  "lead_lag_mean": 0.0157,
+  "lead_lag_std": 0.106,
+  "top_leaders": [
+    {
+      "idx": 7,
+      "ticker": "BMPS.MI",
+      "score": 0.1198
+    },
+    {
+      "idx": 5,
+      "ticker": "BKT.MC",
+      "score": 0.0833
+    },
+    {
+      "idx": 1,
+      "ticker": "BARC.L",
+      "score": 0.0754
+    },
+    {
+      "idx": 3,
+      "ticker": "BCP.LS",
+      "score": 0.0667
+    },
+    {
+      "idx": 9,
+      "ticker": "CABK.MC",
+      "score": 0.0655
+    }
+  ]
+}

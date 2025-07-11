@@ -1,0 +1,86 @@
+[
+  {
+    "window": 30,
+    "threshold": 0.5,
+    "edges": 834,
+    "density": 0.969,
+    "lam2": 0.9131
+  },
+  {
+    "window": 30,
+    "threshold": 0.6,
+    "edges": 788,
+    "density": 0.915,
+    "lam2": 0.8539
+  },
+  {
+    "window": 30,
+    "threshold": 0.7,
+    "edges": 653,
+    "density": 0.758,
+    "lam2": 0.7491
+  },
+  {
+    "window": 30,
+    "threshold": 0.8,
+    "edges": 357,
+    "density": 0.415,
+    "lam2": 0.4494
+  },
+  {
+    "window": 60,
+    "threshold": 0.5,
+    "edges": 821,
+    "density": 0.954,
+    "lam2": 0.8893
+  },
+  {
+    "window": 60,
+    "threshold": 0.6,
+    "edges": 703,
+    "density": 0.816,
+    "lam2": 0.7717
+  },
+  {
+    "window": 60,
+    "threshold": 0.7,
+    "edges": 425,
+    "density": 0.494,
+    "lam2": 0.5231
+  },
+  {
+    "window": 60,
+    "threshold": 0.8,
+    "edges": 129,
+    "density": 0.15,
+    "lam2": 0.0
+  },
+  {
+    "window": 90,
+    "threshold": 0.5,
+    "edges": 769,
+    "density": 0.893,
+    "lam2": 0.8501
+  },
+  {
+    "window": 90,
+    "threshold": 0.6,
+    "edges": 550,
+    "density": 0.639,
+    "lam2": 0.6273
+  },
+  {
+    "window": 90,
+    "threshold": 0.7,
+    "edges": 263,
+    "density": 0.305,
+    "lam2": 0.1254
+  },
+  {
+    "window": 90,
+    "threshold": 0.8,
+    "edges": 50,
+    "density": 0.058,
+    "lam2": -0.0
+  }
+]

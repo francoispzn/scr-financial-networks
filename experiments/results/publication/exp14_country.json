@@ -1,0 +1,36 @@
+{
+  "n_countries": 19,
+  "country_sizes": {
+    "Netherlands": 2,
+    "UK": 5,
+    "Spain": 5,
+    "Portugal": 1,
+    "Ireland": 1,
+    "Italy": 6,
+    "France": 2,
+    "Germany": 2,
+    "Denmark": 1,
+    "Norway": 1,
+    "Austria": 2,
+    "Greece": 3,
+    "Belgium": 1,
+    "Czech Republic": 1,
+    "Finland": 1,
+    "Sweden": 4,
+    "Hungary": 1,
+    "Poland": 2,
+    "Switzerland": 1
+  },
+  "within_country_corr": {
+    "Netherlands": 0.8586,
+    "UK": 0.7986,
+    "Spain": 0.7878,
+    "Italy": 0.7754,
+    "France": 0.8539,
+    "Germany": 0.8272,
+    "Austria": 0.8307,
+    "Greece": 0.8527,
+    "Sweden": 0.7686,
+    "Poland": 0.8942
+  }
+}
