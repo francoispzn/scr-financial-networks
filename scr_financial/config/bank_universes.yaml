@@ -1,0 +1,170 @@
+eu_10:
+  - {id: DE_DBK, ticker: DBK.DE, name: Deutsche Bank, country: Germany, currency: EUR, region: europe}
+  - {id: FR_BNP, ticker: BNP.PA, name: BNP Paribas, country: France, currency: EUR, region: europe}
+  - {id: FR_SAN, ticker: GLE.PA, name: Societe Generale, country: France, currency: EUR, region: europe}
+  - {id: FR_CA, ticker: ACA.PA, name: Credit Agricole, country: France, currency: EUR, region: europe}
+  - {id: ES_SAN, ticker: SAN.MC, name: Banco Santander, country: Spain, currency: EUR, region: europe}
+  - {id: IT_ISP, ticker: ISP.MI, name: Intesa Sanpaolo, country: Italy, currency: EUR, region: europe}
+  - {id: IT_UCG, ticker: UCG.MI, name: UniCredit, country: Italy, currency: EUR, region: europe}
+  - {id: NL_ING, ticker: INGA.AS, name: ING Group, country: Netherlands, currency: EUR, region: europe}
+  - {id: ES_BBV, ticker: BBVA.MC, name: BBVA, country: Spain, currency: EUR, region: europe}
+  - {id: DE_CBK, ticker: CBK.DE, name: Commerzbank, country: Germany, currency: EUR, region: europe}
+
+eu_50:
+  # -- eu_10 ---------------------------------------------------------------
+  - {id: DE_DBK, ticker: DBK.DE, name: Deutsche Bank, country: Germany, currency: EUR, region: europe}
+  - {id: FR_BNP, ticker: BNP.PA, name: BNP Paribas, country: France, currency: EUR, region: europe}
+  - {id: FR_SAN, ticker: GLE.PA, name: Societe Generale, country: France, currency: EUR, region: europe}
+  - {id: FR_CA, ticker: ACA.PA, name: Credit Agricole, country: France, currency: EUR, region: europe}
+  - {id: ES_SAN, ticker: SAN.MC, name: Banco Santander, country: Spain, currency: EUR, region: europe}
+  - {id: IT_ISP, ticker: ISP.MI, name: Intesa Sanpaolo, country: Italy, currency: EUR, region: europe}
+  - {id: IT_UCG, ticker: UCG.MI, name: UniCredit, country: Italy, currency: EUR, region: europe}
+  - {id: NL_ING, ticker: INGA.AS, name: ING Group, country: Netherlands, currency: EUR, region: europe}
+  - {id: ES_BBV, ticker: BBVA.MC, name: BBVA, country: Spain, currency: EUR, region: europe}
+  - {id: DE_CBK, ticker: CBK.DE, name: Commerzbank, country: Germany, currency: EUR, region: europe}
+  # -- additional european banks -------------------------------------------
+  - {id: GB_HSBA, ticker: HSBA.L, name: HSBC Holdings, country: UK, currency: GBP, region: europe}
+  - {id: GB_BARC, ticker: BARC.L, name: Barclays, country: UK, currency: GBP, region: europe}
+  - {id: GB_LLOY, ticker: LLOY.L, name: Lloyds Banking Group, country: UK, currency: GBP, region: europe}
+  - {id: GB_NWG, ticker: NWG.L, name: NatWest Group, country: UK, currency: GBP, region: europe}
+  - {id: GB_STAN, ticker: STAN.L, name: Standard Chartered, country: UK, currency: GBP, region: europe}
+  - {id: CH_UBS, ticker: UBSG.SW, name: UBS Group, country: Switzerland, currency: CHF, region: europe}
+  - {id: SE_SEB, ticker: SEB-A.ST, name: SEB, country: Sweden, currency: SEK, region: europe}
+  - {id: SE_SWED, ticker: SWED-A.ST, name: Swedbank, country: Sweden, currency: SEK, region: europe}
+  - {id: SE_SHB, ticker: SHB-A.ST, name: Svenska Handelsbanken, country: Sweden, currency: SEK, region: europe}
+  - {id: SE_NDA, ticker: NDA-SE.ST, name: Nordea Bank, country: Sweden, currency: SEK, region: europe}
+  - {id: DK_DANSKE, ticker: DANSKE.CO, name: Danske Bank, country: Denmark, currency: DKK, region: europe}
+  - {id: NO_DNB, ticker: DNB.OL, name: DNB Bank, country: Norway, currency: NOK, region: europe}
+  - {id: FI_NORD, ticker: NDA-FI.HE, name: Nordea Bank (Helsinki), country: Finland, currency: EUR, region: europe}
+  - {id: AT_EBS, ticker: EBS.VI, name: Erste Group Bank, country: Austria, currency: EUR, region: europe}
+  - {id: AT_RBI, ticker: RBI.VI, name: Raiffeisen Bank Intl, country: Austria, currency: EUR, region: europe}
+  - {id: BE_KBC, ticker: KBC.BR, name: KBC Group, country: Belgium, currency: EUR, region: europe}
+  - {id: IE_BIRG, ticker: BIRG.IR, name: Bank of Ireland, country: Ireland, currency: EUR, region: europe}
+  - {id: IE_AIB, ticker: AIBG.IR, name: AIB Group, country: Ireland, currency: EUR, region: europe}
+  - {id: PT_BCP, ticker: BCP.LS, name: Banco Comercial Portugues, country: Portugal, currency: EUR, region: europe}
+  - {id: ES_SAB, ticker: SAB.MC, name: Banco Sabadell, country: Spain, currency: EUR, region: europe}
+  - {id: ES_CABK, ticker: CABK.MC, name: CaixaBank, country: Spain, currency: EUR, region: europe}
+  - {id: ES_BKIA, ticker: BKT.MC, name: Bankinter, country: Spain, currency: EUR, region: europe}
+  - {id: IT_BMED, ticker: BMED.MI, name: Banca Mediolanum, country: Italy, currency: EUR, region: europe}
+  - {id: IT_BPE, ticker: BPER.MI, name: BPER Banca, country: Italy, currency: EUR, region: europe}
+  - {id: IT_FBK, ticker: FBK.MI, name: FinecoBank, country: Italy, currency: EUR, region: europe}
+  - {id: IT_MB, ticker: MB.MI, name: Mediobanca, country: Italy, currency: EUR, region: europe}
+  - {id: FR_NAT, ticker: KN.PA, name: Natixis (now Groupe BPCE), country: France, currency: EUR, region: europe}
+  - {id: DE_ARL, ticker: ARL.DE, name: Aareal Bank, country: Germany, currency: EUR, region: europe}
+  - {id: GR_ETE, ticker: ETE.AT, name: National Bank of Greece, country: Greece, currency: EUR, region: europe}
+  - {id: GR_ALPHA, ticker: ALPHA.AT, name: Alpha Bank, country: Greece, currency: EUR, region: europe}
+  - {id: GR_EUROB, ticker: EUROB.AT, name: Eurobank Ergasias, country: Greece, currency: EUR, region: europe}
+  - {id: GR_TPEIR, ticker: TPEIR.AT, name: Piraeus Financial Holdings, country: Greece, currency: EUR, region: europe}
+  - {id: PL_PKO, ticker: PKO.WA, name: PKO Bank Polski, country: Poland, currency: PLN, region: europe}
+  - {id: PL_PEO, ticker: PEO.WA, name: Bank Pekao, country: Poland, currency: PLN, region: europe}
+  - {id: NL_ABN, ticker: ABN.AS, name: ABN AMRO, country: Netherlands, currency: EUR, region: europe}
+  - {id: CH_CS, ticker: CSGN.SW, name: Credit Suisse (legacy), country: Switzerland, currency: CHF, region: europe}
+  - {id: IT_BMPS, ticker: BMPS.MI, name: Banca Monte dei Paschi, country: Italy, currency: EUR, region: europe}
+  - {id: DE_DPB, ticker: DPB.F, name: Deutsche Pfandbriefbank, country: Germany, currency: EUR, region: europe}
+  - {id: HU_OTP, ticker: OTP.BD, name: OTP Bank, country: Hungary, currency: HUF, region: europe}
+  - {id: CZ_KOMB, ticker: KOMB.PR, name: Komercni Banka, country: Czech Republic, currency: CZK, region: europe}
+
+global_100:
+  # -- eu_50 (all 50) ------------------------------------------------------
+  - {id: DE_DBK, ticker: DBK.DE, name: Deutsche Bank, country: Germany, currency: EUR, region: europe}
+  - {id: FR_BNP, ticker: BNP.PA, name: BNP Paribas, country: France, currency: EUR, region: europe}
+  - {id: FR_SAN, ticker: GLE.PA, name: Societe Generale, country: France, currency: EUR, region: europe}
+  - {id: FR_CA, ticker: ACA.PA, name: Credit Agricole, country: France, currency: EUR, region: europe}
+  - {id: ES_SAN, ticker: SAN.MC, name: Banco Santander, country: Spain, currency: EUR, region: europe}
+  - {id: IT_ISP, ticker: ISP.MI, name: Intesa Sanpaolo, country: Italy, currency: EUR, region: europe}
+  - {id: IT_UCG, ticker: UCG.MI, name: UniCredit, country: Italy, currency: EUR, region: europe}
+  - {id: NL_ING, ticker: INGA.AS, name: ING Group, country: Netherlands, currency: EUR, region: europe}
+  - {id: ES_BBV, ticker: BBVA.MC, name: BBVA, country: Spain, currency: EUR, region: europe}
+  - {id: DE_CBK, ticker: CBK.DE, name: Commerzbank, country: Germany, currency: EUR, region: europe}
+  - {id: GB_HSBA, ticker: HSBA.L, name: HSBC Holdings, country: UK, currency: GBP, region: europe}
+  - {id: GB_BARC, ticker: BARC.L, name: Barclays, country: UK, currency: GBP, region: europe}
+  - {id: GB_LLOY, ticker: LLOY.L, name: Lloyds Banking Group, country: UK, currency: GBP, region: europe}
+  - {id: GB_NWG, ticker: NWG.L, name: NatWest Group, country: UK, currency: GBP, region: europe}
+  - {id: GB_STAN, ticker: STAN.L, name: Standard Chartered, country: UK, currency: GBP, region: europe}
+  - {id: CH_UBS, ticker: UBSG.SW, name: UBS Group, country: Switzerland, currency: CHF, region: europe}
+  - {id: SE_SEB, ticker: SEB-A.ST, name: SEB, country: Sweden, currency: SEK, region: europe}
+  - {id: SE_SWED, ticker: SWED-A.ST, name: Swedbank, country: Sweden, currency: SEK, region: europe}
+  - {id: SE_SHB, ticker: SHB-A.ST, name: Svenska Handelsbanken, country: Sweden, currency: SEK, region: europe}
+  - {id: SE_NDA, ticker: NDA-SE.ST, name: Nordea Bank, country: Sweden, currency: SEK, region: europe}
+  - {id: DK_DANSKE, ticker: DANSKE.CO, name: Danske Bank, country: Denmark, currency: DKK, region: europe}
+  - {id: NO_DNB, ticker: DNB.OL, name: DNB Bank, country: Norway, currency: NOK, region: europe}
+  - {id: FI_NORD, ticker: NDA-FI.HE, name: Nordea Bank (Helsinki), country: Finland, currency: EUR, region: europe}
+  - {id: AT_EBS, ticker: EBS.VI, name: Erste Group Bank, country: Austria, currency: EUR, region: europe}
+  - {id: AT_RBI, ticker: RBI.VI, name: Raiffeisen Bank Intl, country: Austria, currency: EUR, region: europe}
+  - {id: BE_KBC, ticker: KBC.BR, name: KBC Group, country: Belgium, currency: EUR, region: europe}
+  - {id: IE_BIRG, ticker: BIRG.IR, name: Bank of Ireland, country: Ireland, currency: EUR, region: europe}
+  - {id: IE_AIB, ticker: AIBG.IR, name: AIB Group, country: Ireland, currency: EUR, region: europe}
+  - {id: PT_BCP, ticker: BCP.LS, name: Banco Comercial Portugues, country: Portugal, currency: EUR, region: europe}
+  - {id: ES_SAB, ticker: SAB.MC, name: Banco Sabadell, country: Spain, currency: EUR, region: europe}
+  - {id: ES_CABK, ticker: CABK.MC, name: CaixaBank, country: Spain, currency: EUR, region: europe}
+  - {id: ES_BKIA, ticker: BKT.MC, name: Bankinter, country: Spain, currency: EUR, region: europe}
+  - {id: IT_BMED, ticker: BMED.MI, name: Banca Mediolanum, country: Italy, currency: EUR, region: europe}
+  - {id: IT_BPE, ticker: BPER.MI, name: BPER Banca, country: Italy, currency: EUR, region: europe}
+  - {id: IT_FBK, ticker: FBK.MI, name: FinecoBank, country: Italy, currency: EUR, region: europe}
+  - {id: IT_MB, ticker: MB.MI, name: Mediobanca, country: Italy, currency: EUR, region: europe}
+  - {id: FR_NAT, ticker: KN.PA, name: Natixis (now Groupe BPCE), country: France, currency: EUR, region: europe}
+  - {id: DE_ARL, ticker: ARL.DE, name: Aareal Bank, country: Germany, currency: EUR, region: europe}
+  - {id: GR_ETE, ticker: ETE.AT, name: National Bank of Greece, country: Greece, currency: EUR, region: europe}
+  - {id: GR_ALPHA, ticker: ALPHA.AT, name: Alpha Bank, country: Greece, currency: EUR, region: europe}
+  - {id: GR_EUROB, ticker: EUROB.AT, name: Eurobank Ergasias, country: Greece, currency: EUR, region: europe}
+  - {id: GR_TPEIR, ticker: TPEIR.AT, name: Piraeus Financial Holdings, country: Greece, currency: EUR, region: europe}
+  - {id: PL_PKO, ticker: PKO.WA, name: PKO Bank Polski, country: Poland, currency: PLN, region: europe}
+  - {id: PL_PEO, ticker: PEO.WA, name: Bank Pekao, country: Poland, currency: PLN, region: europe}
+  - {id: NL_ABN, ticker: ABN.AS, name: ABN AMRO, country: Netherlands, currency: EUR, region: europe}
+  - {id: CH_CS, ticker: CSGN.SW, name: Credit Suisse (legacy), country: Switzerland, currency: CHF, region: europe}
+  - {id: IT_BMPS, ticker: BMPS.MI, name: Banca Monte dei Paschi, country: Italy, currency: EUR, region: europe}
+  - {id: DE_DPB, ticker: DPB.F, name: Deutsche Pfandbriefbank, country: Germany, currency: EUR, region: europe}
+  - {id: HU_OTP, ticker: OTP.BD, name: OTP Bank, country: Hungary, currency: HUF, region: europe}
+  - {id: CZ_KOMB, ticker: KOMB.PR, name: Komercni Banka, country: Czech Republic, currency: CZK, region: europe}
+  # -- United States -------------------------------------------------------
+  - {id: US_JPM, ticker: JPM, name: JPMorgan Chase, country: USA, currency: USD, region: north_america}
+  - {id: US_BAC, ticker: BAC, name: Bank of America, country: USA, currency: USD, region: north_america}
+  - {id: US_C, ticker: C, name: Citigroup, country: USA, currency: USD, region: north_america}
+  - {id: US_WFC, ticker: WFC, name: Wells Fargo, country: USA, currency: USD, region: north_america}
+  - {id: US_GS, ticker: GS, name: Goldman Sachs, country: USA, currency: USD, region: north_america}
+  - {id: US_MS, ticker: MS, name: Morgan Stanley, country: USA, currency: USD, region: north_america}
+  - {id: US_USB, ticker: USB, name: US Bancorp, country: USA, currency: USD, region: north_america}
+  - {id: US_PNC, ticker: PNC, name: PNC Financial, country: USA, currency: USD, region: north_america}
+  - {id: US_TFC, ticker: TFC, name: Truist Financial, country: USA, currency: USD, region: north_america}
+  - {id: US_COF, ticker: COF, name: Capital One, country: USA, currency: USD, region: north_america}
+  - {id: US_BK, ticker: BK, name: Bank of New York Mellon, country: USA, currency: USD, region: north_america}
+  - {id: US_STT, ticker: STT, name: State Street, country: USA, currency: USD, region: north_america}
+  - {id: US_SCHW, ticker: SCHW, name: Charles Schwab, country: USA, currency: USD, region: north_america}
+  - {id: US_AXP, ticker: AXP, name: American Express, country: USA, currency: USD, region: north_america}
+  - {id: US_FITB, ticker: FITB, name: Fifth Third Bancorp, country: USA, currency: USD, region: north_america}
+  # -- Canada --------------------------------------------------------------
+  - {id: CA_RY, ticker: RY.TO, name: Royal Bank of Canada, country: Canada, currency: CAD, region: north_america}
+  - {id: CA_TD, ticker: TD.TO, name: Toronto-Dominion Bank, country: Canada, currency: CAD, region: north_america}
+  - {id: CA_BNS, ticker: BNS.TO, name: Bank of Nova Scotia, country: Canada, currency: CAD, region: north_america}
+  - {id: CA_BMO, ticker: BMO.TO, name: Bank of Montreal, country: Canada, currency: CAD, region: north_america}
+  - {id: CA_CM, ticker: CM.TO, name: CIBC, country: Canada, currency: CAD, region: north_america}
+  # -- Japan ---------------------------------------------------------------
+  - {id: JP_MUFG, ticker: 8306.T, name: Mitsubishi UFJ Financial, country: Japan, currency: JPY, region: asia_pacific}
+  - {id: JP_SMFG, ticker: 8316.T, name: Sumitomo Mitsui Financial, country: Japan, currency: JPY, region: asia_pacific}
+  - {id: JP_MFG, ticker: 8411.T, name: Mizuho Financial, country: Japan, currency: JPY, region: asia_pacific}
+  - {id: JP_NMR, ticker: 8604.T, name: Nomura Holdings, country: Japan, currency: JPY, region: asia_pacific}
+  - {id: JP_DAIWA, ticker: 8601.T, name: Daiwa Securities, country: Japan, currency: JPY, region: asia_pacific}
+  # -- China / Hong Kong ---------------------------------------------------
+  - {id: CN_ICBC, ticker: 1398.HK, name: ICBC, country: China, currency: HKD, region: asia_pacific}
+  - {id: CN_CCB, ticker: 0939.HK, name: China Construction Bank, country: China, currency: HKD, region: asia_pacific}
+  - {id: CN_BOC, ticker: 3988.HK, name: Bank of China, country: China, currency: HKD, region: asia_pacific}
+  - {id: CN_ABC, ticker: 1288.HK, name: Agricultural Bank of China, country: China, currency: HKD, region: asia_pacific}
+  - {id: CN_CMB, ticker: 3968.HK, name: China Merchants Bank, country: China, currency: HKD, region: asia_pacific}
+  # -- Australia -----------------------------------------------------------
+  - {id: AU_CBA, ticker: CBA.AX, name: Commonwealth Bank of Australia, country: Australia, currency: AUD, region: asia_pacific}
+  - {id: AU_WBC, ticker: WBC.AX, name: Westpac Banking, country: Australia, currency: AUD, region: asia_pacific}
+  - {id: AU_NAB, ticker: NAB.AX, name: National Australia Bank, country: Australia, currency: AUD, region: asia_pacific}
+  - {id: AU_ANZ, ticker: ANZ.AX, name: ANZ Group, country: Australia, currency: AUD, region: asia_pacific}
+  - {id: AU_MQG, ticker: MQG.AX, name: Macquarie Group, country: Australia, currency: AUD, region: asia_pacific}
+  # -- Singapore / India ---------------------------------------------------
+  - {id: SG_DBS, ticker: D05.SI, name: DBS Group, country: Singapore, currency: SGD, region: asia_pacific}
+  - {id: SG_OCBC, ticker: O39.SI, name: OCBC Bank, country: Singapore, currency: SGD, region: asia_pacific}
+  - {id: SG_UOB, ticker: U11.SI, name: United Overseas Bank, country: Singapore, currency: SGD, region: asia_pacific}
+  - {id: IN_SBIN, ticker: SBIN.NS, name: State Bank of India, country: India, currency: INR, region: asia_pacific}
+  - {id: IN_HDFC, ticker: HDFCBANK.NS, name: HDFC Bank, country: India, currency: INR, region: asia_pacific}
+  # -- Brazil / South Africa -----------------------------------------------
+  - {id: BR_ITUB, ticker: ITUB4.SA, name: Itau Unibanco, country: Brazil, currency: BRL, region: latam}
+  - {id: BR_BBDC, ticker: BBDC4.SA, name: Bradesco, country: Brazil, currency: BRL, region: latam}
+  - {id: BR_BBAS, ticker: BBAS3.SA, name: Banco do Brasil, country: Brazil, currency: BRL, region: latam}
+  - {id: ZA_FSR, ticker: FSR.JO, name: FirstRand, country: South Africa, currency: ZAR, region: africa}
+  - {id: ZA_SBK, ticker: SBK.JO, name: Standard Bank Group, country: South Africa, currency: ZAR, region: africa}
