@@ -1,0 +1,119 @@
+{
+  "n_banks": 19,
+  "available_tickers": [
+    "BAC",
+    "BK",
+    "C",
+    "CFG",
+    "COF",
+    "GS",
+    "HBAN",
+    "JPM",
+    "KEY",
+    "MS",
+    "PNC",
+    "RF",
+    "SCHW",
+    "STT",
+    "TFC",
+    "USB",
+    "WAL",
+    "WFC",
+    "ZION"
+  ],
+  "period": "2021-01-01 to 2023-06-30",
+  "n_snapshots": 565,
+  "svb_analysis": {
+    "pre_svb_avg_vol": 0.2688,
+    "crisis_avg_vol": 0.365,
+    "pre_svb_systemic_stress": 0.1547,
+    "crisis_systemic_stress": 0.2435,
+    "vol_increase_ranking": [
+      [
+        "WAL",
+        0.5177
+      ],
+      [
+        "KEY",
+        0.2219
+      ],
+      [
+        "ZION",
+        0.2129
+      ],
+      [
+        "SCHW",
+        0.1907
+      ],
+      [
+        "HBAN",
+        0.1431
+      ],
+      [
+        "TFC",
+        0.1184
+      ],
+      [
+        "USB",
+        0.0995
+      ],
+      [
+        "CFG",
+        0.0896
+      ],
+      [
+        "WFC",
+        0.0579
+      ],
+      [
+        "RF",
+        0.0476
+      ]
+    ],
+    "fiedler_ranking": [
+      [
+        "SCHW",
+        0.7161
+      ],
+      [
+        "PNC",
+        0.218
+      ],
+      [
+        "C",
+        0.2063
+      ],
+      [
+        "RF",
+        0.1932
+      ],
+      [
+        "COF",
+        0.1884
+      ],
+      [
+        "KEY",
+        0.1844
+      ],
+      [
+        "JPM",
+        0.1819
+      ],
+      [
+        "HBAN",
+        0.1748
+      ],
+      [
+        "WAL",
+        0.1742
+      ],
+      [
+        "MS",
+        0.1733
+      ]
+    ],
+    "WAL_vol_change": 0.5177,
+    "ZION_vol_change": 0.2129,
+    "SCHW_vol_change": 0.1907
+  }
+}
