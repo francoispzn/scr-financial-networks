@@ -1,0 +1,249 @@
+{
+  "experiment": "spectral_embedding_features",
+  "description": "Spectral embedding coordinates (eigenvector components) as node features. For each snapshot: first 3 non-trivial eigenvector components, node contribution to lambda_2, spectral distance to centroid. Original 5 features + 5 spectral = 10 features per node.",
+  "data_config": {
+    "universe": "eu_50",
+    "threshold": 0.6,
+    "stride": 3,
+    "corr_window": 60,
+    "lookback_years": 3,
+    "n_snapshots": 366,
+    "n_nodes": 39
+  },
+  "model_config": {
+    "hidden_dim": 8,
+    "num_gat_layers": 1,
+    "num_lstm_layers": 1,
+    "heads": 2,
+    "dropout": 0.3,
+    "epochs": 200,
+    "patience": 30,
+    "lr": 0.003
+  },
+  "spectral_features": [
+    "eigvec_1(i): Fiedler vector component",
+    "eigvec_2(i): 2nd non-trivial eigenvector component",
+    "eigvec_3(i): 3rd non-trivial eigenvector component",
+    "|u_1(i)|^2: node contribution to algebraic connectivity",
+    "spectral_distance_to_centroid: Euclidean distance in spectral space"
+  ],
+  "seq_len_comparison": {
+    "5": {
+      "seq_len": 5,
+      "n_features": 10,
+      "train_r2": 0.6299336155255636,
+      "test_r2": 0.2737134297688802,
+      "test_mse": 0.0387093611061573,
+      "test_r2_per_target": {
+        "lambda_2": 0.40134525299072266,
+        "spectral_gap": 0.05219089984893799,
+        "spectral_radius": 0.36760413646698
+      },
+      "train_mse": 0.017618758603930473,
+      "training_time_s": 12.4,
+      "n_snapshots": 366,
+      "n_sequences": 361,
+      "epochs_trained": 65,
+      "n_params": 747
+    },
+    "10": {
+      "seq_len": 10,
+      "n_features": 10,
+      "train_r2": 0.6226847171783447,
+      "test_r2": 0.29833205540974933,
+      "test_mse": 0.03529190272092819,
+      "test_r2_per_target": {
+        "lambda_2": 0.42122048139572144,
+        "spectral_gap": 0.07646942138671875,
+        "spectral_radius": 0.39730626344680786
+      },
+      "train_mse": 0.018084490671753883,
+      "training_time_s": 15.6,
+      "n_snapshots": 366,
+      "n_sequences": 356,
+      "epochs_trained": 60,
+      "n_params": 747
+    },
+    "20": {
+      "seq_len": 20,
+      "n_features": 10,
+      "train_r2": 0.19982955853144327,
+      "test_r2": 0.015706340471903484,
+      "test_mse": 0.046700939536094666,
+      "test_r2_per_target": {
+        "lambda_2": 0.04412496089935303,
+        "spectral_gap": -0.09423410892486572,
+        "spectral_radius": 0.09722816944122314
+      },
+      "train_mse": 0.04543871432542801,
+      "training_time_s": 24.4,
+      "n_snapshots": 366,
+      "n_sequences": 346,
+      "epochs_trained": 65,
+      "n_params": 747
+    },
+    "30": {
+      "seq_len": 30,
+      "n_features": 10,
+      "train_r2": 0.6192831595738729,
+      "test_r2": 0.03741661707560221,
+      "test_mse": 0.037828873842954636,
+      "test_r2_per_target": {
+        "lambda_2": 0.09951132535934448,
+        "spectral_gap": -0.09071636199951172,
+        "spectral_radius": 0.10345488786697388
+      },
+      "train_mse": 0.016449812799692154,
+      "training_time_s": 33.5,
+      "n_snapshots": 366,
+      "n_sequences": 336,
+      "epochs_trained": 65,
+      "n_params": 747
+    }
+  },
+  "best_seq_len": 10,
+  "best_test_r2": 0.29833205540974933,
+  "baseline_5_features": {
+    "seq_len": 10,
+    "n_features": 5,
+    "train_r2": 0.6704421043395996,
+    "test_r2": 0.30856966972351074,
+    "test_mse": 0.03520020842552185,
+    "test_r2_per_target": {
+      "lambda_2": 0.4317393898963928,
+      "spectral_gap": 0.10973775386810303,
+      "spectral_radius": 0.3842318654060364
+    },
+    "train_mse": 0.01500976923853159,
+    "training_time_s": 14.2,
+    "epochs_trained": 60,
+    "n_params": 707
+  },
+  "walk_forward_cv_spectral": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "train_size": 60,
+        "test_size": 36,
+        "train_r2": 0.8481829166412354,
+        "test_r2": -0.6836124261220297,
+        "test_mse": 0.014692975208163261,
+        "test_r2_per_target": {
+          "lambda_2": -1.0,
+          "spectral_gap": -0.05083727836608887,
+          "spectral_radius": -1.0
+        },
+        "training_time_s": 14.6,
+        "epochs_trained": 200
+      },
+      {
+        "fold": 1,
+        "train_size": 148,
+        "test_size": 36,
+        "train_r2": 0.904859185218811,
+        "test_r2": -0.009508927663167318,
+        "test_mse": 0.007126099895685911,
+        "test_r2_per_target": {
+          "lambda_2": 0.0,
+          "spectral_gap": -0.028526782989501953,
+          "spectral_radius": 0.0
+        },
+        "training_time_s": 20.0,
+        "epochs_trained": 135
+      },
+      {
+        "fold": 2,
+        "train_size": 236,
+        "test_size": 36,
+        "train_r2": 0.07749732335408528,
+        "test_r2": -0.3155548572540283,
+        "test_mse": 0.007112170569598675,
+        "test_r2_per_target": {
+          "lambda_2": -0.36314189434051514,
+          "spectral_gap": -0.5256029367446899,
+          "spectral_radius": -0.05791974067687988
+        },
+        "training_time_s": 7.5,
+        "epochs_trained": 35
+      }
+    ],
+    "aggregate": {
+      "test_r2_mean": -0.3362254036797418,
+      "test_r2_std": 0.2755894715886567,
+      "test_r2_median": -0.3155548572540283,
+      "test_mse_mean": 0.009643748557815949,
+      "test_mse_std": 0.0035703469328590897,
+      "n_folds_completed": 3
+    },
+    "cv_config": {
+      "n_splits": 3,
+      "min_train_size": 60,
+      "test_size": 36,
+      "gap_size": 5
+    }
+  },
+  "walk_forward_cv_baseline": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "train_size": 60,
+        "test_size": 36,
+        "train_r2": 0.1392537554105123,
+        "test_r2": -0.6650823752085367,
+        "test_mse": 0.05235841125249863,
+        "test_r2_per_target": {
+          "lambda_2": -1.0,
+          "spectral_gap": 0.0047528743743896484,
+          "spectral_radius": -1.0
+        },
+        "training_time_s": 3.6,
+        "epochs_trained": 50
+      },
+      {
+        "fold": 1,
+        "train_size": 148,
+        "test_size": 36,
+        "train_r2": 0.8766739169756571,
+        "test_r2": -0.05004032452901205,
+        "test_mse": 0.007549406960606575,
+        "test_r2_per_target": {
+          "lambda_2": 0.0,
+          "spectral_gap": -0.15012097358703613,
+          "spectral_radius": 0.0
+        },
+        "training_time_s": 14.4,
+        "epochs_trained": 95
+      },
+      {
+        "fold": 2,
+        "train_size": 236,
+        "test_size": 36,
+        "train_r2": 0.27950676282246906,
+        "test_r2": -0.33492831389109295,
+        "test_mse": 0.006504095625132322,
+        "test_r2_per_target": {
+          "lambda_2": -0.7073956727981567,
+          "spectral_gap": -0.30103445053100586,
+          "spectral_radius": 0.003645181655883789
+        },
+        "training_time_s": 7.8,
+        "epochs_trained": 40
+      }
+    ],
+    "aggregate": {
+      "test_r2_mean": -0.3500170045428806,
+      "test_r2_std": 0.251316443904503,
+      "test_r2_median": -0.33492831389109295,
+      "test_mse_mean": 0.02213730461274584,
+      "test_mse_std": 0.021373810046339425,
+      "n_folds_completed": 3
+    },
+    "cv_config": {
+      "n_splits": 3,
+      "min_train_size": 60,
+      "test_size": 36,
+      "gap_size": 5
+    }
+  },
+  "total_time_s": 255.2
+}

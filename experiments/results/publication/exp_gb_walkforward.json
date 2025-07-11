@@ -1,0 +1,473 @@
+{
+  "n_snapshots": 219,
+  "n_features": 36,
+  "feature_names": [
+    "n_edges",
+    "density",
+    "avg_degree",
+    "std_degree",
+    "max_degree",
+    "clustering_coeff",
+    "assortativity",
+    "n_components",
+    "corr_mean",
+    "corr_std",
+    "corr_q25",
+    "corr_q75",
+    "corr_skew",
+    "corr_kurt",
+    "avg_vol",
+    "std_vol",
+    "avg_return",
+    "std_return",
+    "avg_beta",
+    "avg_momentum",
+    "lam2",
+    "gap",
+    "rho",
+    "ev_entropy",
+    "ev_ratio_12",
+    "ev_sum",
+    "ev_std",
+    "scg_risk",
+    "spectral_resilience",
+    "fiedler_ratio",
+    "lam2_change",
+    "gap_change",
+    "rho_change",
+    "edge_change_abs",
+    "vol_change",
+    "corr_mean_change"
+  ],
+  "cv_config": {
+    "n_splits": 5,
+    "min_train_size": 100,
+    "test_size": 40,
+    "gap_size": 10
+  },
+  "horizons": {
+    "h=1": {
+      "gb": {
+        "r2_mean": 0.3812,
+        "r2_std": 0.3618,
+        "per_target_r2_mean": {
+          "lambda_2": 0.4362,
+          "spectral_gap": -0.5104,
+          "spectral_radius": 0.52
+        },
+        "per_target_r2_std": {
+          "lambda_2": 0.4006,
+          "spectral_gap": 1.1404,
+          "spectral_radius": 0.3533
+        }
+      },
+      "persistence": {
+        "r2_mean": 0.7132,
+        "r2_std": 0.1359,
+        "per_target_r2_mean": {
+          "lambda_2": 0.7745,
+          "spectral_gap": 0.2123,
+          "spectral_radius": 0.7218
+        },
+        "per_target_r2_std": {
+          "lambda_2": 0.1181,
+          "spectral_gap": 0.6452,
+          "spectral_radius": 0.0855
+        }
+      },
+      "diebold_mariano_aggregate": {
+        "dm_stat": -4.2753,
+        "p_value": 0.0,
+        "n_errors": 600,
+        "significant_0.05": true,
+        "gb_significantly_better": false
+      },
+      "diebold_mariano_per_target": {
+        "lambda_2": {
+          "dm_stat": -2.8774,
+          "p_value": 0.004,
+          "significant_0.05": true
+        },
+        "spectral_gap": {
+          "dm_stat": -3.2651,
+          "p_value": 0.0011,
+          "significant_0.05": true
+        },
+        "spectral_radius": {
+          "dm_stat": -3.1758,
+          "p_value": 0.0015,
+          "significant_0.05": true
+        }
+      },
+      "fold_details": [
+        {
+          "fold": 1,
+          "train_size": 100,
+          "test_size": 40,
+          "gb_r2": -0.2134,
+          "persist_r2": 0.8988,
+          "gb_per_target": {
+            "lambda_2": -0.2514,
+            "spectral_gap": -0.1561,
+            "spectral_radius": -0.1535
+          },
+          "persist_per_target": {
+            "lambda_2": 0.9318,
+            "spectral_gap": 0.8485,
+            "spectral_radius": 0.8471
+          }
+        },
+        {
+          "fold": 2,
+          "train_size": 117,
+          "test_size": 40,
+          "gb_r2": 0.1361,
+          "persist_r2": 0.4941,
+          "gb_per_target": {
+            "lambda_2": 0.2159,
+            "spectral_gap": -2.7065,
+            "spectral_radius": 0.5003
+          },
+          "persist_per_target": {
+            "lambda_2": 0.579,
+            "spectral_gap": -0.6725,
+            "spectral_radius": 0.5812
+          }
+        },
+        {
+          "fold": 3,
+          "train_size": 134,
+          "test_size": 40,
+          "gb_r2": 0.6075,
+          "persist_r2": 0.6452,
+          "gb_per_target": {
+            "lambda_2": 0.6753,
+            "spectral_gap": -0.4176,
+            "spectral_radius": 0.6687
+          },
+          "persist_per_target": {
+            "lambda_2": 0.7242,
+            "spectral_gap": -0.4635,
+            "spectral_radius": 0.7044
+          }
+        },
+        {
+          "fold": 4,
+          "train_size": 151,
+          "test_size": 40,
+          "gb_r2": 0.7147,
+          "persist_r2": 0.7709,
+          "gb_per_target": {
+            "lambda_2": 0.7668,
+            "spectral_gap": 0.4521,
+            "spectral_radius": 0.7945
+          },
+          "persist_per_target": {
+            "lambda_2": 0.806,
+            "spectral_gap": 0.7448,
+            "spectral_radius": 0.7267
+          }
+        },
+        {
+          "fold": 5,
+          "train_size": 168,
+          "test_size": 40,
+          "gb_r2": 0.661,
+          "persist_r2": 0.7568,
+          "gb_per_target": {
+            "lambda_2": 0.7745,
+            "spectral_gap": 0.2762,
+            "spectral_radius": 0.7897
+          },
+          "persist_per_target": {
+            "lambda_2": 0.8314,
+            "spectral_gap": 0.6044,
+            "spectral_radius": 0.7494
+          }
+        }
+      ]
+    },
+    "h=5": {
+      "gb": {
+        "r2_mean": -1.3211,
+        "r2_std": 3.2579,
+        "per_target_r2_mean": {
+          "lambda_2": -1.2909,
+          "spectral_gap": -26.0361,
+          "spectral_radius": 0.4513
+        },
+        "per_target_r2_std": {
+          "lambda_2": 3.6337,
+          "spectral_gap": 46.0275,
+          "spectral_radius": 0.1917
+        }
+      },
+      "persistence": {
+        "r2_mean": 0.3217,
+        "r2_std": 0.2541,
+        "per_target_r2_mean": {
+          "lambda_2": 0.3712,
+          "spectral_gap": -0.7663,
+          "spectral_radius": 0.3495
+        },
+        "per_target_r2_std": {
+          "lambda_2": 0.236,
+          "spectral_gap": 1.4899,
+          "spectral_radius": 0.2165
+        }
+      },
+      "diebold_mariano_aggregate": {
+        "dm_stat": -2.5097,
+        "p_value": 0.0121,
+        "n_errors": 600,
+        "significant_0.05": true,
+        "gb_significantly_better": false
+      },
+      "diebold_mariano_per_target": {
+        "lambda_2": {
+          "dm_stat": -1.2604,
+          "p_value": 0.2075,
+          "significant_0.05": false
+        },
+        "spectral_gap": {
+          "dm_stat": -1.9862,
+          "p_value": 0.047,
+          "significant_0.05": true
+        },
+        "spectral_radius": {
+          "dm_stat": 0.0514,
+          "p_value": 0.959,
+          "significant_0.05": false
+        }
+      },
+      "fold_details": [
+        {
+          "fold": 1,
+          "train_size": 100,
+          "test_size": 40,
+          "gb_r2": -0.1604,
+          "persist_r2": 0.6106,
+          "gb_per_target": {
+            "lambda_2": 0.4378,
+            "spectral_gap": -2.7905,
+            "spectral_radius": 0.3368
+          },
+          "persist_per_target": {
+            "lambda_2": 0.5938,
+            "spectral_gap": 0.6284,
+            "spectral_radius": 0.6377
+          }
+        },
+        {
+          "fold": 2,
+          "train_size": 116,
+          "test_size": 40,
+          "gb_r2": -7.8118,
+          "persist_r2": -0.151,
+          "gb_per_target": {
+            "lambda_2": -8.5573,
+            "spectral_gap": -117.7184,
+            "spectral_radius": 0.1584
+          },
+          "persist_per_target": {
+            "lambda_2": -0.0855,
+            "spectral_gap": -3.1472,
+            "spectral_radius": -0.0353
+          }
+        },
+        {
+          "fold": 3,
+          "train_size": 132,
+          "test_size": 40,
+          "gb_r2": 0.1734,
+          "persist_r2": 0.3545,
+          "gb_per_target": {
+            "lambda_2": 0.4981,
+            "spectral_gap": -10.7721,
+            "spectral_radius": 0.4492
+          },
+          "persist_per_target": {
+            "lambda_2": 0.4446,
+            "spectral_gap": -1.8843,
+            "spectral_radius": 0.3813
+          }
+        },
+        {
+          "fold": 4,
+          "train_size": 148,
+          "test_size": 40,
+          "gb_r2": 0.5669,
+          "persist_r2": 0.4386,
+          "gb_per_target": {
+            "lambda_2": 0.5435,
+            "spectral_gap": 0.5256,
+            "spectral_radius": 0.6337
+          },
+          "persist_per_target": {
+            "lambda_2": 0.4824,
+            "spectral_gap": 0.3895,
+            "spectral_radius": 0.3907
+          }
+        },
+        {
+          "fold": 5,
+          "train_size": 164,
+          "test_size": 40,
+          "gb_r2": 0.6267,
+          "persist_r2": 0.356,
+          "gb_per_target": {
+            "lambda_2": 0.623,
+            "spectral_gap": 0.5749,
+            "spectral_radius": 0.6782
+          },
+          "persist_per_target": {
+            "lambda_2": 0.421,
+            "spectral_gap": 0.1823,
+            "spectral_radius": 0.3729
+          }
+        }
+      ]
+    },
+    "h=10": {
+      "gb": {
+        "r2_mean": -1.8756,
+        "r2_std": 2.1922,
+        "per_target_r2_mean": {
+          "lambda_2": -1.9121,
+          "spectral_gap": -26.685,
+          "spectral_radius": -0.0614
+        },
+        "per_target_r2_std": {
+          "lambda_2": 2.3544,
+          "spectral_gap": 35.9996,
+          "spectral_radius": 0.5771
+        }
+      },
+      "persistence": {
+        "r2_mean": -0.5201,
+        "r2_std": 0.4399,
+        "per_target_r2_mean": {
+          "lambda_2": -0.4787,
+          "spectral_gap": -1.9249,
+          "spectral_radius": -0.4586
+        },
+        "per_target_r2_std": {
+          "lambda_2": 0.4456,
+          "spectral_gap": 1.9799,
+          "spectral_radius": 0.4868
+        }
+      },
+      "diebold_mariano_aggregate": {
+        "dm_stat": -1.3031,
+        "p_value": 0.1925,
+        "n_errors": 600,
+        "significant_0.05": false,
+        "gb_significantly_better": false
+      },
+      "diebold_mariano_per_target": {
+        "lambda_2": {
+          "dm_stat": -0.8824,
+          "p_value": 0.3776,
+          "significant_0.05": false
+        },
+        "spectral_gap": {
+          "dm_stat": -2.2682,
+          "p_value": 0.0233,
+          "significant_0.05": true
+        },
+        "spectral_radius": {
+          "dm_stat": 1.6145,
+          "p_value": 0.1064,
+          "significant_0.05": false
+        }
+      },
+      "fold_details": [
+        {
+          "fold": 1,
+          "train_size": 100,
+          "test_size": 40,
+          "gb_r2": -0.0936,
+          "persist_r2": -0.4377,
+          "gb_per_target": {
+            "lambda_2": 0.0999,
+            "spectral_gap": -1.1299,
+            "spectral_radius": 0.1731
+          },
+          "persist_per_target": {
+            "lambda_2": -0.6884,
+            "spectral_gap": -0.3913,
+            "spectral_radius": 0.0093
+          }
+        },
+        {
+          "fold": 2,
+          "train_size": 114,
+          "test_size": 40,
+          "gb_r2": -6.0777,
+          "persist_r2": -1.3205,
+          "gb_per_target": {
+            "lambda_2": -6.4299,
+            "spectral_gap": -94.9071,
+            "spectral_radius": -1.169
+          },
+          "persist_per_target": {
+            "lambda_2": -1.1867,
+            "spectral_gap": -5.5064,
+            "spectral_radius": -1.2662
+          }
+        },
+        {
+          "fold": 3,
+          "train_size": 129,
+          "test_size": 40,
+          "gb_r2": -1.6846,
+          "persist_r2": 0.0194,
+          "gb_per_target": {
+            "lambda_2": -1.7574,
+            "spectral_gap": -31.7494,
+            "spectral_radius": -0.0001
+          },
+          "persist_per_target": {
+            "lambda_2": 0.1438,
+            "spectral_gap": -2.6512,
+            "spectral_radius": 0.0028
+          }
+        },
+        {
+          "fold": 4,
+          "train_size": 144,
+          "test_size": 40,
+          "gb_r2": -1.341,
+          "persist_r2": -0.5113,
+          "gb_per_target": {
+            "lambda_2": -1.2214,
+            "spectral_gap": -4.7845,
+            "spectral_radius": 0.1856
+          },
+          "persist_per_target": {
+            "lambda_2": -0.422,
+            "spectral_gap": -0.3892,
+            "spectral_radius": -0.7357
+          }
+        },
+        {
+          "fold": 5,
+          "train_size": 159,
+          "test_size": 40,
+          "gb_r2": -0.1809,
+          "persist_r2": -0.3505,
+          "gb_per_target": {
+            "lambda_2": -0.2518,
+            "spectral_gap": -0.8539,
+            "spectral_radius": 0.5033
+          },
+          "persist_per_target": {
+            "lambda_2": -0.2402,
+            "spectral_gap": -0.6863,
+            "spectral_radius": -0.3032
+          }
+        }
+      ]
+    }
+  }
+}

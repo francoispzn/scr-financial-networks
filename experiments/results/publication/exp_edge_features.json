@@ -1,0 +1,226 @@
+{
+  "experiment": "edge_level_temporal_features",
+  "hypothesis": "Edge-aggregated temporal features (delta_corr, smoothed_corr, edge_stability, degree_change) improve GNN spectral prediction by encoding HOW the network is changing.",
+  "data": {
+    "universe": "eu_50",
+    "n_banks_after_cleaning": 39,
+    "threshold": 0.6,
+    "stride": 3,
+    "corr_window": 60,
+    "lookback_years": 3,
+    "n_snapshots": 275
+  },
+  "edge_features_added": [
+    "mean_edge_weight",
+    "mean_delta_corr",
+    "mean_smoothed_corr (5-step rolling)",
+    "edge_stability",
+    "degree_change (normalised)"
+  ],
+  "baseline": {
+    "node_features": 5,
+    "walk_forward": {
+      "per_fold": [
+        {
+          "fold": 0,
+          "train_size": 68,
+          "test_size": 27,
+          "train_r2": 0.8930586377779642,
+          "test_r2": -0.1644856333732605,
+          "test_mse": 0.01338103786110878,
+          "test_r2_per_target": {
+            "lambda_2": 0.2851904034614563,
+            "spectral_gap": -1.0,
+            "spectral_radius": 0.2213526964187622
+          },
+          "training_time_s": 12.0,
+          "epochs_trained": 75
+        },
+        {
+          "fold": 1,
+          "train_size": 103,
+          "test_size": 27,
+          "train_r2": 0.464666227499644,
+          "test_r2": -0.07479393482208252,
+          "test_mse": 0.01781025528907776,
+          "test_r2_per_target": {
+            "lambda_2": 0.0,
+            "spectral_gap": -0.22438180446624756,
+            "spectral_radius": 0.0
+          },
+          "training_time_s": 7.8,
+          "epochs_trained": 35
+        },
+        {
+          "fold": 2,
+          "train_size": 138,
+          "test_size": 27,
+          "train_r2": 0.6382964849472046,
+          "test_r2": -1.0,
+          "test_mse": 0.03297699987888336,
+          "test_r2_per_target": {
+            "lambda_2": -1.0,
+            "spectral_gap": -1.0,
+            "spectral_radius": -1.0
+          },
+          "training_time_s": 10.8,
+          "epochs_trained": 40
+        },
+        {
+          "fold": 3,
+          "train_size": 173,
+          "test_size": 27,
+          "train_r2": 0.41367606321970624,
+          "test_r2": -0.2891460657119751,
+          "test_mse": 0.009440825320780277,
+          "test_r2_per_target": {
+            "lambda_2": 0.0,
+            "spectral_gap": -1.0,
+            "spectral_radius": 0.1325618028640747
+          },
+          "training_time_s": 12.1,
+          "epochs_trained": 35
+        },
+        {
+          "fold": 4,
+          "train_size": 208,
+          "test_size": 27,
+          "train_r2": 0.8400717576344808,
+          "test_r2": 0.05318979422251383,
+          "test_mse": 0.08753542602062225,
+          "test_r2_per_target": {
+            "lambda_2": -0.030425548553466797,
+            "spectral_gap": 0.1757946014404297,
+            "spectral_radius": 0.014200329780578613
+          },
+          "training_time_s": 24.5,
+          "epochs_trained": 60
+        }
+      ],
+      "aggregate": {
+        "test_r2_mean": -0.29504716793696084,
+        "test_r2_std": 0.36981619793092185,
+        "test_r2_median": -0.1644856333732605,
+        "test_mse_mean": 0.032228908874094485,
+        "test_mse_std": 0.02878126836673571,
+        "n_folds_completed": 5
+      },
+      "cv_config": {
+        "n_splits": 5,
+        "min_train_size": 68,
+        "test_size": 27,
+        "gap_size": 5
+      },
+      "label": "baseline_5feat",
+      "total_time_s": 67.1,
+      "n_snapshots": 275
+    }
+  },
+  "edge_augmented": {
+    "node_features": 10,
+    "walk_forward": {
+      "per_fold": [
+        {
+          "fold": 0,
+          "train_size": 68,
+          "test_size": 27,
+          "train_r2": 0.8066830039024353,
+          "test_r2": -0.3388985792795817,
+          "test_mse": 0.015435043722391129,
+          "test_r2_per_target": {
+            "lambda_2": -0.07558095455169678,
+            "spectral_gap": -1.0,
+            "spectral_radius": 0.05888521671295166
+          },
+          "training_time_s": 7.8,
+          "epochs_trained": 50
+        },
+        {
+          "fold": 1,
+          "train_size": 103,
+          "test_size": 27,
+          "train_r2": 0.917428175608317,
+          "test_r2": -0.16892969608306885,
+          "test_mse": 0.017045166343450546,
+          "test_r2_per_target": {
+            "lambda_2": 0.0,
+            "spectral_gap": -0.5067890882492065,
+            "spectral_radius": 0.0
+          },
+          "training_time_s": 14.0,
+          "epochs_trained": 65
+        },
+        {
+          "fold": 2,
+          "train_size": 138,
+          "test_size": 27,
+          "train_r2": 0.41196244955062866,
+          "test_r2": -0.8013918797175089,
+          "test_mse": 0.024717122316360474,
+          "test_r2_per_target": {
+            "lambda_2": -1.0,
+            "spectral_gap": -0.40417563915252686,
+            "spectral_radius": -1.0
+          },
+          "training_time_s": 9.9,
+          "epochs_trained": 35
+        },
+        {
+          "fold": 3,
+          "train_size": 173,
+          "test_size": 27,
+          "train_r2": 0.9140127499898275,
+          "test_r2": -0.08084253470102946,
+          "test_mse": 0.007342327851802111,
+          "test_r2_per_target": {
+            "lambda_2": 0.0,
+            "spectral_gap": -0.3820211887359619,
+            "spectral_radius": 0.13949358463287354
+          },
+          "training_time_s": 20.1,
+          "epochs_trained": 80
+        },
+        {
+          "fold": 4,
+          "train_size": 208,
+          "test_size": 27,
+          "train_r2": 0.8093952933947245,
+          "test_r2": -0.13171384731928507,
+          "test_mse": 0.07009819895029068,
+          "test_r2_per_target": {
+            "lambda_2": 0.22027814388275146,
+            "spectral_gap": -1.0,
+            "spectral_radius": 0.3845803141593933
+          },
+          "training_time_s": 12.6,
+          "epochs_trained": 45
+        }
+      ],
+      "aggregate": {
+        "test_r2_mean": -0.30435530742009487,
+        "test_r2_std": 0.2631887996675513,
+        "test_r2_median": -0.16892969608306885,
+        "test_mse_mean": 0.02692757183685899,
+        "test_mse_std": 0.022279636690044232,
+        "n_folds_completed": 5
+      },
+      "cv_config": {
+        "n_splits": 5,
+        "min_train_size": 68,
+        "test_size": 27,
+        "gap_size": 5
+      },
+      "label": "edge_features_10feat",
+      "total_time_s": 64.5,
+      "n_snapshots": 275
+    }
+  },
+  "comparison": {
+    "baseline_r2": -0.29504716793696084,
+    "edge_r2": -0.30435530742009487,
+    "delta_r2": -0.009308139483134026,
+    "baseline_mse": 0.032228908874094485,
+    "edge_mse": 0.02692757183685899,
+    "conclusion": "Edge features show marginal/no improvement"
+  }
+}

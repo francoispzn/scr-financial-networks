@@ -1,0 +1,572 @@
+{
+  "experiment": "xgb_deep_features",
+  "universe": "eu_50",
+  "threshold": 0.6,
+  "stride": 3,
+  "n_samples": 232,
+  "n_features": 60,
+  "feature_names": [
+    "density",
+    "n_edges",
+    "avg_degree",
+    "max_degree",
+    "min_degree",
+    "std_degree",
+    "degree_skew",
+    "degree_kurtosis",
+    "avg_weight",
+    "std_weight",
+    "max_weight",
+    "weight_sum",
+    "corr_mean",
+    "corr_std",
+    "corr_q25",
+    "corr_q50",
+    "corr_q75",
+    "corr_q90",
+    "corr_skew",
+    "corr_iqr",
+    "lam2",
+    "gap",
+    "rho",
+    "lam3",
+    "lam4",
+    "lam_ratio_23",
+    "ev_entropy",
+    "ev_energy",
+    "ev_sum",
+    "fiedler_localization",
+    "avg_vol",
+    "std_vol",
+    "avg_ret",
+    "avg_beta",
+    "avg_momentum",
+    "vol_dispersion",
+    "scg_k",
+    "scg_ratio",
+    "corr_std_x_avg_vol",
+    "density_x_avg_vol",
+    "lam2_x_avg_vol",
+    "lam2_lag1",
+    "lam2_lag2",
+    "lam2_lag3",
+    "gap_lag1",
+    "rho_lag1",
+    "lam2_rmean5",
+    "lam2_rstd5",
+    "lam2_rmean10",
+    "lam2_rstd10",
+    "gap_rmean5",
+    "gap_rstd5",
+    "gap_rmean10",
+    "gap_rstd10",
+    "density_rmean5",
+    "density_rstd5",
+    "density_rmean10",
+    "density_rstd10",
+    "lam2_diff5",
+    "density_diff5"
+  ],
+  "holdout": {
+    "r2_xgb": 0.9308,
+    "r2_persistence": 0.9296,
+    "r2_ar1": 0.9222,
+    "rmse_xgb": 0.052322,
+    "rmse_persistence": 0.052767,
+    "rmse_ar1": 0.055484,
+    "mae_xgb": 0.02939
+  },
+  "builtin_importance_top30": [
+    [
+      "n_edges",
+      0.303811
+    ],
+    [
+      "density",
+      0.251647
+    ],
+    [
+      "lam3",
+      0.2067
+    ],
+    [
+      "corr_std_x_avg_vol",
+      0.0874
+    ],
+    [
+      "rho",
+      0.032831
+    ],
+    [
+      "lam2",
+      0.020487
+    ],
+    [
+      "avg_vol",
+      0.019137
+    ],
+    [
+      "lam2_lag3",
+      0.015229
+    ],
+    [
+      "fiedler_localization",
+      0.013176
+    ],
+    [
+      "avg_weight",
+      0.011347
+    ],
+    [
+      "corr_q50",
+      0.006877
+    ],
+    [
+      "max_degree",
+      0.005609
+    ],
+    [
+      "degree_skew",
+      0.003853
+    ],
+    [
+      "avg_ret",
+      0.003091
+    ],
+    [
+      "density_diff5",
+      0.00269
+    ],
+    [
+      "max_weight",
+      0.002595
+    ],
+    [
+      "lam2_lag2",
+      0.002545
+    ],
+    [
+      "lam2_rmean5",
+      0.00225
+    ],
+    [
+      "gap",
+      0.001778
+    ],
+    [
+      "avg_degree",
+      0.000994
+    ],
+    [
+      "lam_ratio_23",
+      0.000838
+    ],
+    [
+      "lam2_lag1",
+      0.000799
+    ],
+    [
+      "lam2_diff5",
+      0.000614
+    ],
+    [
+      "std_degree",
+      0.000579
+    ],
+    [
+      "rho_lag1",
+      0.000302
+    ],
+    [
+      "density_rmean5",
+      0.000243
+    ],
+    [
+      "ev_entropy",
+      0.00022
+    ],
+    [
+      "corr_mean",
+      0.000219
+    ],
+    [
+      "lam2_rstd10",
+      0.000204
+    ],
+    [
+      "gap_rstd10",
+      0.000189
+    ]
+  ],
+  "permutation_importance_top30": [
+    [
+      "lam3",
+      0.792336
+    ],
+    [
+      "lam2",
+      0.031998
+    ],
+    [
+      "density",
+      0.029764
+    ],
+    [
+      "fiedler_localization",
+      0.025312
+    ],
+    [
+      "avg_vol",
+      0.022365
+    ],
+    [
+      "lam2_lag3",
+      0.009031
+    ],
+    [
+      "avg_momentum",
+      0.005231
+    ],
+    [
+      "degree_kurtosis",
+      0.004084
+    ],
+    [
+      "lam2_diff5",
+      0.002298
+    ],
+    [
+      "density_rstd5",
+      0.002213
+    ],
+    [
+      "gap_rstd5",
+      0.001732
+    ],
+    [
+      "rho",
+      0.001233
+    ],
+    [
+      "ev_entropy",
+      0.000721
+    ],
+    [
+      "gap_rstd10",
+      0.000632
+    ],
+    [
+      "lam2_lag2",
+      0.000592
+    ],
+    [
+      "density_diff5",
+      0.000226
+    ],
+    [
+      "avg_degree",
+      9.4e-05
+    ],
+    [
+      "density_rstd10",
+      8.2e-05
+    ],
+    [
+      "density_x_avg_vol",
+      7e-05
+    ],
+    [
+      "gap",
+      5.9e-05
+    ],
+    [
+      "lam2_rmean5",
+      5.9e-05
+    ],
+    [
+      "corr_iqr",
+      5.5e-05
+    ],
+    [
+      "max_degree",
+      5.1e-05
+    ],
+    [
+      "scg_k",
+      4.9e-05
+    ],
+    [
+      "lam2_x_avg_vol",
+      3.7e-05
+    ],
+    [
+      "rho_lag1",
+      2.4e-05
+    ],
+    [
+      "gap_rmean5",
+      1.1e-05
+    ],
+    [
+      "lam_ratio_23",
+      7e-06
+    ],
+    [
+      "avg_beta",
+      6e-06
+    ],
+    [
+      "min_degree",
+      0.0
+    ]
+  ],
+  "shap": {
+    "top_features": [
+      [
+        "lam3",
+        0.081862
+      ],
+      [
+        "density",
+        0.020853
+      ],
+      [
+        "lam2",
+        0.013715
+      ],
+      [
+        "avg_vol",
+        0.010756
+      ],
+      [
+        "n_edges",
+        0.007863
+      ],
+      [
+        "fiedler_localization",
+        0.005996
+      ],
+      [
+        "degree_kurtosis",
+        0.004215
+      ],
+      [
+        "lam2_lag3",
+        0.003278
+      ],
+      [
+        "max_weight",
+        0.002713
+      ],
+      [
+        "density_diff5",
+        0.002498
+      ],
+      [
+        "avg_ret",
+        0.002392
+      ],
+      [
+        "lam2_lag1",
+        0.002288
+      ],
+      [
+        "std_degree",
+        0.002149
+      ],
+      [
+        "rho",
+        0.001892
+      ],
+      [
+        "lam2_diff5",
+        0.001865
+      ],
+      [
+        "avg_momentum",
+        0.001545
+      ],
+      [
+        "corr_std_x_avg_vol",
+        0.001509
+      ],
+      [
+        "avg_weight",
+        0.001501
+      ],
+      [
+        "density_rstd5",
+        0.001059
+      ],
+      [
+        "gap_rstd5",
+        0.000841
+      ],
+      [
+        "lam2_rstd10",
+        0.000801
+      ],
+      [
+        "max_degree",
+        0.000733
+      ],
+      [
+        "rho_lag1",
+        0.000642
+      ],
+      [
+        "gap_rstd10",
+        0.000467
+      ],
+      [
+        "std_vol",
+        0.00046
+      ],
+      [
+        "lam2_lag2",
+        0.000389
+      ],
+      [
+        "corr_q90",
+        0.000365
+      ],
+      [
+        "lam_ratio_23",
+        0.000364
+      ],
+      [
+        "vol_dispersion",
+        0.00032
+      ],
+      [
+        "corr_q50",
+        0.000318
+      ]
+    ],
+    "available": true
+  },
+  "walk_forward_cv": {
+    "n_folds": 5,
+    "folds": [
+      {
+        "fold": 0,
+        "train_size": 76,
+        "test_size": 38,
+        "r2_xgb": -0.1515,
+        "r2_persistence": 0.084,
+        "r2_ar1": 0.1406,
+        "rmse_xgb": 0.016003,
+        "xgb_beats_persistence": false,
+        "xgb_beats_ar1": false
+      },
+      {
+        "fold": 1,
+        "train_size": 114,
+        "test_size": 38,
+        "r2_xgb": -0.2006,
+        "r2_persistence": 0.8238,
+        "r2_ar1": 0.6327,
+        "rmse_xgb": 0.28041,
+        "xgb_beats_persistence": false,
+        "xgb_beats_ar1": false
+      },
+      {
+        "fold": 2,
+        "train_size": 152,
+        "test_size": 38,
+        "r2_xgb": 0.895,
+        "r2_persistence": 0.9158,
+        "r2_ar1": 0.9115,
+        "rmse_xgb": 0.120613,
+        "xgb_beats_persistence": false,
+        "xgb_beats_ar1": false
+      },
+      {
+        "fold": 3,
+        "train_size": 190,
+        "test_size": 38,
+        "r2_xgb": 0.9233,
+        "r2_persistence": 0.8901,
+        "r2_ar1": 0.8826,
+        "rmse_xgb": 0.038984,
+        "xgb_beats_persistence": true,
+        "xgb_beats_ar1": true
+      },
+      {
+        "fold": 4,
+        "train_size": 228,
+        "test_size": 4,
+        "r2_xgb": 0.3598,
+        "r2_persistence": -0.2563,
+        "r2_ar1": -0.4986,
+        "rmse_xgb": 0.064485,
+        "xgb_beats_persistence": true,
+        "xgb_beats_ar1": true
+      }
+    ],
+    "mean_r2_xgb": 0.3652,
+    "mean_r2_persistence": 0.4915,
+    "mean_r2_ar1": 0.4138
+  },
+  "diebold_mariano_vs_ar1": {
+    "dm_statistic": -0.4299,
+    "p_value": 0.6693,
+    "significant_at_005": false
+  },
+  "ablation": [
+    {
+      "removed_feature": "n_edges",
+      "r2_without": 0.9285,
+      "r2_drop": 0.0023
+    },
+    {
+      "removed_feature": "density",
+      "r2_without": 0.9285,
+      "r2_drop": 0.0023
+    },
+    {
+      "removed_feature": "lam3",
+      "r2_without": 0.7609,
+      "r2_drop": 0.1699
+    },
+    {
+      "removed_feature": "corr_std_x_avg_vol",
+      "r2_without": 0.9197,
+      "r2_drop": 0.0111
+    },
+    {
+      "removed_feature": "rho",
+      "r2_without": 0.9279,
+      "r2_drop": 0.0029
+    },
+    {
+      "removed_feature": "lam2",
+      "r2_without": 0.9271,
+      "r2_drop": 0.0037
+    },
+    {
+      "removed_feature": "avg_vol",
+      "r2_without": 0.9248,
+      "r2_drop": 0.006
+    },
+    {
+      "removed_feature": "lam2_lag3",
+      "r2_without": 0.9132,
+      "r2_drop": 0.0176
+    },
+    {
+      "removed_feature": "fiedler_localization",
+      "r2_without": 0.9235,
+      "r2_drop": 0.0073
+    },
+    {
+      "removed_feature": "avg_weight",
+      "r2_without": 0.9247,
+      "r2_drop": 0.0061
+    }
+  ],
+  "ar1_coefficients": {
+    "intercept": 0.003645,
+    "slope": 0.958163
+  }
+}

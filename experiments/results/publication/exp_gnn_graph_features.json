@@ -1,0 +1,189 @@
+{
+  "experiment": "gnn_graph_features",
+  "description": "GNN with 10 graph-level features broadcast to all nodes. 15 features/node = 5 node-level + 10 graph-level. Key insight: corr_std has ~80% feature importance in GradientBoosting.",
+  "config": {
+    "universe": "eu_50",
+    "n_banks": 39,
+    "threshold": 0.6,
+    "corr_window": 60,
+    "stride": 3,
+    "n_snapshots": 273,
+    "n_node_features": 15,
+    "node_feature_names": [
+      "volatility",
+      "return",
+      "log_price",
+      "beta_proxy",
+      "momentum",
+      "corr_std",
+      "corr_mean",
+      "density",
+      "avg_clustering",
+      "n_components",
+      "avg_degree",
+      "edge_change_abs",
+      "lam2_change",
+      "avg_vol",
+      "vol_dispersion"
+    ],
+    "gnn": {
+      "seq_len": 10,
+      "hidden_dim": 8,
+      "num_gat_layers": 1,
+      "num_lstm_layers": 1,
+      "heads": 2,
+      "dropout": 0.3
+    },
+    "n_parameters": 787
+  },
+  "walk_forward": {
+    "n_splits": 4,
+    "min_train_size": 80,
+    "test_size": 30,
+    "gap_size": 15,
+    "aggregate": {
+      "test_r2_mean": -0.277430052558581,
+      "test_r2_std": 0.3146227660344367,
+      "test_r2_median": -0.19754533966382345,
+      "test_mse_mean": 0.044898175867274404,
+      "test_mse_std": 0.05491347587774911,
+      "n_folds_completed": 4
+    },
+    "per_fold": [
+      {
+        "fold": 0,
+        "train_size": 80,
+        "test_size": 30,
+        "train_r2": 0.7543898622194926,
+        "test_r2": -0.027189890543619793,
+        "test_mse": 0.00994042307138443,
+        "test_r2_per_target": {
+          "lambda_2": 0.0,
+          "spectral_gap": -0.08156967163085938,
+          "spectral_radius": 0.0
+        },
+        "training_time_s": 8.0,
+        "epochs_trained": 185
+      },
+      {
+        "fold": 1,
+        "train_size": 117,
+        "test_size": 30,
+        "train_r2": 0.18777459859848022,
+        "test_r2": 0.03789512316385905,
+        "test_mse": 0.018556514754891396,
+        "test_r2_per_target": {
+          "lambda_2": 0.0,
+          "spectral_gap": 0.11368536949157715,
+          "spectral_radius": 0.0
+        },
+        "training_time_s": 2.1,
+        "epochs_trained": 40
+      },
+      {
+        "fold": 2,
+        "train_size": 154,
+        "test_size": 30,
+        "train_r2": 0.015244642893473307,
+        "test_r2": -0.7525246540705363,
+        "test_mse": 0.011254715733230114,
+        "test_r2_per_target": {
+          "lambda_2": -1.0,
+          "spectral_gap": -0.2575739622116089,
+          "spectral_radius": -1.0
+        },
+        "training_time_s": 2.4,
+        "epochs_trained": 35
+      },
+      {
+        "fold": 3,
+        "train_size": 191,
+        "test_size": 30,
+        "train_r2": 0.46851317087809247,
+        "test_r2": -0.3679007887840271,
+        "test_mse": 0.13984104990959167,
+        "test_r2_per_target": {
+          "lambda_2": -0.5697052478790283,
+          "spectral_gap": -1.0,
+          "spectral_radius": 0.466002881526947
+        },
+        "training_time_s": 6.7,
+        "epochs_trained": 80
+      }
+    ],
+    "total_time_s": 19.2
+  },
+  "simple_split": {
+    "train_r2": 0.701011578241984,
+    "test_r2": 0.478227158387502,
+    "test_mse": 0.02767125703394413,
+    "r2_per_target": {
+      "lambda_2": 0.5982587337493896,
+      "spectral_gap": 0.11730003356933594,
+      "spectral_radius": 0.7191227078437805
+    },
+    "total_time_s": 9.6
+  },
+  "graph_feature_stats": {
+    "corr_std": {
+      "mean": 0.16373764775127223,
+      "std": 0.027297659381569868,
+      "min": 0.0882649829334961,
+      "max": 0.21258753848549136
+    },
+    "corr_mean": {
+      "mean": 0.42394165104220016,
+      "std": 0.14541354246575414,
+      "min": 0.15941144556856282,
+      "max": 0.7094917640242719
+    },
+    "density": {
+      "mean": 0.2392124294958303,
+      "std": 0.24740834578077986,
+      "min": 0.01349527665317139,
+      "max": 0.8704453441295547
+    },
+    "avg_clustering": {
+      "mean": 0.3723298629538676,
+      "std": 0.1915784503228611,
+      "min": 0.015031877411231203,
+      "max": 0.7295503330764838
+    },
+    "n_components": {
+      "mean": 9.974358974358974,
+      "std": 7.585609209544651,
+      "min": 1.0,
+      "max": 30.0
+    },
+    "avg_degree": {
+      "mean": 9.090072320841552,
+      "std": 9.401517139669634,
+      "min": 0.5128205128205128,
+      "max": 33.07692307692308
+    },
+    "edge_change_abs": {
+      "mean": 27.06959706959707,
+      "std": 38.136811634812226,
+      "min": 0.0,
+      "max": 360.0
+    },
+    "lam2_change": {
+      "mean": 0.0024809038962929084,
+      "std": 0.07373552170269453,
+      "min": -0.5012160418132925,
+      "max": 0.6919187983870542
+    },
+    "avg_vol": {
+      "mean": 0.29687641397282316,
+      "std": 0.0553264175399773,
+      "min": 0.225528746843338,
+      "max": 0.4187588691711426
+    },
+    "vol_dispersion": {
+      "mean": 0.0767128532513594,
+      "std": 0.027800461054854276,
+      "min": 0.04968219995498657,
+      "max": 0.17214341461658478
+    }
+  }
+}

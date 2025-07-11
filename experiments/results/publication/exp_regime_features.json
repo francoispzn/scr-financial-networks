@@ -1,0 +1,343 @@
+{
+  "experiment": "regime_features",
+  "description": "Macro regime indicators as GNN node features",
+  "n_snapshots": 41,
+  "n_banks": 40,
+  "n_node_features": 11,
+  "feature_names": {
+    "base": [
+      "vol_30d",
+      "mean_return_30d",
+      "log_price",
+      "beta_proxy",
+      "momentum_20d"
+    ],
+    "macro": [
+      "vix_proxy",
+      "yield_spread",
+      "corr_regime",
+      "momentum_regime",
+      "vol_regime"
+    ],
+    "interaction": [
+      "vol_x_corr"
+    ]
+  },
+  "config": {
+    "universe": "eu_50",
+    "lookback_years": 5,
+    "corr_window": 60,
+    "min_corr": 0.6,
+    "stride": 3
+  },
+  "macro_summary": {
+    "vix_proxy": {
+      "mean": 0.1944,
+      "std": 0.0747,
+      "min": 0.1044,
+      "max": 0.3593
+    },
+    "yield_spread": {
+      "mean": 0.8301,
+      "std": 0.2459,
+      "min": 0.4607,
+      "max": 1.2909
+    },
+    "corr_regime": {
+      "mean": 0.439,
+      "std": 0.4963,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "momentum_regime": {
+      "mean": 0.622,
+      "std": 0.3169,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "vol_regime": {
+      "mean": 0.6098,
+      "std": 0.4878,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "vol_x_corr": {
+      "mean": 0.1135,
+      "std": 0.1356,
+      "min": 0.0,
+      "max": 0.3593
+    }
+  },
+  "gnn_regime": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "train_size": 15,
+        "test_size": 5,
+        "train_r2": 0.32567107677459717,
+        "test_r2": 0.25695109367370605,
+        "test_mse": 0.008721466176211834,
+        "test_r2_per_target": {
+          "lambda_2": 1.0,
+          "spectral_gap": -0.007494330406188965,
+          "spectral_radius": -0.22165238857269287
+        },
+        "training_time_s": 0.4,
+        "epochs_trained": 40
+      },
+      {
+        "fold": 1,
+        "train_size": 19,
+        "test_size": 5,
+        "train_r2": 0.32964173952738446,
+        "test_r2": -0.3333333333333333,
+        "test_mse": 0.010163741186261177,
+        "test_r2_per_target": {
+          "lambda_2": 1.0,
+          "spectral_gap": -1.0,
+          "spectral_radius": -1.0
+        },
+        "training_time_s": 1.9,
+        "epochs_trained": 200
+      },
+      {
+        "fold": 2,
+        "train_size": 23,
+        "test_size": 5,
+        "train_r2": 0.6025732358296713,
+        "test_r2": 0.0,
+        "test_mse": 0.012521074153482914,
+        "test_r2_per_target": {
+          "lambda_2": 1.0,
+          "spectral_gap": -1.0,
+          "spectral_radius": 0.0
+        },
+        "training_time_s": 1.6,
+        "epochs_trained": 160
+      },
+      {
+        "fold": 3,
+        "train_size": 27,
+        "test_size": 5,
+        "train_r2": 0.31238484382629395,
+        "test_r2": -0.6793504953384399,
+        "test_mse": 0.025354862213134766,
+        "test_r2_per_target": {
+          "lambda_2": -0.9990836381912231,
+          "spectral_gap": -1.0,
+          "spectral_radius": -0.03896784782409668
+        },
+        "training_time_s": 0.4,
+        "epochs_trained": 35
+      }
+    ],
+    "aggregate": {
+      "test_r2_mean": -0.1889331837495168,
+      "test_r2_std": 0.35208986050470614,
+      "test_r2_median": -0.16666666666666666,
+      "test_mse_mean": 0.014190285932272673,
+      "test_mse_std": 0.006587015325804872,
+      "n_folds_completed": 4
+    },
+    "cv_config": {
+      "n_splits": 4,
+      "min_train_size": 15,
+      "test_size": 5,
+      "gap_size": 2
+    }
+  },
+  "gb_regime": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "train_size": 15,
+        "test_size": 5,
+        "test_r2": -0.4873,
+        "test_mse": 0.01415,
+        "test_r2_per_target": {
+          "lambda_2": 0.0,
+          "spectral_gap": -1.2118,
+          "spectral_radius": -0.25
+        },
+        "training_time_s": 0.1,
+        "n_features": 42
+      },
+      {
+        "fold": 1,
+        "train_size": 17,
+        "test_size": 5,
+        "test_r2": -1.7105,
+        "test_mse": 0.03521,
+        "test_r2_per_target": {
+          "lambda_2": -0.6662,
+          "spectral_gap": -2.9676,
+          "spectral_radius": -1.4977
+        },
+        "training_time_s": 0.1,
+        "n_features": 42
+      },
+      {
+        "fold": 2,
+        "train_size": 19,
+        "test_size": 5,
+        "test_r2": -2.3124,
+        "test_mse": 0.050622,
+        "test_r2_per_target": {
+          "lambda_2": -3.4159,
+          "spectral_gap": -0.0521,
+          "spectral_radius": -3.4692
+        },
+        "training_time_s": 0.1,
+        "n_features": 42
+      },
+      {
+        "fold": 3,
+        "train_size": 21,
+        "test_size": 5,
+        "test_r2": -4.7708,
+        "test_mse": 0.11539,
+        "test_r2_per_target": {
+          "lambda_2": -7.6788,
+          "spectral_gap": -5.3371,
+          "spectral_radius": -1.2965
+        },
+        "training_time_s": 0.2,
+        "n_features": 42
+      }
+    ],
+    "aggregate": {
+      "test_r2_mean": -2.3202,
+      "test_r2_std": 1.5602,
+      "test_r2_median": -2.0114,
+      "test_mse_mean": 0.053843,
+      "test_mse_std": 0.037819,
+      "n_folds_completed": 4
+    },
+    "cv_config": {
+      "n_splits": 4,
+      "min_train_size": 15,
+      "test_size": 5,
+      "gap_size": 2
+    }
+  },
+  "gnn_baseline": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "train_size": 15,
+        "test_size": 5,
+        "train_r2": 0.306571086247762,
+        "test_r2": 0.29765109221140545,
+        "test_mse": 0.008131899870932102,
+        "test_r2_per_target": {
+          "lambda_2": 1.0,
+          "spectral_gap": -0.0026438236236572266,
+          "spectral_radius": -0.10440289974212646
+        },
+        "training_time_s": 0.3,
+        "epochs_trained": 40
+      },
+      {
+        "fold": 1,
+        "train_size": 19,
+        "test_size": 5,
+        "train_r2": 0.2963459889094035,
+        "test_r2": -0.12406277656555176,
+        "test_mse": 0.006566809490323067,
+        "test_r2_per_target": {
+          "lambda_2": 1.0,
+          "spectral_gap": -1.0,
+          "spectral_radius": -0.3721883296966553
+        },
+        "training_time_s": 0.4,
+        "epochs_trained": 35
+      },
+      {
+        "fold": 2,
+        "train_size": 23,
+        "test_size": 5,
+        "train_r2": 0.40653012196222943,
+        "test_r2": 0.0,
+        "test_mse": 0.01760893501341343,
+        "test_r2_per_target": {
+          "lambda_2": 1.0,
+          "spectral_gap": -1.0,
+          "spectral_radius": 0.0
+        },
+        "training_time_s": 1.4,
+        "epochs_trained": 130
+      },
+      {
+        "fold": 3,
+        "train_size": 27,
+        "test_size": 5,
+        "train_r2": 0.27546672026316327,
+        "test_r2": -0.9333973328272501,
+        "test_mse": 0.0290618184953928,
+        "test_r2_per_target": {
+          "lambda_2": -0.9990841150283813,
+          "spectral_gap": -1.0,
+          "spectral_radius": -0.8011078834533691
+        },
+        "training_time_s": 0.4,
+        "epochs_trained": 35
+      }
+    ],
+    "aggregate": {
+      "test_r2_mean": -0.18995225429534912,
+      "test_r2_std": 0.45576608323384515,
+      "test_r2_median": -0.06203138828277588,
+      "test_mse_mean": 0.01534236571751535,
+      "test_mse_std": 0.008977220139314757,
+      "n_folds_completed": 4
+    },
+    "cv_config": {
+      "n_splits": 4,
+      "min_train_size": 15,
+      "test_size": 5,
+      "gap_size": 2
+    }
+  },
+  "gb_baseline": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "test_r2": -2.4597,
+        "test_mse": 0.036317,
+        "n_features": 14
+      },
+      {
+        "fold": 1,
+        "test_r2": -1.6314,
+        "test_mse": 0.034252,
+        "n_features": 14
+      },
+      {
+        "fold": 2,
+        "test_r2": -2.2651,
+        "test_mse": 0.050169,
+        "n_features": 14
+      },
+      {
+        "fold": 3,
+        "test_r2": -3.7229,
+        "test_mse": 0.121566,
+        "n_features": 14
+      }
+    ],
+    "aggregate": {
+      "test_r2_mean": -2.5198,
+      "test_r2_std": 0.7591,
+      "n_folds_completed": 4
+    }
+  },
+  "timing_total_s": 21.2,
+  "summary": {
+    "gnn_regime_r2": "-0.1889 +/- 0.3521",
+    "gnn_baseline_r2": "-0.1900 +/- 0.4558",
+    "gnn_improvement": "+0.0010",
+    "gb_regime_r2": "-2.3202 +/- 1.5602",
+    "gb_baseline_r2": "-2.5198 +/- 0.7591",
+    "gb_improvement": "+0.1996"
+  }
+}

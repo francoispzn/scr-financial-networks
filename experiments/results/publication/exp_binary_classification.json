@@ -1,0 +1,343 @@
+{
+  "metadata": {
+    "n_snapshots": 365,
+    "n_banks": 10,
+    "n_features": 36,
+    "feature_names": [
+      "lam2",
+      "gap",
+      "rho",
+      "scg_risk",
+      "ev_entropy",
+      "spectral_norm_ratio",
+      "avg_degree",
+      "std_degree",
+      "max_degree",
+      "min_degree",
+      "degree_skew",
+      "density",
+      "n_edges",
+      "clustering_coeff",
+      "corr_mean",
+      "corr_std",
+      "corr_skew",
+      "corr_kurt",
+      "corr_q25",
+      "corr_q50",
+      "corr_q75",
+      "corr_max",
+      "avg_vol",
+      "vol_std",
+      "vol_skew",
+      "lam2_change",
+      "rho_change",
+      "density_change",
+      "edge_change_abs",
+      "vol_change",
+      "modularity_proxy",
+      "assortativity",
+      "second_largest_component",
+      "effective_resistance_approx",
+      "laplacian_energy",
+      "algebraic_connectivity_ratio"
+    ],
+    "horizon": 5,
+    "threshold": 0.6,
+    "stride": 3,
+    "universe": "eu_50"
+  },
+  "label_results": {
+    "connectivity_drop_1std": {
+      "n_samples": 360,
+      "positive_rate": 0.05,
+      "holdout": {
+        "LogisticRegression": {
+          "AUC": 0.7429,
+          "F1": 0.087,
+          "precision": 0.0476,
+          "recall": 0.5
+        },
+        "RandomForest": {
+          "AUC": 0.7071,
+          "F1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0
+        },
+        "GradientBoosting": {
+          "AUC": 0.7286,
+          "F1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0
+        }
+      },
+      "walk_forward": {
+        "LogisticRegression": {
+          "AUC_mean": 0.4664,
+          "AUC_std": 0.1779,
+          "F1_mean": 0.0647,
+          "F1_std": 0.0223,
+          "precision_mean": 0.0377,
+          "recall_mean": 0.3241,
+          "n_folds": 3
+        },
+        "RandomForest": {
+          "AUC_mean": 0.3837,
+          "AUC_std": 0.129,
+          "F1_mean": 0.0,
+          "F1_std": 0.0,
+          "precision_mean": 0.0,
+          "recall_mean": 0.0,
+          "n_folds": 3
+        },
+        "GradientBoosting": {
+          "AUC_mean": 0.432,
+          "AUC_std": 0.1446,
+          "F1_mean": 0.0,
+          "F1_std": 0.0,
+          "precision_mean": 0.0,
+          "recall_mean": 0.0,
+          "n_folds": 3
+        }
+      }
+    },
+    "connectivity_drop_05std": {
+      "n_samples": 360,
+      "positive_rate": 0.2139,
+      "holdout": {
+        "LogisticRegression": {
+          "AUC": 0.7602,
+          "F1": 0.4528,
+          "precision": 0.3158,
+          "recall": 0.8
+        },
+        "RandomForest": {
+          "AUC": 0.7696,
+          "F1": 0.3636,
+          "precision": 0.3333,
+          "recall": 0.4
+        },
+        "GradientBoosting": {
+          "AUC": 0.8456,
+          "F1": 0.5333,
+          "precision": 0.5333,
+          "recall": 0.5333
+        }
+      },
+      "walk_forward": {
+        "LogisticRegression": {
+          "AUC_mean": 0.6065,
+          "AUC_std": 0.1314,
+          "F1_mean": 0.3746,
+          "F1_std": 0.0628,
+          "precision_mean": 0.2694,
+          "recall_mean": 0.6295,
+          "n_folds": 3
+        },
+        "RandomForest": {
+          "AUC_mean": 0.6148,
+          "AUC_std": 0.1035,
+          "F1_mean": 0.1373,
+          "F1_std": 0.1544,
+          "precision_mean": 0.1291,
+          "recall_mean": 0.15,
+          "n_folds": 3
+        },
+        "GradientBoosting": {
+          "AUC_mean": 0.4669,
+          "AUC_std": 0.1955,
+          "F1_mean": 0.1839,
+          "F1_std": 0.1454,
+          "precision_mean": 0.1646,
+          "recall_mean": 0.2352,
+          "n_folds": 3
+        }
+      }
+    },
+    "density_drop": {
+      "n_samples": 360,
+      "positive_rate": 0.3611,
+      "holdout": {
+        "LogisticRegression": {
+          "AUC": 0.4348,
+          "F1": 0.45,
+          "precision": 0.3333,
+          "recall": 0.6923
+        },
+        "RandomForest": {
+          "AUC": 0.6129,
+          "F1": 0.4658,
+          "precision": 0.3617,
+          "recall": 0.6538
+        },
+        "GradientBoosting": {
+          "AUC": 0.5042,
+          "F1": 0.4444,
+          "precision": 0.3784,
+          "recall": 0.5385
+        }
+      },
+      "walk_forward": {
+        "LogisticRegression": {
+          "AUC_mean": 0.5174,
+          "AUC_std": 0.1036,
+          "F1_mean": 0.5277,
+          "F1_std": 0.1311,
+          "precision_mean": 0.4335,
+          "recall_mean": 0.7082,
+          "n_folds": 3
+        },
+        "RandomForest": {
+          "AUC_mean": 0.5754,
+          "AUC_std": 0.1228,
+          "F1_mean": 0.5106,
+          "F1_std": 0.0867,
+          "precision_mean": 0.5012,
+          "recall_mean": 0.5999,
+          "n_folds": 3
+        },
+        "GradientBoosting": {
+          "AUC_mean": 0.5861,
+          "AUC_std": 0.098,
+          "F1_mean": 0.4912,
+          "F1_std": 0.0968,
+          "precision_mean": 0.503,
+          "recall_mean": 0.556,
+          "n_folds": 3
+        }
+      }
+    },
+    "high_vol_regime": {
+      "n_samples": 360,
+      "positive_rate": 0.2944,
+      "holdout": {
+        "LogisticRegression": {
+          "AUC": 0.9717,
+          "F1": 0.9524,
+          "precision": 1.0,
+          "recall": 0.9091
+        },
+        "RandomForest": {
+          "AUC": 0.9896,
+          "F1": 0.9091,
+          "precision": 0.9091,
+          "recall": 0.9091
+        },
+        "GradientBoosting": {
+          "AUC": 0.9866,
+          "F1": 0.8696,
+          "precision": 0.8333,
+          "recall": 0.9091
+        }
+      },
+      "walk_forward": {
+        "LogisticRegression": {
+          "AUC_mean": 0.9317,
+          "AUC_std": 0.0498,
+          "F1_mean": 0.7139,
+          "F1_std": 0.1557,
+          "precision_mean": 0.792,
+          "recall_mean": 0.65,
+          "n_folds": 2
+        },
+        "RandomForest": {
+          "AUC_mean": 0.9831,
+          "AUC_std": 0.0018,
+          "F1_mean": 0.8353,
+          "F1_std": 0.0092,
+          "precision_mean": 0.9068,
+          "recall_mean": 0.7758,
+          "n_folds": 2
+        },
+        "GradientBoosting": {
+          "AUC_mean": 0.9696,
+          "AUC_std": 0.0113,
+          "F1_mean": 0.8444,
+          "F1_std": 0.0,
+          "precision_mean": 0.9274,
+          "recall_mean": 0.7758,
+          "n_folds": 2
+        }
+      }
+    }
+  },
+  "summary": {
+    "best_auc": 0.9896,
+    "best_combination": "high_vol_regime + RandomForest (holdout)",
+    "combos_above_065_AUC": [
+      {
+        "label": "connectivity_drop_1std",
+        "model": "LogisticRegression",
+        "eval": "holdout",
+        "AUC": 0.7429
+      },
+      {
+        "label": "connectivity_drop_1std",
+        "model": "RandomForest",
+        "eval": "holdout",
+        "AUC": 0.7071
+      },
+      {
+        "label": "connectivity_drop_1std",
+        "model": "GradientBoosting",
+        "eval": "holdout",
+        "AUC": 0.7286
+      },
+      {
+        "label": "connectivity_drop_05std",
+        "model": "LogisticRegression",
+        "eval": "holdout",
+        "AUC": 0.7602
+      },
+      {
+        "label": "connectivity_drop_05std",
+        "model": "RandomForest",
+        "eval": "holdout",
+        "AUC": 0.7696
+      },
+      {
+        "label": "connectivity_drop_05std",
+        "model": "GradientBoosting",
+        "eval": "holdout",
+        "AUC": 0.8456
+      },
+      {
+        "label": "high_vol_regime",
+        "model": "LogisticRegression",
+        "eval": "holdout",
+        "AUC": 0.9717
+      },
+      {
+        "label": "high_vol_regime",
+        "model": "RandomForest",
+        "eval": "holdout",
+        "AUC": 0.9896
+      },
+      {
+        "label": "high_vol_regime",
+        "model": "GradientBoosting",
+        "eval": "holdout",
+        "AUC": 0.9866
+      },
+      {
+        "label": "high_vol_regime",
+        "model": "LogisticRegression",
+        "eval": "walk_forward",
+        "AUC": 0.9317
+      },
+      {
+        "label": "high_vol_regime",
+        "model": "RandomForest",
+        "eval": "walk_forward",
+        "AUC": 0.9831
+      },
+      {
+        "label": "high_vol_regime",
+        "model": "GradientBoosting",
+        "eval": "walk_forward",
+        "AUC": 0.9696
+      }
+    ],
+    "any_above_065": true,
+    "elapsed_seconds": 81.2
+  }
+}
