@@ -1,0 +1,85 @@
+{
+  "raw": {
+    "lambda_2": 0.6513,
+    "spectral_gap": 0.3767,
+    "spectral_radius": 1.3125,
+    "frobenius_error": 0.3658,
+    "n_edges": 38,
+    "eigenvalues": [
+      0.0,
+      0.6513,
+      1.0279,
+      1.0974,
+      1.1274,
+      1.1551,
+      1.1617,
+      1.2053,
+      1.2614,
+      1.3125
+    ]
+  },
+  "constant": {
+    "lambda_2": 1.1033,
+    "spectral_gap": 0.0017,
+    "spectral_radius": 1.1159,
+    "frobenius_error": 1.4291,
+    "n_edges": 45,
+    "eigenvalues": [
+      -0.0,
+      1.1033,
+      1.1071,
+      1.108,
+      1.1098,
+      1.1118,
+      1.1137,
+      1.1148,
+      1.1154,
+      1.1159
+    ]
+  },
+  "shrinkage": {
+    "lambda_2": 0.5902,
+    "spectral_gap": 0.4265,
+    "spectral_radius": 1.3229,
+    "frobenius_error": 0.3879,
+    "n_edges": 36,
+    "eigenvalues": [
+      0.0,
+      0.5902,
+      1.0166,
+      1.1104,
+      1.1232,
+      1.1741,
+      1.1785,
+      1.2329,
+      1.2513,
+      1.3229
+    ]
+  },
+  "targeted": {
+    "lambda_2": 1.1033,
+    "spectral_gap": 0.0017,
+    "spectral_radius": 1.1159,
+    "frobenius_error": 1.4291,
+    "n_edges": 45,
+    "eigenvalues": [
+      -0.0,
+      1.1033,
+      1.1071,
+      1.108,
+      1.1098,
+      1.1118,
+      1.1137,
+      1.1148,
+      1.1154,
+      1.1159
+    ]
+  },
+  "mp_fit": {
+    "n_signal": 1,
+    "n_noise": 9,
+    "lambda_plus": 1.4380920761273377,
+    "ks_stat": 0.891019162465623,
+    "p_value": 4.33691855558458e-09
+  }
+}

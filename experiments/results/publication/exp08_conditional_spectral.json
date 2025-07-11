@@ -1,0 +1,9 @@
+{
+  "vol_regression_r2": 0.2642803710464854,
+  "vol_regression_beta": 0.9670726033747619,
+  "n_momentum_alerts": 25,
+  "cond_risk_mean": 0.4719686238499841,
+  "cond_risk_std": 0.18215761664321942,
+  "mp_relative_mean": 0.48741797383901,
+  "mp_relative_above_1_frac": 0.0
+}

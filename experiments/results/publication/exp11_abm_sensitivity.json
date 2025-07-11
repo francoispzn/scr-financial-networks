@@ -1,0 +1,152 @@
+{
+  "n_defaults": {
+    "lgd": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "funding_lcr_threshold": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "funding_sensitivity": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "funding_withdrawal_rate": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "fire_sale_haircut": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "fire_sale_amplifier": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "ou_theta_cet1": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "ou_sigma_cet1": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    }
+  },
+  "mean_cet1": {
+    "lgd": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "funding_lcr_threshold": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "funding_sensitivity": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "funding_withdrawal_rate": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "fire_sale_haircut": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "fire_sale_amplifier": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "ou_theta_cet1": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "ou_sigma_cet1": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    }
+  },
+  "min_cet1": {
+    "lgd": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "funding_lcr_threshold": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "funding_sensitivity": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "funding_withdrawal_rate": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "fire_sale_haircut": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "fire_sale_amplifier": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "ou_theta_cet1": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    },
+    "ou_sigma_cet1": {
+      "S1": 0.0,
+      "S1_conf": 0.0,
+      "ST": 0.0,
+      "ST_conf": 0.0
+    }
+  }
+}

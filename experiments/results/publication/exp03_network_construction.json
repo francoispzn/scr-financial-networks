@@ -1,0 +1,30 @@
+[
+  {
+    "method": "Threshold",
+    "n_edges": 45,
+    "density": 1.0,
+    "lambda_2": 1.0697,
+    "spectral_gap": 0.0107
+  },
+  {
+    "method": "MST",
+    "n_edges": 9,
+    "density": 0.2,
+    "lambda_2": 0.1984,
+    "spectral_gap": 0.5842
+  },
+  {
+    "method": "PMFG",
+    "n_edges": 24,
+    "density": 0.533,
+    "lambda_2": 0.5744,
+    "spectral_gap": 0.2706
+  },
+  {
+    "method": "Partial Corr",
+    "n_edges": 31,
+    "density": 0.689,
+    "lambda_2": 0.5735,
+    "spectral_gap": 0.2112
+  }
+]

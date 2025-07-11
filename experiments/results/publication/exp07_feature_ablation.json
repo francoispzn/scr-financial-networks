@@ -1,0 +1,36 @@
+{
+  "baseline": {
+    "r2_mean": 0.175,
+    "r2_std": 0.0176
+  },
+  "remove_volatility": {
+    "r2_mean": -0.9096,
+    "r2_std": 0.0788,
+    "r2_drop": 1.0846,
+    "importance": 6.1993
+  },
+  "remove_return": {
+    "r2_mean": 0.1468,
+    "r2_std": 0.0447,
+    "r2_drop": 0.0281,
+    "importance": 0.1607
+  },
+  "remove_log_price": {
+    "r2_mean": 0.1297,
+    "r2_std": 0.0503,
+    "r2_drop": 0.0453,
+    "importance": 0.2588
+  },
+  "remove_beta": {
+    "r2_mean": 0.112,
+    "r2_std": 0.0131,
+    "r2_drop": 0.063,
+    "importance": 0.36
+  },
+  "remove_momentum": {
+    "r2_mean": 0.1784,
+    "r2_std": 0.0924,
+    "r2_drop": -0.0034,
+    "importance": -0.0196
+  }
+}

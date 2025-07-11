@@ -1,0 +1,596 @@
+{
+  "mdl_optimal": 0.7741379310344828,
+  "cv_optimal": 0.1,
+  "percolation_threshold": 0.758,
+  "mdl_scores": [
+    {
+      "threshold": 0.05,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.07586206896551724,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.10172413793103449,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.12758620689655173,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.15344827586206897,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.17931034482758623,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.20517241379310347,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.2310344827586207,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.25689655172413794,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.2827586206896552,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.3086206896551724,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.33448275862068966,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.3603448275862069,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.38620689655172413,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.41206896551724137,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.4379310344827586,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.46379310344827585,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.4896551724137931,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.5155172413793103,
+      "n_edges": 45,
+      "density": 1.0,
+      "mdl": 103.62
+    },
+    {
+      "threshold": 0.5413793103448276,
+      "n_edges": 44,
+      "density": 0.9778,
+      "mdl": 101.89
+    },
+    {
+      "threshold": 0.5672413793103449,
+      "n_edges": 43,
+      "density": 0.9556,
+      "mdl": 100.18
+    },
+    {
+      "threshold": 0.5931034482758621,
+      "n_edges": 42,
+      "density": 0.9333,
+      "mdl": 98.57
+    },
+    {
+      "threshold": 0.6189655172413794,
+      "n_edges": 37,
+      "density": 0.8222,
+      "mdl": 90.7
+    },
+    {
+      "threshold": 0.6448275862068966,
+      "n_edges": 33,
+      "density": 0.7333,
+      "mdl": 84.67
+    },
+    {
+      "threshold": 0.6706896551724139,
+      "n_edges": 27,
+      "density": 0.6,
+      "mdl": 76.06
+    },
+    {
+      "threshold": 0.6965517241379311,
+      "n_edges": 20,
+      "density": 0.4444,
+      "mdl": 66.44
+    },
+    {
+      "threshold": 0.7224137931034483,
+      "n_edges": 15,
+      "density": 0.3333,
+      "mdl": 59.97
+    },
+    {
+      "threshold": 0.7482758620689656,
+      "n_edges": 12,
+      "density": 0.2667,
+      "mdl": 56.32
+    },
+    {
+      "threshold": 0.7741379310344828,
+      "n_edges": 3,
+      "density": 0.0667,
+      "mdl": 46.04
+    },
+    {
+      "threshold": 0.8,
+      "n_edges": 3,
+      "density": 0.0667,
+      "mdl": 46.04
+    }
+  ],
+  "cv_scores": [
+    {
+      "threshold": 0.1,
+      "gap_mean": 0.0148,
+      "gap_cv": 0.3644,
+      "lam2_mean": 1.0198,
+      "lam2_cv": 0.0715
+    },
+    {
+      "threshold": 0.14285714285714285,
+      "gap_mean": 0.0368,
+      "gap_cv": 1.2603,
+      "lam2_mean": 1.0196,
+      "lam2_cv": 0.0721
+    },
+    {
+      "threshold": 0.18571428571428572,
+      "gap_mean": 0.0468,
+      "gap_cv": 1.4157,
+      "lam2_mean": 1.0216,
+      "lam2_cv": 0.0682
+    },
+    {
+      "threshold": 0.22857142857142856,
+      "gap_mean": 0.0468,
+      "gap_cv": 1.4157,
+      "lam2_mean": 1.0216,
+      "lam2_cv": 0.0682
+    },
+    {
+      "threshold": 0.27142857142857146,
+      "gap_mean": 0.0452,
+      "gap_cv": 1.3953,
+      "lam2_mean": 1.0063,
+      "lam2_cv": 0.0984
+    },
+    {
+      "threshold": 0.3142857142857143,
+      "gap_mean": 0.0512,
+      "gap_cv": 1.4652,
+      "lam2_mean": 0.9819,
+      "lam2_cv": 0.1498
+    },
+    {
+      "threshold": 0.3571428571428571,
+      "gap_mean": 0.0733,
+      "gap_cv": 1.626,
+      "lam2_mean": 0.9592,
+      "lam2_cv": 0.2002
+    },
+    {
+      "threshold": 0.4,
+      "gap_mean": 0.051,
+      "gap_cv": 1.5424,
+      "lam2_mean": 0.9353,
+      "lam2_cv": 0.1935
+    },
+    {
+      "threshold": 0.44285714285714284,
+      "gap_mean": 0.1108,
+      "gap_cv": 1.1114,
+      "lam2_mean": 0.8731,
+      "lam2_cv": 0.2536
+    },
+    {
+      "threshold": 0.48571428571428577,
+      "gap_mean": 0.1059,
+      "gap_cv": 1.0694,
+      "lam2_mean": 0.8185,
+      "lam2_cv": 0.3229
+    },
+    {
+      "threshold": 0.5285714285714286,
+      "gap_mean": 0.2386,
+      "gap_cv": 0.6261,
+      "lam2_mean": 0.7581,
+      "lam2_cv": 0.3534
+    },
+    {
+      "threshold": 0.5714285714285714,
+      "gap_mean": 0.1749,
+      "gap_cv": 0.9519,
+      "lam2_mean": 0.7365,
+      "lam2_cv": 0.4508
+    },
+    {
+      "threshold": 0.6142857142857142,
+      "gap_mean": 0.2282,
+      "gap_cv": 0.6834,
+      "lam2_mean": 0.6894,
+      "lam2_cv": 0.4637
+    },
+    {
+      "threshold": 0.6571428571428571,
+      "gap_mean": 0.2256,
+      "gap_cv": 0.705,
+      "lam2_mean": 0.6867,
+      "lam2_cv": 0.4024
+    },
+    {
+      "threshold": 0.7,
+      "gap_mean": 0.3406,
+      "gap_cv": 1.0099,
+      "lam2_mean": 0.5604,
+      "lam2_cv": 0.6478
+    }
+  ],
+  "percolation_results": [
+    {
+      "threshold": 0.01,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.029,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.048,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.068,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.087,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.106,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.125,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.144,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.163,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.183,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.202,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.221,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.24,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.259,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.279,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.298,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.317,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.336,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.355,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.374,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.394,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.413,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.432,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.451,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.47,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.49,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.509,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.528,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.547,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.566,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.586,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.605,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.624,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.643,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.662,
+      "n_components": 1,
+      "largest_component": 10,
+      "fraction_in_giant": 1.0
+    },
+    {
+      "threshold": 0.681,
+      "n_components": 2,
+      "largest_component": 9,
+      "fraction_in_giant": 0.9
+    },
+    {
+      "threshold": 0.701,
+      "n_components": 2,
+      "largest_component": 9,
+      "fraction_in_giant": 0.9
+    },
+    {
+      "threshold": 0.72,
+      "n_components": 2,
+      "largest_component": 9,
+      "fraction_in_giant": 0.9
+    },
+    {
+      "threshold": 0.739,
+      "n_components": 2,
+      "largest_component": 9,
+      "fraction_in_giant": 0.9
+    },
+    {
+      "threshold": 0.758,
+      "n_components": 4,
+      "largest_component": 6,
+      "fraction_in_giant": 0.6
+    },
+    {
+      "threshold": 0.777,
+      "n_components": 8,
+      "largest_component": 3,
+      "fraction_in_giant": 0.3
+    },
+    {
+      "threshold": 0.797,
+      "n_components": 8,
+      "largest_component": 3,
+      "fraction_in_giant": 0.3
+    },
+    {
+      "threshold": 0.816,
+      "n_components": 8,
+      "largest_component": 3,
+      "fraction_in_giant": 0.3
+    },
+    {
+      "threshold": 0.835,
+      "n_components": 10,
+      "largest_component": 1,
+      "fraction_in_giant": 0.1
+    },
+    {
+      "threshold": 0.854,
+      "n_components": 10,
+      "largest_component": 1,
+      "fraction_in_giant": 0.1
+    },
+    {
+      "threshold": 0.873,
+      "n_components": 10,
+      "largest_component": 1,
+      "fraction_in_giant": 0.1
+    },
+    {
+      "threshold": 0.892,
+      "n_components": 10,
+      "largest_component": 1,
+      "fraction_in_giant": 0.1
+    },
+    {
+      "threshold": 0.912,
+      "n_components": 10,
+      "largest_component": 1,
+      "fraction_in_giant": 0.1
+    },
+    {
+      "threshold": 0.931,
+      "n_components": 10,
+      "largest_component": 1,
+      "fraction_in_giant": 0.1
+    },
+    {
+      "threshold": 0.95,
+      "n_components": 10,
+      "largest_component": 1,
+      "fraction_in_giant": 0.1
+    }
+  ]
+}

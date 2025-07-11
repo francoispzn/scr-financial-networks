@@ -1,0 +1,20 @@
+{
+  "total_time_s": 702.5,
+  "experiments": {
+    "exp01_multiscale_scg": "completed",
+    "exp02_rmt_denoising": "completed",
+    "exp03_network_construction": "completed",
+    "exp04_walkforward_cv": "FAILED: __init__() got an unexpected keyword argument 'encoder_type'",
+    "exp05_per_target_analysis": "completed",
+    "exp06_ablation": "completed",
+    "exp07_feature_ablation": "completed",
+    "exp08_conditional_spectral": "completed",
+    "exp09_change_points": "completed",
+    "exp10_abm_dynamics": "completed",
+    "exp11_abm_sensitivity": "completed",
+    "exp12_threshold_sensitivity": "completed",
+    "exp13_backtesting": "completed"
+  },
+  "n_succeeded": 12,
+  "n_failed": 1
+}

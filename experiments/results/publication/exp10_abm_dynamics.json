@@ -1,0 +1,38 @@
+{
+  "OU": {
+    "mean_defaults": 0.0,
+    "std_defaults": 0.0,
+    "max_defaults": 0,
+    "default_rate": 0.0,
+    "mean_final_cet1": 12.89,
+    "defaults_bootstrap": {
+      "mean": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0
+    }
+  },
+  "JumpDiffusion": {
+    "mean_defaults": 0.0,
+    "std_defaults": 0.0,
+    "max_defaults": 0,
+    "default_rate": 0.0,
+    "mean_final_cet1": 12.89,
+    "defaults_bootstrap": {
+      "mean": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0
+    }
+  },
+  "RegimeSwitching": {
+    "mean_defaults": 0.0,
+    "std_defaults": 0.0,
+    "max_defaults": 0,
+    "default_rate": 0.0,
+    "mean_final_cet1": 12.89,
+    "defaults_bootstrap": {
+      "mean": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0
+    }
+  }
+}
