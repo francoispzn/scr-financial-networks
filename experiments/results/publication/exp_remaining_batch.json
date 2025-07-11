@@ -1,0 +1,21 @@
+{
+  "critical_slowing_down": {
+    "ac_predicts_drop_r": 0.219,
+    "var_predicts_drop_r": 0.322,
+    "combined_auc": 0.852,
+    "walk_forward_auc": 0.842,
+    "description": "CSD from ecology: rising autocorrelation + variance in lambda_2 predicts connectivity drops"
+  },
+  "persistence_breaks": {
+    "n_breaks": 15,
+    "break_rate": 0.05,
+    "holdout_auc": 0.933,
+    "walk_forward_auc": 0.788,
+    "description": "Predict WHEN persistence fails. Actionable: switch to ensemble when break predicted."
+  },
+  "trend_decomposition": {
+    "trend_gb_r2": 0.0403,
+    "trend_persist_r2": 0.9893,
+    "conclusion": "Trend is just smoothed persistence \u2014 no additional signal from GB"
+  }
+}
