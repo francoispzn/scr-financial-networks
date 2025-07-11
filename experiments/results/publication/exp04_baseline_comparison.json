@@ -1,0 +1,59 @@
+{
+  "persistence": {
+    "r2": 0.7657,
+    "mse": 0.001473
+  },
+  "ma_5": {
+    "r2": -0.7127,
+    "mse": 0.010772
+  },
+  "ma_10": {
+    "r2": -0.678,
+    "mse": 0.010553
+  },
+  "random_forest": {
+    "r2": 0.571,
+    "mse": 0.002698
+  },
+  "ar1_lambda2": {
+    "r2": 0.8421,
+    "coefs": [
+      0.0305,
+      0.968
+    ]
+  },
+  "ar1_gap": {
+    "r2": 0.6323,
+    "coefs": [
+      0.0033,
+      0.9453
+    ]
+  },
+  "ar1_radius": {
+    "r2": 0.7701,
+    "coefs": [
+      0.0764,
+      0.9364
+    ]
+  },
+  "gat_walkforward": {
+    "r2_mean": -0.42,
+    "r2_std": 0.57,
+    "note": "worse than persistence"
+  },
+  "gcn_walkforward": {
+    "r2_mean": -0.29,
+    "r2_std": 0.55
+  },
+  "tiny_gat_walkforward": {
+    "r2_mean": -0.54,
+    "r2_std": 0.26,
+    "params": 1283
+  },
+  "small_gat_walkforward": {
+    "r2_mean": -0.3,
+    "r2_std": 0.52,
+    "params": 4675
+  },
+  "key_finding": "Spectral properties are highly autocorrelated (AR1 coefficient ~0.97). Persistence baseline R2=0.77 beats all GNN models under walk-forward CV. The GNN does not learn useful graph structure beyond autoregressive patterns that a trivial AR(1) captures better."
+}
