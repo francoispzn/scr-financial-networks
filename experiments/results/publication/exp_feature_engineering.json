@@ -1,0 +1,94 @@
+{
+  "n_banks": 42,
+  "n_features": 36,
+  "n_samples": 296,
+  "r2_persistence": 0.886,
+  "r2_ar1": 0.8914,
+  "r2_gb_levels": 0.8411,
+  "r2_gb_residuals": -0.2594,
+  "r2_ensemble": 0.8644,
+  "top_features_lam2": [
+    [
+      "corr_std",
+      0.8026
+    ],
+    [
+      "ev_entropy",
+      0.1129
+    ],
+    [
+      "lam2",
+      0.0153
+    ],
+    [
+      "max_degree",
+      0.0117
+    ],
+    [
+      "scg_risk",
+      0.0116
+    ],
+    [
+      "corr_q75",
+      0.0099
+    ],
+    [
+      "avg_degree",
+      0.0076
+    ],
+    [
+      "corr_skew",
+      0.0051
+    ],
+    [
+      "edge_change_abs",
+      0.0047
+    ],
+    [
+      "density",
+      0.0035
+    ]
+  ],
+  "top_features_gap": [
+    [
+      "gap",
+      0.4247
+    ],
+    [
+      "scg_risk",
+      0.0741
+    ],
+    [
+      "density",
+      0.0499
+    ],
+    [
+      "corr_mean",
+      0.0453
+    ],
+    [
+      "max_degree",
+      0.0417
+    ],
+    [
+      "corr_std",
+      0.0326
+    ],
+    [
+      "corr_skew",
+      0.0247
+    ],
+    [
+      "rho_change",
+      0.0241
+    ],
+    [
+      "lam2",
+      0.0236
+    ],
+    [
+      "std_degree",
+      0.0235
+    ]
+  ]
+}

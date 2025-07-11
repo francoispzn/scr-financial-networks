@@ -1,0 +1,39 @@
+{
+  "tiny_residual": {
+    "test_r2": 0.0032,
+    "per_target": {
+      "lambda_2": 0.0096,
+      "spectral_gap": -0.012,
+      "spectral_radius": 0.0119
+    },
+    "params": 1355
+  },
+  "small_residual": {
+    "test_r2": 0.0022,
+    "per_target": {
+      "lambda_2": 0.0035,
+      "spectral_gap": -0.0152,
+      "spectral_radius": 0.0182
+    },
+    "params": 4819
+  },
+  "medium_residual": {
+    "test_r2": -0.016,
+    "per_target": {
+      "lambda_2": -0.0103,
+      "spectral_gap": -0.0166,
+      "spectral_radius": -0.0212
+    },
+    "params": 5155
+  },
+  "walk_forward_residuals": {
+    "test_r2_mean": -0.04588235418001811,
+    "test_r2_std": 0.046815931766328193,
+    "test_r2_median": -0.034460633993148804,
+    "test_mse_mean": 0.013157571665942669,
+    "test_mse_std": 0.005056905043792651,
+    "n_folds_completed": 4
+  },
+  "levels_ar1_r2": 0.8907,
+  "levels_persist_r2": 0.8854
+}
