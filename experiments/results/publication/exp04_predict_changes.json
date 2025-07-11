@@ -1,0 +1,26 @@
+{
+  "tiny_gat": {
+    "test_r2_mean": -0.026866137981414795,
+    "test_r2_std": 0.03290512400848498,
+    "test_r2_median": -0.0016463398933410645,
+    "test_mse_mean": 0.3591100454330444,
+    "test_mse_std": 0.0699383291845927,
+    "n_folds_completed": 5
+  },
+  "small_gat": {
+    "test_r2_mean": -0.02786720196406046,
+    "test_r2_std": 0.034214421300887324,
+    "test_r2_median": -0.0018501877784729004,
+    "test_mse_mean": 0.3593610018491745,
+    "test_mse_std": 0.07019595942453422,
+    "n_folds_completed": 5
+  },
+  "small_gcn": {
+    "test_r2_mean": -0.025954079627990723,
+    "test_r2_std": 0.029696872386511083,
+    "test_r2_median": -0.004379630088806152,
+    "test_mse_mean": 0.3587406247854233,
+    "test_mse_std": 0.0701814583572904,
+    "n_folds_completed": 5
+  }
+}
