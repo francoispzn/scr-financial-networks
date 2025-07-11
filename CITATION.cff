@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "SCR Financial Networks: Spectral Coarse-Graining for Systemic Risk Analysis"
+version: 0.3.0
+date-released: 2026-04-10
+url: "https://github.com/francoispzn/scr-financial-networks"
+repository-code: "https://github.com/francoispzn/scr-financial-networks"
+license: MIT
+authors:
+  - family-names: Petizon
+    given-names: Francois
+    affiliation: "Department of Informatics, King's College London"
+keywords:
+  - spectral-coarse-graining
+  - graph-neural-networks
+  - systemic-risk
+  - financial-networks
+  - agent-based-model
+  - graph-attention-network
+abstract: >-
+  A framework for systemic risk analysis in financial networks combining
+  spectral coarse-graining (adapting Schmidt, Caccioli & Aste 2025),
+  temporal Graph Attention Networks, and multi-channel agent-based
+  stress testing. Includes configurable bank universes (10-100+ banks),
+  FX conversion, RMT denoising, walk-forward cross-validation, and
+  an interactive Dash dashboard.
+references:
+  - type: article
+    authors:
+      - family-names: Schmidt
+        given-names: M.
+      - family-names: Caccioli
+        given-names: F.
+      - family-names: Aste
+        given-names: T.
+    title: "Spectral coarse graining and rescaling for preserving structural and dynamical properties in graphs"
+    journal: "Physical Review E"
+    volume: 112
+    pages: "034303"
+    year: 2025
+    doi: "10.1103/PhysRevE.112.034303"
