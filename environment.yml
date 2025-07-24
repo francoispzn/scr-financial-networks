@@ -27,6 +27,7 @@ dependencies:
   - pandoc
   - pip
   - pip:
+    - torch-geometric>=2.3
     - fredapi==0.5.*
     - yfinance==0.2.*
     - pyvis==0.3.*

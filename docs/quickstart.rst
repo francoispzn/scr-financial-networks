@@ -35,9 +35,10 @@ Programmatic Usage
    from scr_financial.network.coarse_graining import SpectralCoarseGraining
    from scr_financial.ml.gnn_predictor import GNNPredictor
 
-   # Run ABM simulation
-   sim = BankingSystemSimulation()
-   sim.setup_banks()
+   # Run ABM simulation (inputs from the real data pipeline)
+   from dashboard.data_loader import load_simulation_inputs
+   bank_data, network_data, system_indicators = load_simulation_inputs()
+   sim = BankingSystemSimulation(bank_data, network_data, system_indicators)
    sim.run_simulation(100)
 
    # Spectral analysis

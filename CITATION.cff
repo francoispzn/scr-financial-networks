@@ -3,7 +3,7 @@ message: "If you use this software, please cite it as below."
 type: software
 title: "SCR Financial Networks: Spectral Coarse-Graining for Systemic Risk Analysis"
 version: 0.3.0
-date-released: 2026-04-10
+date-released: 2025-07-24
 url: "https://github.com/francoispzn/scr-financial-networks"
 repository-code: "https://github.com/francoispzn/scr-financial-networks"
 license: MIT

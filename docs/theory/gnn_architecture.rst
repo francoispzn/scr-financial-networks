@@ -13,7 +13,7 @@ Architecture
 
    Input: sequence of T daily graph snapshots (10 banks, 5 node features)
        |
-   [GCNConv -> BatchNorm -> ReLU -> Dropout] x L layers
+   [GATConv (multi-head) -> BatchNorm -> ELU -> Dropout] x L layers
        |
    global_mean_pool -> graph-level embedding per snapshot
        |
@@ -24,10 +24,10 @@ Architecture
 Components
 ----------
 
-**GCN Encoder** (per snapshot):
+**GAT Encoder** (per snapshot):
 
-- Multi-layer Graph Convolutional Network (GCNConv)
-- Each layer: GCNConv -> BatchNorm -> ReLU -> Dropout
+- Multi-layer Graph Attention Network (GATConv, multi-head)
+- Each layer: GATConv -> BatchNorm -> ELU -> Dropout
 - Aggregates neighbor features through actual network edges
 - Output: node embeddings [N, hidden_dim]
 

@@ -115,3 +115,6 @@ results/
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Knowledge graph output (local analysis artifact)
+graphify-out/

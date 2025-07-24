@@ -1,0 +1,1598 @@
+% ══════════════════════════════════════════════════════════════════
+% Part 1: Chapters 1–3
+% Spectral Coarse-Graining for Systemic Risk Analysis
+% in Financial Networks
+% ══════════════════════════════════════════════════════════════════
+
+
+% ══════════════════════════════════════════════════════════════════
+\chapter{Introduction}
+\label{ch:introduction}
+% ══════════════════════════════════════════════════════════════════
+
+\section{Context and Motivation}
+\label{sec:context}
+
+Modern financial systems are characterised by interdependencies that span
+multiple temporal, spatial, and relational scales.  At the microscopic
+level, individual institutions manage balance sheets, hedge exposures, and
+extend credit to counterparties; at the mesoscopic level, clusters of
+institutions crystallise around shared asset classes, funding strategies,
+or geographic concentration; at the macroscopic level, system-wide
+phenomena---contagion cascades, liquidity spirals, fire-sale
+externalities---emerge from the collective behaviour of interconnected
+agents~\cite{bardoscia2021physics,mantegna1999introduction}.  The global
+financial crisis of 2007--2009 demonstrated with devastating clarity that
+risk measures evaluated in isolation---Value-at-Risk, stress tests
+calibrated to single institutions---fundamentally fail to capture these
+emergent dynamics~\cite{brunnermeier2009market,bisias2012survey}.
+
+The crisis exposed what Haldane and May~\cite{haldane2011systemic} termed
+the ``robust-yet-fragile'' character of the banking ecosystem: a system
+that absorbs small perturbations efficiently through diversification can
+nonetheless amplify large shocks catastrophically through the same
+channels.  Battiston et al.~\cite{battiston2016price} formalised this
+observation as the ``price of complexity,'' showing that the proliferation
+of financial instruments and cross-holdings can erode systemic stability
+even as individual institutions appear well-capitalised.  These insights
+motivate a network perspective: representing institutions as nodes and
+their relationships---statistical dependencies, bilateral exposures,
+common asset holdings---as edges enables the application of analytical
+frameworks from graph theory, statistical physics, and machine
+learning~\cite{newman2003structure,barabasi2016network}.
+
+Network representations of financial systems have grown rapidly since
+Mantegna's~\cite{mantegna1999hierarchical} pioneering construction of
+minimum spanning trees from equity correlation matrices, which revealed
+hierarchical taxonomies corresponding to economic sectors.  Subsequent
+empirical studies of interbank payment networks~\cite{soramaki2007topology},
+overnight lending markets~\cite{iori2008network}, and multiplex exposure
+layers~\cite{bargigli2015multiplex,aldasoro2018multiplex} have confirmed
+that financial networks exhibit heavy-tailed degree distributions,
+small-world properties, and time-varying community structure.  Yet
+extracting actionable risk indicators from these networks remains an open
+challenge: the high dimensionality and temporal volatility of financial
+graphs demand principled methods for dimensionality reduction that
+preserve the dynamical properties relevant to contagion and stress
+propagation.
+
+This dissertation addresses that challenge by adapting a spectral
+coarse-graining methodology---originally developed for general complex
+networks---to the domain of interbank systemic risk analysis.  The
+approach exploits the eigenstructure of the graph Laplacian to identify
+natural scales for network simplification, and integrates the resulting
+spectral diagnostics with machine learning and agent-based simulation to
+construct a multi-layer analytical framework.
+
+\section{The Spectral Perspective}
+\label{sec:spectral_perspective}
+
+The eigenvalues and eigenvectors of the graph Laplacian encode structural
+information at every scale of a network~\cite{chung1997spectral}.  The
+smallest non-zero eigenvalue, the \emph{algebraic connectivity}
+$\lambda_2$ introduced by Fiedler~\cite{fiedler1973algebraic}, governs
+the convergence rate of diffusion processes on the graph and determines the
+bottleneck resistance to partitioning: a small $\lambda_2$ signals a
+network that can be easily split into weakly connected components, while
+a large $\lambda_2$ implies rapid mixing and robust
+connectivity~\cite{luxburg2007tutorial}.
+
+For financial networks, the spectral perspective offers a natural
+language for contagion dynamics.  A shock introduced at a single
+institution propagates through the network as a diffusion process
+governed by the Laplacian; the spectrum determines the timescales of
+this propagation~\cite{masuda2017random}.  Specifically, the
+eigenmode expansion of the diffusion operator (Section~\ref{sec:diffusion_theory})
+shows that each eigenvalue $\lambda_\alpha$ defines a characteristic
+decay time $\tau_\alpha = 1/\lambda_\alpha$: slow modes associated
+with small eigenvalues persist and dominate the long-time dynamics,
+while fast modes associated with large eigenvalues decay rapidly.
+
+The \emph{spectral gap}---an anomalously large jump between consecutive
+eigenvalues---identifies natural timescale separations in the
+network~\cite{arenas2006synchronization}.  Arenas, D\'iaz-Guilera, and
+P\'erez-Vicente showed that such gaps correspond to the emergence of
+community structure at different scales: modes below the gap capture
+inter-community dynamics (slow, global), while modes above the gap
+capture intra-community dynamics (fast, local).  This timescale
+separation is precisely the property that makes principled
+coarse-graining possible: if a clear gap exists, one can discard the
+fast modes without significantly affecting the long-time behaviour of the
+system.
+
+In the financial context, the spectral gap acquires a risk-relevant
+interpretation.  A network with a pronounced gap between $\lambda_k$ and
+$\lambda_{k+1}$ admits a faithful reduced representation with $k$
+effective degrees of freedom.  Our experiments on 1{,}096 daily snapshots
+of a 10-bank European interbank network (Section~\ref{ch:results})
+confirm that 2--4 clusters emerge across diverse topologies, with the
+Erd\H{o}s-R\'enyi gap test rejecting the null hypothesis at $p < 0.01$
+in all configurations tested.
+
+\section{Schmidt et al.'s Spectral Coarse-Graining}
+\label{sec:intro_scg}
+
+Schmidt, Caccioli, and Aste~\cite{schmidt2024spectral} recently introduced
+a spectral coarse-graining and rescaling procedure that generates
+reduced-complexity graph representations while preserving both structural
+and dynamical properties.  The method draws its conceptual motivation from
+the renormalization group in statistical
+physics~\cite{wilson1975renormalization}: just as the renormalization group
+systematically integrates out short-wavelength fluctuations to produce an
+effective theory at longer wavelengths, spectral coarse-graining integrates
+out the fast eigenmodes of the graph Laplacian to produce a reduced
+network whose diffusion dynamics approximate those of the original system.
+
+The procedure operates in three stages.  First, statistically significant
+gaps in the Laplacian spectrum are identified by comparing observed gaps
+against an ensemble of Erd\H{o}s-R\'enyi random graphs with matched size
+and average degree; gaps whose empirical $p$-value falls below a
+threshold $\alpha$ (typically 0.01) are flagged as candidates for
+coarse-graining.  Second, the eigenvectors below the gap are used to
+partition nodes into clusters via spectral clustering, and a
+coarse-grained Laplacian $\mathbf{L}^{(1)}$ is constructed by aggregating
+edge weights within and between clusters.  Third, the coarse-grained edge
+weights are rescaled by a factor $1/\lambda_k$ to compensate for the
+information loss inherent in dimensionality reduction, ensuring that
+diffusion dynamics on the reduced graph approximate those of the original
+network.
+
+Villegas et al.~\cite{villegas2023laplacian} developed a related
+Laplacian renormalization group (LRG) approach based on the normalised
+heat kernel.  Schmidt et al.'s method differs in operating directly on
+the combinatorial Laplacian spectrum, which better preserves both
+dynamics and large-scale topological structure.  The original application
+of the method was to electroencephalogram (EEG) recordings of brain
+activity, where spectral coarse-graining identified functionally relevant
+mesoscale modules in cortical networks.
+
+Adapting this methodology to financial networks is valuable for several
+reasons.  First, the principled gap test provides a statistically
+grounded criterion for determining the appropriate level of
+simplification, unlike ad hoc community detection methods that require
+the number of communities as an input parameter.  Second, the rescaling
+step preserves diffusion dynamics, which---in the financial
+context---correspond to shock propagation processes.  Third, the spectral
+quantities computed during the SCG procedure ($\lambda_2$, spectral gap,
+spectral radius) are themselves informative risk indicators that can be
+tracked over time to monitor changes in network vulnerability.  Our
+experiments demonstrate perfect diffusion reconstruction ($R^2 = 1.0$)
+across five network topologies, confirming that the method transfers
+effectively to financial correlation networks.
+
+
+\section{Research Objectives and Contributions}
+\label{sec:objectives}
+
+This project addresses the gap between spectral graph theory and
+operational systemic risk analysis by developing an integrated framework
+that combines spectral coarse-graining, graph neural network prediction,
+and agent-based stress testing.  The specific research objectives are:
+
+\begin{enumerate}[label=\textbf{O\arabic*.}]
+    \item \textbf{Adapt spectral coarse-graining to financial networks.}
+    Implement Schmidt et al.'s full renormalization procedure---including
+    the Erd\H{o}s-R\'enyi null model gap test with automatic Laplacian
+    type detection (combinatorial vs.\ normalised)---for networks
+    constructed from daily bank stock return correlations, and evaluate
+    preservation of diffusion dynamics across diverse network topologies.
+
+    \item \textbf{Develop a temporal spectral predictor.}  Design and
+    train a Graph Attention Network with LSTM temporal
+    module~\cite{velickovic2018graph} that predicts the evolution of
+    spectral risk indicators ($\lambda_2$, spectral gap, spectral radius)
+    from sequences of weekly graph snapshots, enabling forward-looking
+    risk assessment.
+
+    \item \textbf{Implement multi-channel agent-based contagion.}
+    Construct a three-channel agent-based model capturing credit
+    losses~\cite{nier2007network}, funding liquidity
+    stress~\cite{gai2010contagion}, and fire-sale asset
+    correlation~\cite{caccioli2015overlapping}, and quantify the
+    amplification effect relative to a single-channel baseline.
+
+    \item \textbf{Backtest the SCG risk indicator.}  Propose and
+    empirically evaluate a spectral risk indicator
+    $\text{SCG-Risk} = 1 - \lambda_2/\rho$ as a potential early-warning
+    signal for systemic stress, comparing its predictive power against
+    realised market volatility and established metrics.
+
+    \item \textbf{Deploy an integrated analytical framework.}  Build a
+    modular Python package with an interactive Dash dashboard for
+    real-time spectral analysis, GNN training with live progress
+    monitoring, and scenario-based stress testing.
+\end{enumerate}
+
+The principal contributions of this work are:
+
+\begin{itemize}
+    \item The first adaptation of Schmidt et al.'s spectral
+    coarse-graining methodology to financial networks, achieving $R^2 =
+    1.0$ diffusion reconstruction with statistically significant gap
+    detection ($p < 0.01$) across all topologies tested, with 2--4
+    clusters identified depending on network construction.
+
+    \item A GAT-LSTM architecture using PyTorch
+    Geometric~\cite{fey2019fast} that achieves test $R^2 = 0.382 \pm
+    0.072$ for spectral property prediction on 220 weekly snapshots of
+    real market data, with per-target analysis revealing algebraic
+    connectivity as the most predictable spectral quantity ($R^2 = 0.493$)
+    and spectral gap as the least ($R^2 = 0.223$).
+
+    \item Extension of agent-based contagion from a single credit channel
+    to a three-channel model (credit, funding liquidity, fire-sale),
+    demonstrating $10\times$ default amplification under severe liquidity
+    stress (100 Monte Carlo runs per scenario).
+
+    \item Honest empirical evaluation showing that the proposed SCG risk
+    indicator exhibits negative rank correlation with future market
+    volatility ($r = -0.43$ to $-0.49$), while algebraic connectivity
+    alone shows positive predictive power ($r = +0.40$ to $+0.46$),
+    revealing a critical distinction between network fragmentation and
+    systemic stress.
+
+    \item Cross-correlation analysis exposing the algebraic
+    structure of spectral indicators: $\lambda_2$ vs.\ spectral radius
+    $\rho = -0.926$, $\lambda_2$ vs.\ SCG risk $= -0.990$, and
+    $\lambda_2$ vs.\ realised volatility $= 0.576$.
+
+    \item Interpretable attention analysis revealing that BNP Paribas and
+    HSBC are the most attended-to nodes (highest incoming attention),
+    while Santander and Deutsche Bank exhibit the highest outgoing
+    attention, suggesting that peripheral banks attend most to core
+    institutions for spectral prediction.
+\end{itemize}
+
+
+\section{Scope and Limitations}
+\label{sec:scope}
+
+Several important limitations bound the scope of this work and should be
+stated explicitly.
+
+\paragraph{Network scale.}
+The analysis uses a panel of 10 European bank stocks: Deutsche Bank
+(DE\_DBK), BNP Paribas (FR\_BNP), Santander (ES\_SAN), UniCredit
+(IT\_UCG), ING (NL\_ING), Nordea (SE\_NDA), UBS (CH\_UBS), Barclays
+(UK\_BARC), HSBC (UK\_HSBC), and Cr\'edit Agricole (FR\_ACA).  While
+this sample covers the major European jurisdictions and represents a
+combined balance sheet of several trillion euros, 10 nodes is small for
+network-scientific purposes.  Spectral coarse-graining delivers its
+greatest value for networks with 50--100+ nodes, where dimensionality
+reduction is genuinely necessary; at $N=10$, the SCG procedure
+demonstrates technical feasibility but not operational utility.
+
+\paragraph{Correlation proxy.}
+The adjacency matrix is constructed from pairwise Pearson correlations of
+daily log returns, thresholded to produce binary or weighted networks.
+This is a statistical proxy for actual bilateral interbank exposures,
+which are not publicly available at the institution level.  Correlation
+networks capture co-movement in equity prices, which reflects market
+perceptions of interconnectedness rather than the contractual
+relationships through which contagion propagates.  The threshold
+sensitivity analysis (Section~\ref{ch:results}) reveals that density
+drops from 0.956 at threshold 0.2 to 0.473 at threshold 0.6, confirming
+that the choice of threshold materially affects network topology and
+downstream spectral properties.
+
+\paragraph{Data constraints.}
+The dataset comprises 1{,}096 daily snapshots over 2021--2024, yielding
+220 weekly observations after stride-5 aggregation.  This provides
+sufficient data for training and evaluation, but the period does not
+include a major systemic crisis, which limits the ability to validate
+early-warning properties of the spectral indicators under genuine stress
+conditions.
+
+\paragraph{Indicator inversion.}
+The backtesting results reveal that the proposed SCG risk indicator
+$1 - \lambda_2/\rho$ is negatively correlated with future market
+volatility ($r = -0.43$ to $-0.49$), while volatility persistence
+alone achieves $r = 0.67$.  This is an honest negative result: the
+indicator captures network fragmentation rather than systemic stress,
+and should not be interpreted as an operational early-warning signal
+without substantial modification.
+
+\section{Document Structure}
+\label{sec:structure}
+
+The remainder of this document is organised as follows. Chapter~\ref{ch:background} reviews the literature on financial networks, contagion, spectral methods, GNNs, ABMs, and risk metrics. Chapter~\ref{ch:theory} develops the mathematical foundations: Laplacian spectral theory, diffusion dynamics, the SCG procedure, GAT attention, and multi-channel contagion. Chapter~\ref{ch:methodology} details the implementation of each component. Chapter~\ref{ch:results} presents experimental results across SCG validation, GAT training, ABM stress testing, backtesting, and sensitivity analysis. Chapter~\ref{ch:discussion} critically analyses the findings and identifies future directions. Chapter~\ref{ch:ethics} addresses ethical considerations. Chapter~\ref{ch:conclusion} summarises the contributions.
+
+
+% ══════════════════════════════════════════════════════════════════
+\chapter{Background and Literature Review}
+\label{ch:background}
+% ══════════════════════════════════════════════════════════════════
+
+This chapter surveys the six bodies of literature upon which the present
+work draws: financial network analysis (Section~\ref{sec:fin_networks}),
+systemic risk and contagion mechanisms
+(Section~\ref{sec:systemic_risk}), spectral graph theory for financial
+networks (Section~\ref{sec:spectral_background}), spectral
+coarse-graining and renormalization (Section~\ref{sec:scg_background}),
+graph neural networks (Section~\ref{sec:gnn_background}), agent-based
+models in financial systems (Section~\ref{sec:abm_background}), and
+systemic risk metrics (Section~\ref{sec:risk_metrics_background}).  Each
+section critically assesses the strengths and limitations of existing
+approaches.  Section~\ref{sec:research_gap} synthesises the identified
+gaps and positions this work within the literature.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Financial Network Analysis}
+\label{sec:fin_networks}
+% ──────────────────────────────────────────────────────────────────
+
+\subsection{Network Construction Methodologies}
+\label{sec:network_construction}
+
+Three principal approaches to constructing financial networks have
+emerged in the literature, each capturing a different facet of
+inter-institutional relationships.
+
+\paragraph{Correlation-based networks.}
+The econophysics tradition, initiated by Mantegna~\cite{mantegna1999hierarchical},
+constructs networks from the pairwise correlation matrix of asset
+returns.  Mantegna showed that the minimum spanning tree (MST) of the
+correlation distance matrix $d_{ij} = \sqrt{2(1-\rho_{ij})}$ reveals a
+hierarchical taxonomy of equities corresponding to industry sectors and
+geographic regions~\cite{mantegna1999introduction}.  Tumminello
+et al.~\cite{tumminello2005tool} extended this with the Planar Maximally
+Filtered Graph (PMFG), which retains substantially more topological
+information than the MST while remaining planar, and demonstrated that
+the PMFG preserves economically meaningful structures in the correlation
+matrix~\cite{tumminello2007correlation}.  Bonanno
+et al.~\cite{bonanno2004networks} provided a comprehensive
+characterisation of equity correlation networks, establishing that they
+exhibit both high clustering and small-world properties.  A limitation
+of correlation-based approaches is their sensitivity to the choice of
+threshold, estimation window, and frequency: Laloux
+et al.~\cite{laloux1999noise} showed via random matrix theory that a
+substantial fraction of eigenvalues in empirical correlation matrices are
+indistinguishable from noise, implying that naive thresholding can
+produce networks dominated by statistical artefacts.
+
+\paragraph{Exposure-based networks.}
+Bilateral exposure data---credit claims, derivative positions, securities
+cross-holdings---provide a more direct representation of the channels
+through which contagion can propagate.  Upper~\cite{nier2007network}
+and Nier et al.\ used balance-sheet data to construct interbank lending
+networks and simulate cascading defaults, finding that network topology
+has a first-order effect on systemic stability.  Elliott, Golub, and
+Jackson~\cite{elliott2014financial} modelled cross-holdings as a linear
+integration matrix, deriving conditions under which discontinuous
+cascades emerge.  However, bilateral exposure data are rarely available
+at the institution level: regulators collect such data through exercises
+like the European Banking Authority's transparency exercises, but public
+releases are aggregated and incomplete.
+
+\paragraph{Payment and transaction networks.}
+Soram\"aki et al.~\cite{soramaki2007topology} provided one of the first
+comprehensive analyses of interbank payment flows using data from
+Fedwire, the large-value real-time gross settlement system operated by
+the U.S. Federal Reserve.  They documented small-world properties,
+heavy-tailed degree distributions, and a core-periphery structure in
+which a small number of highly connected banks intermediate the majority
+of payment flows.  Iori et al.~\cite{iori2008network} performed a
+parallel analysis of the Italian e-MID overnight lending market,
+documenting how network topology evolved through the 2007--2008 crisis:
+the network became sparser, more concentrated, and more hierarchical as
+banks withdrew from unsecured lending.
+
+\subsection{Network Topology and Stylised Facts}
+\label{sec:topology}
+
+Empirical studies have established several stylised facts about financial
+network topology.  First, degree distributions are heavy-tailed but
+generally not pure power laws; truncated power laws and log-normal
+distributions provide better fits~\cite{soramaki2007topology}.  Second,
+financial networks exhibit a pronounced core-periphery structure, with a
+densely connected core of systemically important institutions and a
+sparse periphery of smaller banks~\cite{newman2003structure}.  Third,
+financial networks are temporal: their topology evolves substantially
+over time, particularly during periods of
+stress~\cite{iori2008network,holme2012temporal}.
+
+\subsection{Multiplex Structure}
+\label{sec:multiplex}
+
+A critical development in financial network analysis has been the
+recognition that interbank relationships form a \emph{multiplex}
+structure: different relationship types---unsecured lending, secured
+lending, derivatives, securities holdings---constitute distinct network
+layers with potentially different topological
+properties~\cite{bargigli2015multiplex}.  Bargigli et al.\ analysed the
+Italian interbank market and showed that the degree distributions, degree
+correlations, and clustering coefficients differ markedly across layers,
+implying that single-layer representations lose important structural
+information.  Aldasoro and Alves~\cite{aldasoro2018multiplex} confirmed
+this finding using European data and demonstrated that systemic
+importance rankings of individual institutions depend on which layer (or
+combination of layers) is considered.
+
+The multiplex perspective is relevant to the present work because
+correlation-based networks---the type we construct from equity return
+data---represent a projection of this multiplex structure onto a single
+layer.  The correlation between two bank stocks reflects the market's
+aggregate assessment of their co-movement, which is influenced by all
+underlying exposure channels but does not identify which channels are
+active.  This conflation is a fundamental limitation that should be borne
+in mind when interpreting spectral properties of correlation networks.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Systemic Risk and Contagion Mechanisms}
+\label{sec:systemic_risk}
+% ──────────────────────────────────────────────────────────────────
+
+\subsection{Direct Contagion: Credit Losses and DebtRank}
+\label{sec:direct_contagion}
+
+The most studied contagion mechanism operates through direct bilateral
+exposures.  When an institution defaults, its creditors suffer losses
+proportional to their exposure and the loss-given-default rate.  Nier
+et al.~\cite{nier2007network} showed through simulation that the
+relationship between network connectivity and systemic risk is
+non-monotonic: moderate connectivity diversifies risk, but high
+connectivity facilitates system-wide contagion.
+
+Battiston et al.~\cite{battiston2012debtrank} introduced DebtRank, a
+recursive centrality measure that quantifies the fraction of total
+economic value in the network that is at risk conditional on the distress
+of a particular institution.  Unlike simple cascade models that assume
+binary default, DebtRank allows for continuous distress levels that
+propagate through the network.  Bardoscia et
+al.~\cite{bardoscia2017distress} extended DebtRank to a non-linear
+setting in which the propagation of distress depends on the magnitude of
+losses, introducing distress propagation functions that capture the
+concavity or convexity of the loss-distress relationship.
+
+A key insight from DebtRank analysis is that centrality-based measures of
+systemic importance---which depend only on network topology---can diverge
+substantially from impact-based measures that account for balance-sheet
+heterogeneity~\cite{battiston2009liaisons}.  An institution with
+moderate connectivity but large balance sheet may be more systemically
+important than a highly connected institution with small exposures.
+
+\subsection{Phase Transitions and the Robust-Yet-Fragile Property}
+\label{sec:phase_transitions}
+
+Two influential models characterise the conditions under which contagion
+propagates through financial networks.
+
+Elliott, Golub, and Jackson~\cite{elliott2014financial} model an economy
+in which organisations hold cross-holdings in one another.  They show
+that as the degree of integration increases, the system transitions
+discontinuously from a regime in which failures are isolated to one in
+which failures cascade through the entire network.  The location of this
+phase transition depends on the network topology, the distribution of
+initial shocks, and the threshold at which an organisation's value
+decline triggers discontinuous failure.
+
+Acemoglu, Ozdaglar, and Tahbaz-Salehi~\cite{acemoglu2015systemic}
+formalised the ``robust-yet-fragile'' property more rigorously.  In their
+model, a dense (complete) interbank network is optimal for absorbing
+small shocks---each institution bears only a small fraction of any
+counterparty's losses---but becomes the worst-possible topology for
+large shocks, because losses that exceed the absorptive capacity of the
+system spread to every institution simultaneously.  The critical shock
+size that separates the two regimes decreases with network density,
+creating a non-monotonic relationship between connectivity and stability.
+
+These theoretical results have direct implications for spectral
+coarse-graining.  The algebraic connectivity $\lambda_2$, which measures
+how well-connected the network is, captures the same structural feature
+that determines the robust-yet-fragile threshold.  A network with high
+$\lambda_2$ diffuses small shocks efficiently but is vulnerable to large
+shocks; a network with low $\lambda_2$ may localise large shocks but
+fails to absorb even moderate ones.  Our spectral evolution data
+(Section~\ref{ch:results}) show $\lambda_2$ with mean $0.923 \pm 0.160$
+over the 2021--2024 period, with substantial temporal variation that
+tracks changes in market conditions.
+
+\subsection{Indirect Contagion: Funding Liquidity and Fire Sales}
+\label{sec:indirect_contagion}
+
+Gai and Kapadia~\cite{gai2010contagion} developed an analytical model of
+contagion in random financial networks that emphasises the ``knife-edge''
+property: small changes in network structure---a single additional
+default, a marginal increase in correlations---can tip the system from
+stability to widespread collapse.  Their model captures both direct
+credit contagion and the indirect effects of liquidity hoarding.
+
+Brunnermeier and Pedersen~\cite{brunnermeier2009market} provided a
+foundational analysis of the feedback loop between market liquidity
+(the ease of trading an asset) and funding liquidity (the ease of
+obtaining financing).  They showed that a decline in market liquidity
+tightens funding constraints, which forces leveraged institutions to
+deleverage by selling assets, which further depresses market liquidity.
+This ``liquidity spiral'' represents a contagion mechanism that operates
+through market prices rather than bilateral exposures.
+
+Caccioli et al.~\cite{caccioli2015overlapping} demonstrated that
+overlapping portfolios create a distinct contagion channel.  When
+institution $A$ is forced to sell an asset, the price decline imposes
+mark-to-market losses on institution $B$ if it holds the same asset,
+even if $A$ and $B$ have no direct bilateral relationship.  This
+fire-sale externality has been shown to be quantitatively significant:
+Caccioli et al.\ documented that fire-sale losses can exceed direct
+credit losses in stressed scenarios, particularly in systems with high
+leverage~\cite{caccioli2009eroding}.
+
+Glasserman and Young~\cite{glasserman2015contagion} provided analytical
+bounds on the probability and magnitude of contagion, showing that
+contagion amplification is more severe when exposures are concentrated
+rather than diversified.  Their results complement those of Acemoglu et
+al.\ by demonstrating that the distribution of exposures, not merely
+their mean level, determines systemic vulnerability.
+
+The multi-channel nature of contagion---direct credit, funding liquidity,
+and fire-sale externalities---motivates the three-channel agent-based
+model developed in this work.  Our ABM experiments
+(Section~\ref{ch:results}) show that the funding liquidity channel is
+the primary amplification mechanism, producing $10\times$ default
+amplification under severe stress compared to a single-channel credit
+baseline.
+
+\subsection{The Ecological Analogy}
+\label{sec:ecology}
+
+The ecological analogy introduced by May~\cite{may1972will}---that
+increased complexity and connectivity in ecosystems can paradoxically
+decrease stability---was applied to banking by Haldane and
+May~\cite{haldane2011systemic}.  They argued that the banking ecosystem
+exhibits a May-Wigner instability threshold, where the product of the
+number of institutions, their average connectivity, and the variance of
+interaction strengths determines whether the system is stable or unstable.
+This insight underscores the importance of spectral methods: the
+stability of a linear system is determined by the eigenvalues of its
+interaction matrix, and the transition from stability to instability
+occurs precisely when the largest eigenvalue crosses a critical
+threshold~\cite{may1972will}.
+
+Caccioli et al.~\cite{caccioli2018network} provided a comprehensive
+review synthesising network models of systemic risk, while Bardoscia et
+al.~\cite{bardoscia2021physics} offered the physics community's
+perspective on the statistical mechanics of financial contagion.
+Battiston et al.~\cite{battiston2016price} quantified the complexity--stability
+trade-off specifically for financial systems.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Spectral Graph Theory for Financial Networks}
+\label{sec:spectral_background}
+% ──────────────────────────────────────────────────────────────────
+
+\subsection{The Laplacian Spectrum}
+\label{sec:laplacian_spectrum}
+
+The graph Laplacian and its spectral decomposition form the mathematical
+backbone of this work.  Chung's monograph~\cite{chung1997spectral}
+provides the foundational treatment, establishing that the eigenvalues
+of the normalised Laplacian encode information about expansion,
+diameter, chromatic number, and random walk mixing times.  Cvetkovi\'c,
+Doob, and Sachs~\cite{cvetkovic1995spectra} developed the broader theory
+of graph spectra, covering adjacency, Laplacian, and signless Laplacian
+matrices.  Fiedler~\cite{fiedler1973algebraic} introduced the algebraic
+connectivity $\lambda_2$ and showed that it provides both upper and
+lower bounds on the vertex and edge connectivity of the graph.
+
+For financial networks, the Laplacian spectrum has been used primarily
+for two purposes.  First, spectral clustering methods---surveyed by von
+Luxburg~\cite{luxburg2007tutorial}---use the bottom eigenvectors of the
+normalised Laplacian to partition the network into communities,
+following the normalised cut criterion of Ng, Jordan, and
+Weiss~\cite{ng2002spectral}.  In the financial context, these
+communities correspond to groups of institutions with similar risk
+profiles or co-movement patterns.  Second, random matrix theory has
+been applied to financial correlation matrices to separate signal from
+noise: Laloux et al.~\cite{laloux1999noise} showed that the bulk of
+eigenvalues in large correlation matrices follows the Marc\v{e}nko-Pastur
+distribution, and only eigenvalues exceeding the upper bound of this
+distribution carry genuine information.
+
+\subsection{Spectral Clustering and Community Detection}
+\label{sec:spectral_clustering}
+
+Spectral clustering exploits the fact that the first $k$ eigenvectors
+of the graph Laplacian define an optimal $k$-dimensional embedding of
+the vertices in the sense of minimising the normalised
+cut~\cite{ng2002spectral,luxburg2007tutorial}.  In this embedding,
+vertices that are densely connected in the original graph are mapped to
+nearby points, enabling standard clustering algorithms (typically
+$k$-means) to identify communities.  Kyriakopoulos
+et al.~\cite{kyriakopoulos2009network} applied spectral methods to
+the Greek stock market, using the Laplacian spectrum to identify sector
+structure and temporal variation in market organisation.
+
+The relationship between spectral clustering and community detection
+methods is mediated by the concept of modularity.  Fortunato and
+Hric~\cite{fortunato2016community} provide a comprehensive survey of
+community detection methods, including modularity maximisation, label
+propagation, and information-theoretic approaches.  Mucha
+et al.~\cite{mucha2010community} extended community detection to
+temporal and multiplex networks through the concept of multislice
+modularity, which is particularly relevant for financial networks that
+evolve over time.
+
+\subsection{Temporal Spectral Analysis}
+\label{sec:temporal_spectral}
+
+The temporal evolution of spectral properties provides a dynamic view of
+network structure that static snapshots cannot capture.  Arenas,
+D\'iaz-Guilera, and P\'erez-Vicente~\cite{arenas2006synchronization}
+showed that the eigenvalues of the Laplacian determine the
+synchronisation properties of coupled oscillators on networks, with
+gaps in the spectrum corresponding to timescale separations between
+community-level and global dynamics.  Lambiotte, Delvenne, and
+Barab\'asi~\cite{lambiotte2014random} connected these spectral
+timescales to the Markov time at which random walks on the network
+reveal community structure: communities are visible at time $t$ when
+$1/\lambda_{k+1} \ll t \ll 1/\lambda_k$ for the gap between eigenvalues
+$\lambda_k$ and $\lambda_{k+1}$.
+
+Masuda, Porter, and Lambiotte~\cite{masuda2017random} provide a
+comprehensive treatment of random walks on temporal networks, showing
+how the interplay between network dynamics and random walk dynamics
+gives rise to non-trivial diffusion behaviour.  Holme and
+Saram\"aki~\cite{holme2012temporal} survey the broader literature on
+temporal networks, including metrics, models, and empirical findings.
+
+Our analysis tracks spectral evolution over 1{,}096 daily snapshots
+(Section~\ref{ch:results}), finding that $\lambda_2$ exhibits a mean
+of $0.923 \pm 0.160$ with substantial temporal variation, the SCG risk
+indicator averages $0.237 \pm 0.181$, and the number of edges varies
+between approximately 35 and 46 ($\text{mean} = 40.7 \pm 5.8$),
+reflecting changing market conditions over 2021--2024.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Spectral Coarse-Graining and Renormalization}
+\label{sec:scg_background}
+% ──────────────────────────────────────────────────────────────────
+
+\subsection{Renormalization Group Origins}
+\label{sec:rg_origins}
+
+The renormalization group (RG), introduced by Wilson~\cite{wilson1975renormalization}
+in the context of critical phenomena and quantum field theory, provides a
+systematic framework for understanding how physical systems behave across
+different scales.  The central idea is to iteratively ``integrate out''
+short-wavelength (fast) degrees of freedom, producing an effective theory
+for the remaining long-wavelength (slow) degrees of freedom.  At each
+step, the coupling constants of the effective theory are
+\emph{renormalized} to account for the integrated-out fluctuations.
+
+The application of RG ideas to networks is more recent.  Villegas et
+al.~\cite{villegas2023laplacian} developed the Laplacian Renormalization
+Group (LRG), which uses the normalised heat kernel at a given diffusion
+time $t$ to define a renormalized partition of the network.  At each RG
+step, nodes that are ``close'' in diffusion distance at time $t$ are
+merged, producing a coarser network.  The procedure can be iterated,
+yielding a hierarchy of increasingly coarse representations.  The LRG
+is elegant and principled, but operates on the normalised Laplacian and
+requires the diffusion time as a parameter, which introduces a
+user-specified scale.
+
+\subsection{Schmidt et al.'s Spectral Coarse-Graining}
+\label{sec:schmidt_method}
+
+Schmidt, Caccioli, and Aste~\cite{schmidt2024spectral} introduced an
+alternative spectral coarse-graining procedure that avoids the
+explicit choice of diffusion time.  Instead, the method identifies
+natural scales directly from the Laplacian spectrum through a
+statistical gap test.  The procedure has three components:
+
+\paragraph{Gap identification.}  For each gap
+$\delta_k = |\lambda_{k+1} - \lambda_k|$ in the ordered spectrum,
+the observed value is compared against the distribution of gaps from
+an ensemble of $10^4$ connected Erd\H{o}s-R\'enyi graphs
+$G_{\text{ER}}(n,p)$ with matching number of vertices and expected
+average degree.  Gaps whose empirical one-tailed $p$-value falls below
+$\alpha = 0.01$ are flagged as statistically significant, identifying
+natural scales for coarse-graining.
+
+\paragraph{Spectral clustering and coarse-graining.}  Given a
+significant gap at position $k$, the $k$ eigenvectors corresponding
+to eigenvalues below the gap are used as features for $k$-means
+clustering, partitioning the $N$ nodes into $k$ groups.  The
+coarse-grained Laplacian $\mathbf{L}^{(1)} \in \mathbb{R}^{k \times k}$
+is then constructed by aggregating edge weights: the off-diagonal
+entry $L^{(1)}_{ab}$ equals the sum of original edge weights between
+clusters $a$ and $b$, with self-loops accounting for intra-cluster
+edges.
+
+\paragraph{Rescaling.}  The coarse-grained adjacency is rescaled by
+a factor $1/\lambda_k$ (the eigenvalue at the gap), producing a
+rescaled adjacency matrix $\mathbf{A}_R$ whose diffusion dynamics
+approximate those of the original network.  This rescaling compensates
+for the compression inherent in coarse-graining: without it, the
+coarse-grained network would diffuse too slowly because the fast modes
+have been removed.
+
+\subsection{Comparison with Alternative Approaches}
+\label{sec:scg_comparison}
+
+Schmidt et al.'s method differs from the LRG of Villegas et
+al.~\cite{villegas2023laplacian} in three respects.  First, it operates
+on the combinatorial Laplacian rather than the normalised Laplacian,
+which better preserves the absolute timescales of diffusion processes.
+Second, the gap test provides an automatic, statistically grounded
+criterion for the coarse-graining resolution, whereas the LRG requires
+the diffusion time as an input.  Third, the rescaling step explicitly
+compensates for information loss, ensuring that the coarse-grained
+dynamics approximate the original dynamics quantitatively.
+
+The method also differs from standard community detection algorithms,
+which seek to maximise modularity~\cite{fortunato2016community} or
+minimise normalised cuts~\cite{ng2002spectral,luxburg2007tutorial}.
+While the spectral clustering step used in SCG is similar to normalised-cut
+partitioning, the gap test and rescaling steps are distinct: the gap test
+determines \emph{whether} coarse-graining is appropriate (not just how
+many communities exist), and the rescaling step ensures dynamical
+fidelity rather than merely topological similarity.  Mucha et
+al.'s~\cite{mucha2010community} multislice modularity framework provides
+a complementary perspective for temporal networks but does not address
+the dynamical preservation that is central to SCG.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Graph Neural Networks}
+\label{sec:gnn_background}
+% ──────────────────────────────────────────────────────────────────
+
+\subsection{Historical Development}
+\label{sec:gnn_history}
+
+The extension of neural networks to graph-structured data has proceeded
+through several conceptual stages.  Scarselli et
+al.~\cite{scarselli2009graph} introduced the original Graph Neural
+Network (GNN) as a recursive message-passing system in which node
+representations are iteratively updated based on their neighbours'
+representations until a fixed point is reached.  While theoretically
+appealing, this approach suffered from computational limitations and
+convergence issues.
+
+The spectral perspective on graph convolution, initiated by Bruna et
+al.~\cite{bruna2014spectral}, defined graph convolution in the spectral
+domain via the graph Fourier transform---i.e., multiplication in the
+eigenspace of the graph Laplacian.  Defferrard et
+al.~\cite{defferrard2016convolutional} made this practical by
+approximating spectral filters with Chebyshev polynomials, avoiding the
+$O(N^3)$ eigendecomposition.  Kipf and
+Welling~\cite{kipf2017semi} simplified this further with the Graph
+Convolutional Network (GCN), which uses a first-order Chebyshev
+approximation with renormalisation.
+
+\subsection{Message Passing and the Spatial Perspective}
+\label{sec:mpnn}
+
+Gilmer et al.~\cite{gilmer2017neural} unified the various GNN
+architectures under the Message Passing Neural Network (MPNN) framework,
+showing that GCNs, GATs, and other variants can all be expressed as
+instances of a general message-passing scheme:
+\begin{equation}
+\mathbf{h}_i^{(\ell+1)} = \phi\!\left(\mathbf{h}_i^{(\ell)},\;
+\bigoplus_{j \in \mathcal{N}(i)} \psi\!\left(\mathbf{h}_i^{(\ell)},\,
+\mathbf{h}_j^{(\ell)},\, \mathbf{e}_{ij}\right)\right)
+\label{eq:mpnn}
+\end{equation}
+where $\psi$ is the message function, $\bigoplus$ is a permutation-invariant
+aggregation (sum, mean, or max), and $\phi$ is the update function.  This
+framework clarifies the design space and has guided subsequent
+architectural innovation.  Wu et al.~\cite{wu2020comprehensive} provide
+a comprehensive survey of the GNN landscape, covering architectures,
+training procedures, and applications.
+
+\subsection{Graph Attention Networks}
+\label{sec:gat_background}
+
+Veli\v{c}kovi\'c et al.~\cite{velickovic2018graph} introduced Graph
+Attention Networks (GATs), which replace the fixed aggregation weights
+of GCNs with learned attention coefficients:
+\begin{equation}
+\alpha_{ij} = \frac{
+  \exp\!\left(\text{LeakyReLU}\!\left(\mathbf{a}^T\!
+  \left[\mathbf{W}\mathbf{h}_i \,\|\, \mathbf{W}\mathbf{h}_j\right]
+  \right)\right)}{
+  \sum_{k \in \mathcal{N}(i)}
+  \exp\!\left(\text{LeakyReLU}\!\left(\mathbf{a}^T\!
+  \left[\mathbf{W}\mathbf{h}_i \,\|\, \mathbf{W}\mathbf{h}_k\right]
+  \right)\right)}
+\label{eq:gat_attn}
+\end{equation}
+The attention mechanism offers two advantages over fixed spectral
+filters.  First, it is \emph{adaptive}: the weights $\alpha_{ij}$
+depend on the current node features, so the aggregation pattern changes
+as the input changes.  In financial networks, where the relative
+importance of inter-bank relationships varies with market conditions,
+this adaptivity is valuable.  Second, attention weights are
+\emph{interpretable}: examining which banks attend to which reveals
+the network relationships that the model considers most informative for
+prediction.
+
+Multi-head attention with $K$ heads stabilises learning and increases
+representational capacity~\cite{velickovic2018graph}:
+\begin{equation}
+\mathbf{h}_i^{(\ell+1)} = \Big\|_{k=1}^{K}\,\sigma\!\left(
+\sum_{j \in \mathcal{N}(i)} \alpha_{ij}^{(k)}\,
+\mathbf{W}^{(k)}\,\mathbf{h}_j^{(\ell)}\right)
+\label{eq:multihead_attn}
+\end{equation}
+Our implementation uses $K=8$ attention heads with hidden dimension
+$h=64$ (Section~\ref{ch:methodology}), yielding 73{,}795 trainable
+parameters.
+
+\subsection{Oversmoothing and Depth Limitations}
+\label{sec:oversmoothing}
+
+A well-documented limitation of GNNs is \emph{oversmoothing}: as the
+number of layers $L$ increases, node representations converge to a
+common vector, losing the discriminative power needed for node-level
+tasks~\cite{kipf2017semi}.  This is a spectral phenomenon---repeated
+application of the graph convolution operator is equivalent to
+low-pass filtering, which progressively attenuates the higher-frequency
+components that distinguish different nodes.  For small networks like
+our 10-bank system, $L=2$ layers suffice to propagate information
+across the entire graph (the diameter is at most 2--3 for the dense
+topologies we consider), so oversmoothing is not a practical concern.
+However, it would become relevant for larger networks where deeper
+architectures might be needed.
+
+\subsection{GNNs for Financial Applications}
+\label{sec:gnn_finance}
+
+GNNs have been applied to several financial prediction tasks, including
+credit scoring, fraud detection, and portfolio
+construction~\cite{wu2020comprehensive}.  However, the specific problem
+of predicting \emph{spectral properties} of time-evolving financial
+networks from graph sequences has not, to our knowledge, been addressed
+in the literature.  This is a distinctive feature of the present work:
+rather than predicting node-level quantities (e.g., individual bank
+returns) or graph-level labels (e.g., crisis / no-crisis), we predict
+continuous spectral properties ($\lambda_2$, spectral gap, spectral
+radius) that characterise the network as a whole.  The implementation
+uses PyTorch Geometric~\cite{fey2019fast}.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Agent-Based Models in Financial Systems}
+\label{sec:abm_background}
+% ──────────────────────────────────────────────────────────────────
+
+\subsection{Motivation and Advantages}
+\label{sec:abm_motivation}
+
+Agent-based models (ABMs) represent each institution as an autonomous
+agent with state variables (balance sheet, regulatory ratios), decision
+rules (lending, borrowing, deleveraging), and interaction mechanisms
+(bilateral contracts, market clearing)~\cite{tesfatsion2006agent}.  The
+aggregate behaviour of the system emerges from the interactions of
+heterogeneous agents, without imposing equilibrium conditions or
+representative-agent assumptions.
+
+Farmer and Foley~\cite{farmer2009economy} argued that ABMs offer
+advantages over dynamic stochastic general equilibrium (DSGE) models
+for studying financial crises: they can incorporate heterogeneous agents,
+bounded rationality, network structure, and non-linear feedback loops
+that give rise to the fat tails, clustering, and regime shifts observed
+in financial data.  Schweitzer et al.~\cite{schweitzer2009economic}
+placed this argument in the broader context of complexity economics,
+emphasising that emergent phenomena---which are precisely what systemic
+risk embodies---require bottom-up modelling approaches.
+
+\subsection{Contagion Models}
+\label{sec:abm_contagion}
+
+The seminal financial ABM of Nier et al.~\cite{nier2007network} modelled
+banks with stylised balance sheets and simulated cascading defaults on
+random interbank networks, establishing that network topology---not just
+aggregate capital levels---determines systemic stability.  Gai and
+Kapadia~\cite{gai2010contagion} extended this framework analytically,
+deriving conditions under which the ``knife-edge'' property arises in
+random financial networks.
+
+Multi-channel contagion has been a major theme in recent ABM development.
+Poledna et al.~\cite{poledna2015economics} constructed a multi-layer
+interbank network model using Austrian supervisory data, demonstrating
+that single-layer models substantially underestimate cascading losses
+because they miss the amplification from cross-layer interactions.
+Montagna and Kok~\cite{montagna2016multi} developed a multi-layered
+model for ECB macro-prudential stress testing, incorporating credit,
+funding, and market risk channels.  Thurner, Farmer, and
+Geanakoplos~\cite{thurner2012leverage} demonstrated the importance of
+leverage dynamics: procyclical leverage creates a feedback loop in which
+declining asset prices force deleveraging, which further depresses prices.
+
+\subsection{Calibration Challenges}
+\label{sec:abm_calibration}
+
+A persistent challenge for financial ABMs is calibration: mapping the
+model parameters to empirical data in a way that produces realistic
+dynamics.  Unlike econometric models, ABMs typically do not admit
+closed-form likelihoods, making standard estimation techniques
+inapplicable.  Approximate Bayesian computation, moment matching, and
+other simulation-based inference methods have been
+proposed~\cite{farmer2009economy}, but remain computationally expensive
+and sensitive to the choice of summary statistics.
+
+Our ABM makes no claim to calibration against a specific banking system.
+Instead, it uses stylised parameters informed by the literature and
+focuses on \emph{relative} comparisons: how much amplification does
+three-channel contagion produce relative to single-channel, and how does
+the spectral structure of the network modulate this amplification?  This
+comparative approach avoids the calibration problem while still yielding
+substantive insights into the role of multi-channel dynamics.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Systemic Risk Metrics}
+\label{sec:risk_metrics_background}
+% ──────────────────────────────────────────────────────────────────
+
+\subsection{Market-Based Metrics}
+\label{sec:market_metrics}
+
+Several market-based systemic risk metrics have been developed to
+complement network-based approaches.
+
+\textbf{SRISK.}  Brownlees and Engle~\cite{brownlees2017srisk} defined
+SRISK as the expected capital shortfall of a financial institution
+conditional on a prolonged market decline.  The measure combines
+market capitalisation, book debt, and the long-run marginal expected
+shortfall (LRMES), estimated from an asymmetric dynamic conditional
+correlation model.  SRISK has the advantage of being computable from
+publicly available data and has been shown to predict the institutions
+that required government support during the 2008 crisis.
+
+\textbf{Marginal Expected Shortfall.}  Acharya et
+al.~\cite{acharya2017measuring} proposed MES as a measure of the
+contribution of an individual institution to aggregate tail risk.  MES
+is defined as the expected loss of institution $i$ conditional on the
+market being in the $\alpha$-tail of its return distribution.  The
+measure captures the co-dependence between individual and system-wide
+losses but does not account for network topology or contagion dynamics.
+
+\textbf{Limitations.}  Both SRISK and MES are backward-looking
+indicators that rely on historical return distributions and may not
+anticipate structural shifts in the network.  Furthermore, they treat
+the financial system as a set of return series rather than as a network,
+missing the topological information that determines how shocks propagate.
+
+\subsection{Macroprudential Indicators}
+\label{sec:macropru}
+
+The macroprudential literature has developed indicators aimed at
+identifying the build-up of systemic vulnerabilities before they
+materialise.  Drehmann and Juselius~\cite{drehmann2013model} showed
+that the credit-to-GDP gap is one of the best single predictors of
+banking crises at horizons of 1--3 years.  Borio~\cite{borio2011macroprudential}
+articulated the macroprudential policy framework, distinguishing between
+the cross-sectional dimension (how risk is distributed across
+institutions at a given point in time) and the time-series dimension
+(how aggregate risk evolves through the financial cycle).
+
+Admati and Hellwig~\cite{admati2013fallacies} argued that capital
+requirements under the Basel framework are insufficient because they
+do not account for the systemic externalities of interconnectedness.
+Their critique motivates the development of network-based risk
+indicators that complement institution-level capital ratios.
+
+\subsection{Survey of the Landscape}
+\label{sec:survey}
+
+Bisias et al.~\cite{bisias2012survey} provide a comprehensive survey of
+31 quantitative measures of systemic risk, categorising them into
+macroeconomic measures, granular measures (including network-based
+approaches), and market-based measures.  They observe that no single
+measure captures all dimensions of systemic risk, and advocate for a
+``dashboard'' approach that monitors multiple indicators simultaneously.
+This observation motivates the integrated framework developed in this
+work, which combines spectral network diagnostics (SCG), predictive
+modelling (GAT-LSTM), and stress simulation (ABM) in a unified
+dashboard.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Research Gap and Positioning}
+\label{sec:research_gap}
+% ──────────────────────────────────────────────────────────────────
+
+The preceding review identifies several gaps in the existing literature
+that this work aims to address.
+
+\paragraph{Gap 1: Spectral coarse-graining for financial networks.}
+While spectral methods have been applied to financial networks for
+clustering~\cite{luxburg2007tutorial,kyriakopoulos2009network}, noise
+filtering~\cite{laloux1999noise}, and static structural
+analysis~\cite{bonanno2004networks}, the application of spectral
+\emph{coarse-graining}---as a rigorous dimensionality reduction that
+preserves dynamical properties---has not been explored.  Schmidt et
+al.'s~\cite{schmidt2024spectral} method has been applied only to EEG
+data; its adaptation to financial networks requires addressing the
+specific challenges of correlation-based adjacency, threshold
+sensitivity, and temporal variability.
+
+\paragraph{Gap 2: GNN prediction of spectral properties.}
+Graph neural networks have been applied to financial prediction tasks
+such as credit scoring, fraud detection, and return
+forecasting~\cite{wu2020comprehensive}, but the specific problem of
+predicting spectral properties (algebraic connectivity, spectral gap,
+spectral radius) of time-evolving financial networks from graph
+sequences has not been addressed.  This is a graph-level regression
+task that requires temporal modelling of network evolution, combining
+spatial (graph) and temporal (sequence) information.
+
+\paragraph{Gap 3: Integration of spectral diagnostics with ABM stress
+testing.}
+Agent-based models of financial contagion typically use exogenous network
+structures~\cite{nier2007network,poledna2015economics} or stylised
+topologies~\cite{gai2010contagion} rather than empirically estimated
+networks with spectral characterisation.  Conversely, spectral analyses
+of financial networks~\cite{kyriakopoulos2009network} typically stop at
+structural description without connecting to contagion simulation.  No
+prior work, to our knowledge, integrates SCG-derived spectral
+diagnostics with multi-channel ABM stress testing in a unified framework.
+
+\paragraph{Gap 4: Empirical validation of spectral risk indicators.}
+The construction of risk indicators from spectral properties (e.g.,
+$1 - \lambda_2/\rho$) has theoretical appeal but requires empirical
+backtesting against realised outcomes.  The literature on spectral
+methods in finance has focused on methodology rather than operational
+validation.  Our backtesting analysis (Section~\ref{ch:results})
+provides this validation, with the honest finding that the naive SCG
+risk indicator fails as an early-warning signal---a result that is
+itself informative for future research.
+
+\paragraph{Positioning.}  This work bridges spectral graph theory,
+graph neural networks, and agent-based modelling for systemic risk
+analysis.  It is the first to adapt Schmidt et al.'s spectral
+coarse-graining to financial networks, the first to train a GNN to
+predict spectral properties of financial graph sequences, and the
+first to integrate spectral diagnostics with multi-channel contagion
+simulation.  The framework is implemented as a modular Python package
+with an interactive dashboard, enabling reproducible analysis and
+extension to larger networks.
+
+
+% ══════════════════════════════════════════════════════════════════
+\chapter{Theoretical Foundations}
+\label{ch:theory}
+% ══════════════════════════════════════════════════════════════════
+
+This chapter develops the mathematical framework underlying the three
+components of our analytical pipeline: spectral coarse-graining
+(Sections~\ref{sec:laplacian_theory}--\ref{sec:scg_theory}), graph
+attention prediction (Section~\ref{sec:gat_theory}), and multi-channel
+contagion simulation (Section~\ref{sec:contagion_theory}).
+Section~\ref{sec:risk_formulation} formulates the proposed risk
+indicator and discusses its theoretical basis and limitations.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Graph Laplacian and Spectral Decomposition}
+\label{sec:laplacian_theory}
+% ──────────────────────────────────────────────────────────────────
+
+\begin{definition}[Financial Network Graph]
+\label{def:financial_graph}
+A \emph{financial network graph} is a weighted undirected graph
+$\mathcal{G} = (V, E, w)$ where $V = \{v_1, \ldots, v_N\}$ is a set
+of $N$ financial institutions, $E \subseteq V \times V$ is the edge
+set, and $w : E \to \mathbb{R}_{>0}$ assigns positive weights to
+edges.  The adjacency matrix $\mathbf{A} \in \mathbb{R}^{N \times N}$
+has entries $A_{ij} = w(v_i, v_j)$ if $(v_i, v_j) \in E$ and
+$A_{ij} = 0$ otherwise.
+\end{definition}
+
+In this work, $N = 10$ and the weights are derived from pairwise
+correlations of daily log returns (Section~\ref{ch:methodology}).  We
+construct both binary networks (thresholded at a cutoff $\theta$) and
+weighted networks (using the absolute correlation or the correlation
+distance $d_{ij} = \sqrt{2(1 - \rho_{ij})}$ as
+weight)~\cite{mantegna1999introduction}.
+
+\begin{definition}[Combinatorial and Normalised Laplacian]
+\label{def:laplacian}
+Given the adjacency matrix $\mathbf{A}$ and the degree matrix
+$\mathbf{D} = \operatorname{diag}(d_1, \ldots, d_N)$ with
+$d_i = \sum_{j=1}^{N} A_{ij}$, the \emph{combinatorial Laplacian} is
+\begin{equation}
+\mathbf{L} = \mathbf{D} - \mathbf{A},
+\label{eq:comb_laplacian}
+\end{equation}
+and the \emph{normalised Laplacian} is
+\begin{equation}
+\mathcal{L} = \mathbf{D}^{-1/2}\,\mathbf{L}\,\mathbf{D}^{-1/2}
+= \mathbf{I} - \mathbf{D}^{-1/2}\,\mathbf{A}\,\mathbf{D}^{-1/2}.
+\label{eq:norm_laplacian}
+\end{equation}
+Both matrices are real and symmetric~\cite{chung1997spectral}.
+\end{definition}
+
+\begin{theorem}[Spectral Properties of the Laplacian]
+\label{thm:spectral}
+Let $\mathbf{L}$ be the combinatorial Laplacian of a weighted undirected
+graph $\mathcal{G}$ with $N$ vertices.  Then:
+\begin{enumerate}[label=(\roman*)]
+    \item $\mathbf{L}$ is positive semidefinite: all eigenvalues satisfy
+    $\lambda_\alpha \geq 0$.
+    \item The smallest eigenvalue is $\lambda_0 = 0$ with eigenvector
+    $\mathbf{u}_0 = \frac{1}{\sqrt{N}}\,\mathbf{1}$.
+    \item The multiplicity of the zero eigenvalue equals the number of
+    connected components of $\mathcal{G}$.
+    \item For a connected graph, the eigenvalues satisfy
+    $0 = \lambda_0 < \lambda_1 \leq \lambda_2 \leq \cdots \leq
+    \lambda_{N-1} \leq 2\,d_{\max}$, where $d_{\max}$ is the maximum
+    degree.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+For (i), observe that for any vector $\mathbf{x} \in \mathbb{R}^N$,
+\begin{equation}
+\mathbf{x}^T \mathbf{L}\, \mathbf{x}
+= \mathbf{x}^T (\mathbf{D} - \mathbf{A})\, \mathbf{x}
+= \sum_{(i,j) \in E} A_{ij}\,(x_i - x_j)^2
+\geq 0,
+\label{eq:psd_proof}
+\end{equation}
+which establishes positive semidefiniteness via the quadratic form
+characterisation~\cite{chung1997spectral}.  For (ii), $\mathbf{L}\,
+\mathbf{1} = (\mathbf{D} - \mathbf{A})\,\mathbf{1} = \mathbf{d} -
+\mathbf{d} = \mathbf{0}$ since each row of $\mathbf{L}$ sums to zero.
+For (iii), the null space of $\mathbf{L}$ is spanned by indicator
+vectors of the connected components~\cite{cvetkovic1995spectra}.  For
+(iv), the upper bound follows from the Gershgorin circle
+theorem~\cite{golub2013matrix}.
+\end{proof}
+
+\begin{definition}[Algebraic Connectivity and Spectral Gap]
+\label{def:algebraic_connectivity}
+The \emph{algebraic connectivity} of a connected graph $\mathcal{G}$ is
+the second-smallest eigenvalue $\lambda_1$ of its Laplacian, also called
+the \emph{Fiedler value}~\cite{fiedler1973algebraic}.  The corresponding
+eigenvector $\mathbf{u}_1$ is the \emph{Fiedler vector}, whose sign
+pattern defines the optimal bisection of the graph.
+
+The \emph{spectral gap} at index $k$ is $\delta_k = \lambda_{k+1} -
+\lambda_k$.  A ``large'' spectral gap indicates a natural timescale
+separation: the $k$ slowest eigenmodes are well-separated from the
+remaining faster modes.
+\end{definition}
+
+Note: following convention in the graph Laplacian literature, we index
+eigenvalues starting from $\lambda_0 = 0$, so the algebraic
+connectivity is $\lambda_1$ in this indexing.  However, when describing
+experimental results, we often use $\lambda_2$ to refer to the algebraic
+connectivity, following the convention of Schmidt et
+al.~\cite{schmidt2024spectral} who index from $\lambda_1$.  Both
+conventions appear in the literature; context disambiguates.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Diffusion Dynamics on Financial Networks}
+\label{sec:diffusion_theory}
+% ──────────────────────────────────────────────────────────────────
+
+The graph Laplacian governs continuous-time diffusion on
+networks~\cite{masuda2017random}.  Let $\mathbf{p}(t) \in \mathbb{R}^N$
+represent the distribution of a quantity (e.g., financial distress)
+across $N$ institutions at time $t$.  The diffusion equation is:
+\begin{equation}
+\frac{d\mathbf{p}}{dt} = -\mathbf{L}\,\mathbf{p}(t).
+\label{eq:diffusion_eq}
+\end{equation}
+This has the formal solution:
+\begin{equation}
+\mathbf{p}(t) = e^{-t\mathbf{L}}\,\mathbf{p}(0).
+\label{eq:diffusion_matrix_exp}
+\end{equation}
+Expanding in the eigenbasis $\{\mathbf{u}_\alpha\}_{\alpha=0}^{N-1}$ of
+$\mathbf{L}$:
+\begin{equation}
+\mathbf{p}(t) = \sum_{\alpha=0}^{N-1} e^{-t\lambda_\alpha}\,
+c_\alpha\,\mathbf{u}_\alpha,
+\quad\text{where}\quad
+c_\alpha = \mathbf{u}_\alpha^T\,\mathbf{p}(0).
+\label{eq:eigenmode_expansion}
+\end{equation}
+
+\begin{theorem}[Convergence Rate]
+\label{thm:convergence}
+For a connected graph with algebraic connectivity $\lambda_1 > 0$, the
+solution~\eqref{eq:eigenmode_expansion} converges to the stationary
+distribution $\mathbf{p}_\infty = c_0\,\mathbf{u}_0$ at rate
+$\lambda_1$:
+\begin{equation}
+\left\|\mathbf{p}(t) - \mathbf{p}_\infty\right\|_2
+\leq \left\|\mathbf{p}(0)\right\|_2\,e^{-\lambda_1 t}.
+\label{eq:convergence_bound}
+\end{equation}
+The characteristic timescale of convergence is
+$\tau_{\text{mix}} = 1/\lambda_1$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Since $\lambda_0 = 0$, the mode $\alpha = 0$ contributes a constant
+$c_0\,\mathbf{u}_0$ that persists indefinitely.  All other modes
+$\alpha \geq 1$ decay as $e^{-t\lambda_\alpha}$, and the slowest-decaying
+non-trivial mode has rate $\lambda_1$.  The bound follows by bounding
+$e^{-t\lambda_\alpha} \leq e^{-t\lambda_1}$ for $\alpha \geq
+1$~\cite{chung1997spectral}.
+\end{proof}
+
+\paragraph{Financial interpretation.}
+In the financial context, $\mathbf{p}(0)$ represents an initial shock
+localised at one or more institutions, and $\mathbf{p}(t)$ describes how
+that shock diffuses through the interbank network.  The algebraic
+connectivity $\lambda_1$ determines the \emph{speed} of shock
+propagation: a large $\lambda_1$ implies rapid diffusion (the shock
+reaches all institutions quickly), while a small $\lambda_1$ implies
+slow propagation (the shock may remain localised for an extended
+period)~\cite{haldane2011systemic,elliott2014financial}.
+
+The eigenmode expansion~\eqref{eq:eigenmode_expansion} decomposes the
+diffusion process into independent modes, each with its own timescale.
+The spectral gap identifies the point at which this timescale separation
+is most pronounced.  If $\delta_k = \lambda_{k+1} - \lambda_k$ is
+large, then the first $k$ modes (slow, global) are well-separated from
+the remaining $N - k - 1$ modes (fast, local), and coarse-graining to
+$k$ effective degrees of freedom loses little dynamical information.
+This is the physical basis for Schmidt et al.'s gap test: a
+statistically significant gap justifies coarse-graining because the
+fast modes contribute negligibly to the long-time behaviour of the
+system.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Spectral Coarse-Graining Theory}
+\label{sec:scg_theory}
+% ──────────────────────────────────────────────────────────────────
+
+We now present the formal construction of the spectral coarse-graining
+procedure following Schmidt, Caccioli, and
+Aste~\cite{schmidt2024spectral}.  Let $\mathcal{G} = (V, E, w)$ be a
+connected weighted graph with $N$ vertices and combinatorial Laplacian
+$\mathbf{L} \in \mathbb{R}^{N \times N}$ having eigenvalues $0 =
+\lambda_0 < \lambda_1 \leq \cdots \leq \lambda_{N-1}$ and
+corresponding eigenvectors $\mathbf{u}_0, \mathbf{u}_1, \ldots,
+\mathbf{u}_{N-1}$.
+
+\paragraph{Step 1: Gap identification.}
+For each index $k \in \{1, \ldots, N-2\}$, compute the spectral gap:
+\begin{equation}
+\delta_k = \lambda_{k+1} - \lambda_k.
+\label{eq:spectral_gap}
+\end{equation}
+To determine whether $\delta_k$ is statistically anomalous, generate an
+ensemble of $M = 10^4$ connected Erd\H{o}s-R\'enyi random graphs
+$G_{\text{ER}}(N, p)$ with the same number of vertices and edge
+probability $p = \bar{d}/(N-1)$, where $\bar{d}$ is the average degree
+of $\mathcal{G}$.  For each random graph, compute the Laplacian
+eigenvalues and the corresponding gap at position $k$.  The empirical
+one-tailed $p$-value is:
+\begin{equation}
+p\text{-value}(k) = \frac{1}{M} \sum_{m=1}^{M}
+\mathbf{1}\!\left[\delta_k^{(m)} \geq \delta_k^{\text{obs}}\right],
+\label{eq:gap_pvalue}
+\end{equation}
+where $\delta_k^{(m)}$ is the gap at position $k$ in the $m$-th random
+graph and $\delta_k^{\text{obs}}$ is the observed gap.  Gaps with
+$p\text{-value}(k) < \alpha$ (typically $\alpha = 0.01$) are flagged
+as statistically significant.
+
+\paragraph{Step 2: Spectral clustering.}
+Given a significant gap at position $k$, construct the spectral embedding
+matrix:
+\begin{equation}
+\mathbf{U}_k = \begin{bmatrix}
+\mathbf{u}_1 & \mathbf{u}_2 & \cdots & \mathbf{u}_k
+\end{bmatrix} \in \mathbb{R}^{N \times k},
+\label{eq:spectral_embedding}
+\end{equation}
+where $\mathbf{u}_1, \ldots, \mathbf{u}_k$ are the eigenvectors
+corresponding to the $k$ smallest non-zero eigenvalues.  Apply $k$-means
+clustering to the rows of $\mathbf{U}_k$ to partition $V$ into $k$
+clusters $C_1, C_2, \ldots, C_k$~\cite{ng2002spectral,luxburg2007tutorial}.
+
+\paragraph{Step 3: Coarse-grained Laplacian construction.}
+Define the membership matrix $\mathbf{S} \in \{0,1\}^{N \times k}$
+with $S_{ia} = 1$ if node $i$ belongs to cluster $C_a$.  The
+coarse-grained Laplacian is:
+\begin{equation}
+\mathbf{L}^{(1)} = \mathbf{S}^T\,\mathbf{L}\,\mathbf{S}
+\in \mathbb{R}^{k \times k}.
+\label{eq:cg_laplacian}
+\end{equation}
+The off-diagonal entry $L^{(1)}_{ab} = -\sum_{i \in C_a, j \in C_b}
+A_{ij}$ captures the total edge weight between clusters $a$ and $b$,
+and the diagonal entry ensures row sums equal zero.
+
+\paragraph{Step 4: Rescaling.}
+The coarse-grained adjacency matrix $\mathbf{A}^{(1)} = \mathbf{D}^{(1)}
+- \mathbf{L}^{(1)}$ is rescaled by the eigenvalue at the gap:
+\begin{equation}
+\mathbf{A}_R = \frac{1}{\lambda_k}\,\mathbf{A}^{(1)}.
+\label{eq:rescaling}
+\end{equation}
+This rescaling ensures that diffusion on the coarse-grained network
+approximates the slow-mode dynamics of the original network.  The
+intuition is as follows: the eigenvalues of $\mathbf{L}^{(1)}$ are
+approximately $\lambda_1, \ldots, \lambda_k$ scaled by the cluster
+sizes; dividing by $\lambda_k$ normalises the fastest retained mode
+to unit rate, compensating for the change in scale introduced by
+aggregation~\cite{schmidt2024spectral}.
+
+\paragraph{Step 5: Reconstruction error.}
+The quality of the coarse-grained approximation is measured by comparing
+the diffusion dynamics on the original and coarse-grained networks.
+Define the reconstruction error at time $t$ as:
+\begin{equation}
+\varepsilon(t) = \left\|e^{-t\mathbf{L}}\,\mathbf{p}(0) -
+\mathbf{S}\,e^{-t\mathbf{L}_R}\,\mathbf{S}^T\,\mathbf{p}(0)
+\right\|_2^2,
+\label{eq:reconstruction_error}
+\end{equation}
+where $\mathbf{L}_R = \mathbf{D}_R - \mathbf{A}_R$ is the Laplacian of
+the rescaled coarse-grained network.  In our experiments, the
+reconstruction achieves $R^2 = 1.0$ across all five topologies tested
+(Section~\ref{ch:results}), indicating that the procedure preserves
+diffusion dynamics with negligible error for these network
+configurations.
+
+\paragraph{Relationship to the renormalization group.}
+The analogy with Wilson's renormalization
+group~\cite{wilson1975renormalization} is instructive but imperfect.  In
+the RG, one integrates out short-wavelength (high-frequency) modes to
+obtain an effective theory for long-wavelength modes, and the coupling
+constants are renormalized to preserve the partition function.  In SCG,
+one integrates out fast eigenmodes (large eigenvalues) to obtain an
+effective network for slow eigenmodes (small eigenvalues), and the edge
+weights are rescaled to preserve diffusion dynamics.  The gap test plays
+the role of identifying the ``cutoff'' scale, analogous to the momentum
+cutoff in field theory.  Villegas et al.~\cite{villegas2023laplacian}
+formalise this analogy more precisely through the heat kernel, though
+their LRG operates on the normalised rather than combinatorial
+Laplacian.
+
+\paragraph{Why $R^2 = 1.0$?}
+The perfect reconstruction observed in our experiments deserves comment.
+For a network with $N = 10$ nodes that admits $k = 2$--4 clusters with a
+clean spectral gap, the slow modes are exactly preserved by the
+coarse-grained Laplacian (which is constructed to reproduce them), and the
+fast modes contribute negligibly to the diffusion dynamics at timescales
+$t \gg 1/\lambda_{k+1}$.  For larger networks where the spectral gap is
+less clean or the cluster structure is fuzzier, reconstruction error
+would increase.  The perfect result here reflects the small scale of the
+network and the cleanness of the spectral gaps, not a general property
+of the method.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Graph Attention Mechanism}
+\label{sec:gat_theory}
+% ──────────────────────────────────────────────────────────────────
+
+The graph attention mechanism~\cite{velickovic2018graph} computes
+adaptive, data-dependent aggregation weights for message passing on
+graphs.  Given a graph $\mathcal{G}$ with node feature matrix
+$\mathbf{H}^{(\ell)} \in \mathbb{R}^{N \times d_\ell}$ at layer
+$\ell$, the attention coefficient between nodes $i$ and $j$ is:
+\begin{equation}
+e_{ij} = \text{LeakyReLU}\!\left(
+\mathbf{a}^T\!\left[
+\mathbf{W}\,\mathbf{h}_i^{(\ell)} \;\Big\|\; \mathbf{W}\,\mathbf{h}_j^{(\ell)}
+\right]\right),
+\label{eq:raw_attention}
+\end{equation}
+where $\mathbf{W} \in \mathbb{R}^{d' \times d_\ell}$ is a shared
+linear transformation, $\mathbf{a} \in \mathbb{R}^{2d'}$ is a learnable
+attention vector, and $\|$ denotes concatenation.  The raw scores are
+normalised via softmax over the neighbourhood:
+\begin{equation}
+\alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}(i)}
+\exp(e_{ik})}.
+\label{eq:softmax_attention}
+\end{equation}
+The updated node representation is:
+\begin{equation}
+\mathbf{h}_i^{(\ell+1)} = \sigma\!\left(
+\sum_{j \in \mathcal{N}(i)} \alpha_{ij}\,\mathbf{W}\,
+\mathbf{h}_j^{(\ell)}\right).
+\label{eq:gat_update}
+\end{equation}
+
+\paragraph{Multi-head attention.}
+To stabilise learning and increase expressivity, $K$ independent
+attention heads are computed in parallel, and their outputs are
+concatenated (in intermediate layers) or averaged (in the final
+layer)~\cite{velickovic2018graph}:
+\begin{equation}
+\mathbf{h}_i^{(\ell+1)} = \Big\|_{k=1}^{K}\,\sigma\!\left(
+\sum_{j \in \mathcal{N}(i)} \alpha_{ij}^{(k)}\,
+\mathbf{W}^{(k)}\,\mathbf{h}_j^{(\ell)}\right).
+\label{eq:multihead_gat}
+\end{equation}
+Each head has its own weight matrix $\mathbf{W}^{(k)}$ and attention
+vector $\mathbf{a}^{(k)}$, learning different aspects of the
+neighbourhood structure.
+
+\paragraph{Why attention for financial networks?}
+Two properties of the attention mechanism make it preferable to fixed
+spectral filters (as in GCNs~\cite{kipf2017semi}) for financial
+network analysis.
+
+First, \emph{adaptivity}: the attention weights $\alpha_{ij}$ depend
+on the current node features, so the aggregation pattern changes as
+market conditions evolve.  In a GCN, the aggregation is determined
+entirely by the adjacency matrix; if two banks have a high correlation,
+their features are always aggregated with the same weight.  The
+attention mechanism can learn to upweight or downweight specific
+relationships depending on the input, capturing the regime-dependent
+nature of financial interdependencies.
+
+Second, \emph{interpretability}: the attention weights reveal which
+inter-bank relationships the model considers most informative for
+prediction.  Our experiments (Section~\ref{ch:results}) show that BNP
+Paribas and HSBC receive the highest incoming attention across heads,
+while Santander and Deutsche Bank exhibit the highest outgoing
+attention, suggesting that peripheral banks attend primarily to core
+institutions for spectral prediction.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Multi-Channel Contagion Theory}
+\label{sec:contagion_theory}
+% ──────────────────────────────────────────────────────────────────
+
+The agent-based model simulates contagion through three
+channels~\cite{nier2007network,gai2010contagion,caccioli2015overlapping},
+each governed by a distinct propagation equation.  Let
+$\mathbf{E} \in \mathbb{R}^{N \times N}$ denote the bilateral exposure
+matrix, $h_i(t)$ the health of institution $i$ at time step $t$ (a
+composite of its CET1 ratio and liquidity coverage ratio), and
+$\theta_d$ the default threshold.
+
+\paragraph{Channel 1: Credit losses.}
+When institution $j$ defaults ($h_j(t) \leq \theta_d$), creditor $i$
+suffers a loss proportional to its exposure and the loss-given-default
+rate:
+\begin{equation}
+\Delta_i^{\text{credit}}(t) = \sum_{j:\,h_j(t) \leq \theta_d}
+E_{ij}\,\text{LGD},
+\label{eq:credit_loss}
+\end{equation}
+where LGD is the loss-given-default parameter (typically $0.4$--$0.6$).
+This is the classical contagion channel modelled by Nier et
+al.~\cite{nier2007network} and formalised in the DebtRank
+framework~\cite{battiston2012debtrank}.
+
+\paragraph{Channel 2: Funding liquidity stress.}
+Funding stress propagates through changes in perceived creditworthiness,
+following the ``liquidity spiral'' mechanism of Brunnermeier and
+Pedersen~\cite{brunnermeier2009market}.  The funding liquidity loss
+of institution $i$ is modelled as a sigmoid function of the aggregate
+distress in its neighbourhood:
+\begin{equation}
+\Delta_i^{\text{funding}}(t) = \gamma\;\sigma\!\left(
+\beta\,\sum_{j \in \mathcal{N}(i)} (1 - h_j(t)) - \mu\right),
+\label{eq:funding_loss}
+\end{equation}
+where $\sigma(\cdot)$ is the logistic function, $\gamma$ scales the
+maximum funding loss, $\beta$ controls the sensitivity to neighbourhood
+distress, and $\mu$ is a threshold parameter.  The sigmoid form captures
+the non-linear nature of funding stress: small levels of neighbourhood
+distress have little effect, but distress beyond a threshold triggers
+rapid funding withdrawal~\cite{gai2010contagion}.
+
+\paragraph{Channel 3: Fire-sale asset correlation.}
+When distressed institutions deleverage by selling common assets, the
+resulting price decline imposes mark-to-market losses on all holders of
+those assets~\cite{caccioli2015overlapping}.  The fire-sale loss is:
+\begin{equation}
+\Delta_i^{\text{fire\text{-}sale}}(t) = \eta\,\sum_{a=1}^{A}
+\omega_{ia}\,\Delta p_a(t),
+\quad\text{where}\quad
+\Delta p_a(t) = -\kappa\,\sum_{j:\,h_j(t) < \theta_s}
+\omega_{ja}\,\text{sell}_j(t),
+\label{eq:firesale_loss}
+\end{equation}
+where $\omega_{ia}$ is institution $i$'s holding of asset $a$,
+$\Delta p_a(t)$ is the price impact of fire sales on asset $a$,
+$\kappa$ is the price impact coefficient, $\theta_s$ is the stress
+threshold triggering deleveraging, and $\text{sell}_j(t)$ is the volume
+sold by institution $j$.  Caccioli et al.~\cite{caccioli2015overlapping}
+showed that this channel can dominate direct credit losses in systems
+with high leverage and concentrated portfolios.
+
+\paragraph{Cascade termination.}
+At each time step, institution $i$'s health is updated:
+\begin{equation}
+h_i(t+1) = h_i(t) - \Delta_i^{\text{credit}}(t) -
+\Delta_i^{\text{funding}}(t) - \Delta_i^{\text{fire-sale}}(t).
+\label{eq:health_update}
+\end{equation}
+The cascade terminates when either (a) no new defaults occur
+($\forall\, i:\; h_i(t+1) > \theta_d$ if $h_i(t) > \theta_d$), or (b) a
+maximum number of iterations $T_{\max}$ is reached.  In our experiments,
+cascades terminate within 5--10 steps for most scenarios.
+
+\paragraph{Ornstein-Uhlenbeck dynamics for regulatory ratios.}
+Between stress scenarios, the CET1 and LCR ratios of non-defaulted
+institutions are modelled as Ornstein-Uhlenbeck processes:
+\begin{equation}
+dX_i = \theta_{\text{OU}}\,(\mu_X - X_i)\,dt + \sigma_X\,dW_i,
+\label{eq:ou_dynamics}
+\end{equation}
+where $X_i \in \{\text{CET1}_i, \text{LCR}_i\}$, $\theta_{\text{OU}}$
+is the mean-reversion speed, $\mu_X$ is the long-run mean, and
+$\sigma_X$ is the volatility.  This reflects the empirical observation
+that regulatory ratios tend to revert toward target levels set by
+management and supervisors, with stochastic fluctuations driven by
+business conditions.
+
+
+% ──────────────────────────────────────────────────────────────────
+\section{Risk Indicator Formulation}
+\label{sec:risk_formulation}
+% ──────────────────────────────────────────────────────────────────
+
+We propose a spectral risk indicator that combines the algebraic
+connectivity and spectral radius:
+\begin{equation}
+\text{SCG-Risk} = 1 - \frac{\lambda_2}{\rho(\mathbf{L})},
+\label{eq:scg_risk}
+\end{equation}
+where $\lambda_2$ is the algebraic connectivity (smallest non-zero
+eigenvalue of $\mathbf{L}$) and $\rho(\mathbf{L}) =
+\lambda_{N-1}$ is the spectral radius (largest eigenvalue).
+
+\paragraph{Theoretical motivation.}
+The ratio $\lambda_2/\rho$ captures the ``spectral spread'' of the
+network: a network in which all non-zero eigenvalues are similar
+(spread close to 1) is spectrally homogeneous, while a network with a
+large gap between $\lambda_2$ and $\rho$ (spread close to 0) has a
+more heterogeneous spectral structure, suggesting the presence of
+bottlenecks or weakly connected communities.  Subtracting from 1 gives
+a quantity that increases as the network becomes more spectrally
+heterogeneous---intuitively, more ``risky'' in the sense of being
+closer to fragmentation.
+
+\paragraph{Limitations and honest assessment.}
+It is essential to note that the SCG risk indicator is \emph{proposed}
+rather than derived from first principles.  While $\lambda_2$ has a
+rigorous interpretation as the convergence rate of diffusion processes
+(Theorem~\ref{thm:convergence}), and $\rho$ bounds the maximum degree
+(Theorem~\ref{thm:spectral}), the specific functional form
+$1 - \lambda_2/\rho$ is a heuristic choice.
+
+Our backtesting results (Section~\ref{ch:results}) reveal a critical
+limitation: the SCG risk indicator exhibits \emph{negative} correlation
+with future market volatility ($r = -0.43$ to $-0.49$), meaning that
+the indicator \emph{decreases} when volatility is about to increase.
+This occurs because high correlation environments (which precede high
+volatility) produce dense, well-connected networks with high
+$\lambda_2$ and thus low SCG risk---the opposite of what a risk
+indicator should signal.  In contrast, $\lambda_2$ alone shows positive
+correlation with future volatility ($r = +0.40$ to $+0.46$), and
+the cross-correlation analysis reveals the underlying structure:
+$\lambda_2$ vs.\ $\rho = -0.926$ and $\lambda_2$ vs.\ SCG risk $=
+-0.990$.
+
+These findings indicate that the naive SCG risk indicator captures
+\emph{network fragmentation} rather than systemic stress.  A fragmented
+network (low $\lambda_2$, high SCG risk) may actually be \emph{less}
+systemically dangerous than a highly integrated one (high $\lambda_2$,
+low SCG risk), because contagion propagates faster in
+well-connected networks~\cite{acemoglu2015systemic,haldane2011systemic}.
+The distinction between ``connected and vulnerable'' and ``fragmented
+and safe'' is fundamental to the robust-yet-fragile property, and the
+SCG risk indicator---as currently formulated---conflates connectivity
+with safety rather than with vulnerability.
+
+This is an honest negative result that informs future work: constructing
+a useful spectral risk indicator requires a more nuanced treatment of
+the connectivity--vulnerability relationship, possibly incorporating
+the magnitude distribution of shocks (which determines whether the
+system is in the ``robust'' or ``fragile'' regime) or combining spectral
+properties with balance-sheet information.
