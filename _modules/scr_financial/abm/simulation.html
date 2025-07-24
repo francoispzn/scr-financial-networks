@@ -41,7 +41,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -339,6 +339,8 @@
         <span class="n">dciss</span> <span class="o">=</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="p">(</span><span class="n">ciss_mu</span> <span class="o">-</span> <span class="n">ciss</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">system_indicators</span><span class="p">[</span><span class="s2">&quot;CISS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">ciss</span> <span class="o">+</span> <span class="n">dciss</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
 
+    <span class="c1"># ── Channel 1: Credit contagion ──────────────────────────────────────</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_propagate_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterative contagion cascade: defaulted banks impose losses on counterparties.&quot;&quot;&quot;</span>
         <span class="n">newly_defaulted</span> <span class="o">=</span> <span class="p">{</span>
@@ -352,7 +354,7 @@
             <span class="c1"># Freeze all newly-defaulted banks</span>
             <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">newly_defaulted</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Bank </span><span class="si">%s</span><span class="s2"> defaulted at t=</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Bank </span><span class="si">%s</span><span class="s2"> defaulted at t=</span><span class="si">%d</span><span class="s2"> (credit channel)&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
 
             <span class="n">next_round</span><span class="p">:</span> <span class="nb">set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">newly_defaulted</span><span class="p">:</span>
@@ -367,6 +369,111 @@
                         <span class="k">if</span> <span class="n">other_bank</span><span class="o">.</span><span class="n">is_defaulted</span><span class="p">():</span>
                             <span class="n">next_round</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">other_id</span><span class="p">)</span>
             <span class="n">newly_defaulted</span> <span class="o">=</span> <span class="n">next_round</span>
+
+    <span class="c1"># ── Channel 2: Funding liquidity stress ───────────────────────────────</span>
+
+    <span class="n">_FUNDING_LCR_THRESHOLD</span> <span class="o">=</span> <span class="mf">100.0</span>   <span class="c1"># LCR below which funding stress triggers</span>
+    <span class="n">_FUNDING_SENSITIVITY</span> <span class="o">=</span> <span class="mf">0.05</span>      <span class="c1"># Sensitivity parameter for withdrawal probability</span>
+    <span class="n">_FUNDING_WITHDRAWAL_RATE</span> <span class="o">=</span> <span class="mf">0.03</span>  <span class="c1"># Max fraction of cash drained per stressed counterparty</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_propagate_funding_stress</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Funding liquidity channel: banks with low LCR face counterparty withdrawals.</span>
+
+<span class="sd">        When a bank&#39;s LCR drops below the regulatory minimum (100%), its</span>
+<span class="sd">        counterparties withdraw short-term funding proportionally to the gap.</span>
+<span class="sd">        This drains cash and can trigger a liquidity spiral.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">bank</span><span class="o">.</span><span class="n">_defaulted</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">lcr</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="mf">130.0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lcr</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FUNDING_LCR_THRESHOLD</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Withdrawal probability increases with LCR gap (sigmoid)</span>
+            <span class="n">lcr_gap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FUNDING_LCR_THRESHOLD</span> <span class="o">-</span> <span class="n">lcr</span>
+            <span class="n">withdrawal_prob</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_FUNDING_SENSITIVITY</span> <span class="o">*</span> <span class="n">lcr_gap</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">other_id</span><span class="p">,</span> <span class="n">other_bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">other_bank</span><span class="o">.</span><span class="n">_defaulted</span> <span class="ow">or</span> <span class="n">other_id</span> <span class="o">==</span> <span class="n">bid</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">exposure</span> <span class="o">=</span> <span class="n">other_bank</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">exposure</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Stochastic withdrawal decision</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">withdrawal_prob</span><span class="p">:</span>
+                    <span class="n">withdrawal</span> <span class="o">=</span> <span class="n">exposure</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FUNDING_WITHDRAWAL_RATE</span>
+                    <span class="n">cash</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cash&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+                    <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;cash&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cash</span> <span class="o">-</span> <span class="n">withdrawal</span>
+
+                    <span class="c1"># LCR deteriorates further as liquid assets drain</span>
+                    <span class="n">total_assets</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total_assets&quot;</span><span class="p">,</span> <span class="mf">1e9</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">total_assets</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">lcr_hit</span> <span class="o">=</span> <span class="p">(</span><span class="n">withdrawal</span> <span class="o">/</span> <span class="n">total_assets</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
+                        <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;LCR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="mf">130.0</span><span class="p">)</span> <span class="o">-</span> <span class="n">lcr_hit</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">bank</span><span class="o">.</span><span class="n">is_defaulted</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">bank</span><span class="o">.</span><span class="n">_defaulted</span><span class="p">:</span>
+                        <span class="n">bank</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Bank </span><span class="si">%s</span><span class="s2"> defaulted at t=</span><span class="si">%d</span><span class="s2"> (funding channel)&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+                        <span class="k">break</span>  <span class="c1"># This bank is done</span>
+
+    <span class="c1"># ── Channel 3: Fire-sale / asset correlation ──────────────────────────</span>
+
+    <span class="n">_FIRE_SALE_HAIRCUT</span> <span class="o">=</span> <span class="mf">0.02</span>   <span class="c1"># Base haircut per correlated default</span>
+    <span class="n">_FIRE_SALE_AMPLIFIER</span> <span class="o">=</span> <span class="mf">1.5</span>  <span class="c1"># Amplification when multiple banks default simultaneously</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_propagate_fire_sales</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asset correlation channel: defaults cause mark-to-market losses on correlated assets.</span>
+
+<span class="sd">        When banks default, surviving banks holding correlated assets suffer</span>
+<span class="sd">        mark-to-market losses proportional to correlation strength and the</span>
+<span class="sd">        number of simultaneous defaults. This captures the fire-sale externality.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">defaulted_ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">bid</span> <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">bank</span><span class="o">.</span><span class="n">_defaulted</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">defaulted_ids</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Amplification factor increases with simultaneous defaults</span>
+        <span class="n">n_defaults</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">defaulted_ids</span><span class="p">)</span>
+        <span class="n">amplifier</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_defaults</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_FIRE_SALE_AMPLIFIER</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
+        <span class="n">bank_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">id_to_idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">bid</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bank_ids</span><span class="p">)}</span>
+
+        <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">bank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">bank</span><span class="o">.</span><span class="n">_defaulted</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">id_to_idx</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span>
+            <span class="n">total_haircut</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">def_id</span> <span class="ow">in</span> <span class="n">defaulted_ids</span><span class="p">:</span>
+                <span class="n">def_idx</span> <span class="o">=</span> <span class="n">id_to_idx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">def_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">def_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">correlation</span> <span class="o">=</span> <span class="n">adj</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">def_idx</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">correlation</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">total_haircut</span> <span class="o">+=</span> <span class="n">correlation</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FIRE_SALE_HAIRCUT</span> <span class="o">*</span> <span class="n">amplifier</span>
+
+            <span class="k">if</span> <span class="n">total_haircut</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Cap haircut to prevent unrealistic total wipeouts</span>
+                <span class="n">total_haircut</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">total_haircut</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
+
+                <span class="c1"># Mark-to-market loss on total assets</span>
+                <span class="n">ta</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total_assets&quot;</span><span class="p">,</span> <span class="mf">1e9</span><span class="p">)</span>
+                <span class="n">asset_loss</span> <span class="o">=</span> <span class="n">ta</span> <span class="o">*</span> <span class="n">total_haircut</span>
+                <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;total_assets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ta</span> <span class="o">-</span> <span class="n">asset_loss</span>
+
+                <span class="c1"># CET1 hit proportional to loss</span>
+                <span class="n">rwa_est</span> <span class="o">=</span> <span class="n">ta</span> <span class="o">*</span> <span class="mf">0.35</span>
+                <span class="k">if</span> <span class="n">rwa_est</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">asset_loss</span> <span class="o">/</span> <span class="n">rwa_est</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+
+                <span class="k">if</span> <span class="n">bank</span><span class="o">.</span><span class="n">is_defaulted</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">bank</span><span class="o">.</span><span class="n">_defaulted</span><span class="p">:</span>
+                    <span class="n">bank</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Bank </span><span class="si">%s</span><span class="s2"> defaulted at t=</span><span class="si">%d</span><span class="s2"> (fire-sale channel)&quot;</span><span class="p">,</span> <span class="n">bid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BankingSystemSimulation.run_simulation">
 <a class="viewcode-back" href="../../../api/abm.html#scr_financial.abm.simulation.BankingSystemSimulation.run_simulation">[docs]</a>
@@ -410,8 +517,10 @@
             <span class="c1"># Run interbank lending simulation</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">simulate_interbank_lending</span><span class="p">()</span>
 
-            <span class="c1"># Propagate any defaults through the network</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_propagate_defaults</span><span class="p">()</span>
+            <span class="c1"># 3-channel contagion cascade</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_propagate_defaults</span><span class="p">()</span>        <span class="c1"># Channel 1: credit losses</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_propagate_funding_stress</span><span class="p">()</span>   <span class="c1"># Channel 2: liquidity withdrawals</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_propagate_fire_sales</span><span class="p">()</span>       <span class="c1"># Channel 3: asset correlation losses</span>
 
             <span class="c1"># Record system state</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">record_state</span><span class="p">()</span>

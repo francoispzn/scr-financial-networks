@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+  <title>Quick Start &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
@@ -44,7 +44,12 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#launch-the-dashboard">Launch the Dashboard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#train-a-gnn-from-the-ui">Train a GNN from the UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#programmatic-usage">Programmatic Usage</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -81,7 +86,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Quickstart</li>
+      <li class="breadcrumb-item active">Quick Start</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -91,27 +96,64 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="quickstart">
-<h1>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">¶</a></h1>
-<p>Launch the dashboard:</p>
+  <section id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h1>
+<section id="launch-the-dashboard">
+<h2>Launch the Dashboard<a class="headerlink" href="#launch-the-dashboard" title="Link to this heading">¶</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>dashboard/app.py
+<span class="c1"># Open http://localhost:8050</span>
 </pre></div>
 </div>
-<p>Open <a class="reference external" href="http://localhost:8050">http://localhost:8050</a>. Navigate to the <strong>Evolve</strong> page to train a GNN on real market data.</p>
-<p>Programmatic usage:</p>
+<p>The dashboard has 5 pages:</p>
+<ul class="simple">
+<li><p><strong>Network</strong>: interactive interbank exposure graph with health indicators</p></li>
+<li><p><strong>Simulate</strong>: run ABM stress scenarios in real-time</p></li>
+<li><p><strong>Spectral</strong>: eigenvalue spectrum, diffusion distances, coarse-graining</p></li>
+<li><p><strong>Evolve</strong>: train GNN from the UI with live progress</p></li>
+<li><p><strong>AI/Data</strong>: LLM-powered risk analysis and data fetching</p></li>
+</ul>
+</section>
+<section id="train-a-gnn-from-the-ui">
+<h2>Train a GNN from the UI<a class="headerlink" href="#train-a-gnn-from-the-ui" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Navigate to <strong>Evolve</strong> → select <strong>Real Market (yfinance)</strong> → click <strong>Load Data</strong></p></li>
+<li><p>Adjust hyperparameters (hidden dim, GCN/LSTM layers, epochs, learning rate, dropout)</p></li>
+<li><p>Click <strong>Train GNN</strong> — watch live progress with loss, RAM usage, and ETA</p></li>
+<li><p>Review training loss curve, test scatter plot, and spectral evolution predictions</p></li>
+</ol>
+</section>
+<section id="programmatic-usage">
+<h2>Programmatic Usage<a class="headerlink" href="#programmatic-usage" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.abm.simulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">BankingSystemSimulation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_laplacian</span><span class="p">,</span> <span class="n">eigendecomposition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.coarse_graining</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralCoarseGraining</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.ml.gnn_predictor</span><span class="w"> </span><span class="kn">import</span> <span class="n">GNNPredictor</span>
 
-<span class="n">sim</span> <span class="o">=</span> <span class="n">BankingSystemSimulation</span><span class="p">()</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">setup_banks</span><span class="p">()</span>
+<span class="c1"># Run ABM simulation (inputs from the real data pipeline)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_simulation_inputs</span>
+<span class="n">bank_data</span><span class="p">,</span> <span class="n">network_data</span><span class="p">,</span> <span class="n">system_indicators</span> <span class="o">=</span> <span class="n">load_simulation_inputs</span><span class="p">()</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">BankingSystemSimulation</span><span class="p">(</span><span class="n">bank_data</span><span class="p">,</span> <span class="n">network_data</span><span class="p">,</span> <span class="n">system_indicators</span><span class="p">)</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">run_simulation</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 
+<span class="c1"># Spectral analysis</span>
 <span class="n">adj</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">()</span>
 <span class="n">L</span> <span class="o">=</span> <span class="n">compute_laplacian</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigendecomposition</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+
+<span class="c1"># Coarse-grain the network</span>
+<span class="n">scg</span> <span class="o">=</span> <span class="n">SpectralCoarseGraining</span><span class="o">.</span><span class="n">from_adjacency</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">banks</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="n">scg</span><span class="o">.</span><span class="n">coarse_grain</span><span class="p">()</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">scg</span><span class="o">.</span><span class="n">compute_reconstruction_accuracy</span><span class="p">(</span><span class="n">time_steps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+
+<span class="c1"># Train GNN on market data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_daily_graph_snapshots</span>
+<span class="n">snapshots</span> <span class="o">=</span> <span class="n">build_daily_graph_snapshots</span><span class="p">(</span><span class="n">lookback_years</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">GNNPredictor</span><span class="p">(</span><span class="n">seq_len</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">num_gcn_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">predictor</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">snapshots</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">3e-3</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">snapshots</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
 </section>
 
 

@@ -41,7 +41,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -139,7 +139,7 @@
 
 
 <div class="viewcode-block" id="EBACollector">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.eba_collector.EBACollector">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.EBACollector">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EBACollector</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collector for European Banking Authority (EBA) data.</span>
@@ -150,7 +150,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="EBACollector.__init__">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.eba_collector.EBACollector.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.EBACollector.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the EBA data collector.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="s2">&quot;https://www.eba.europa.eu/sites/default/documents/files/&quot;</span>
@@ -160,7 +160,7 @@
 
 
 <div class="viewcode-block" id="EBACollector.__repr__">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.eba_collector.EBACollector.__repr__">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.EBACollector.__repr__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of this collector.</span>
 
@@ -171,7 +171,7 @@
 
 
 <div class="viewcode-block" id="EBACollector.collect_transparency_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.eba_collector.EBACollector.collect_transparency_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.EBACollector.collect_transparency_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_transparency_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -238,7 +238,7 @@
 
 
 <div class="viewcode-block" id="EBACollector.collect_aggregated_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.eba_collector.EBACollector.collect_aggregated_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.EBACollector.collect_aggregated_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_aggregated_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>

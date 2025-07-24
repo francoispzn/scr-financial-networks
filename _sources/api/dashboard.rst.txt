@@ -1,10 +1,10 @@
 Dashboard
 =========
 
-Data Loader
------------
+Main Application
+----------------
 
-.. automodule:: dashboard.data_loader
+.. automodule:: dashboard.app
    :members:
    :undoc-members:
    :show-inheritance:
@@ -13,6 +13,14 @@ Data API
 --------
 
 .. automodule:: dashboard.data_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Data Loader
+-----------
+
+.. automodule:: dashboard.data_loader
    :members:
    :undoc-members:
    :show-inheritance:
@@ -33,18 +41,18 @@ GNN Export
    :undoc-members:
    :show-inheritance:
 
-Simulation State
-----------------
+LLM Integration
+---------------
 
-.. automodule:: dashboard.simulation_state
+.. automodule:: dashboard.llm
    :members:
    :undoc-members:
    :show-inheritance:
 
-REST API
---------
+Simulation State
+----------------
 
-.. automodule:: dashboard.api
+.. automodule:: dashboard.simulation_state
    :members:
    :undoc-members:
    :show-inheritance:

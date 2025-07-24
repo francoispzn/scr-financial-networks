@@ -5,8 +5,3 @@ Network Construction
    :members:
    :undoc-members:
    :show-inheritance:
-
-.. automodule:: scr_financial.network.coarse_graining
-   :members:
-   :undoc-members:
-   :show-inheritance:

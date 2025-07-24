@@ -41,7 +41,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -118,7 +118,7 @@
 
 
 <div class="viewcode-block" id="MarketDataCollector">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.MarketDataCollector">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MarketDataCollector</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collector for market data.</span>
@@ -128,7 +128,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MarketDataCollector.__init__">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.MarketDataCollector.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the market data collector.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fred_base_url</span> <span class="o">=</span> <span class="s2">&quot;https://api.stlouisfed.org/fred/series/observations&quot;</span>
@@ -138,7 +138,7 @@
 
 
 <div class="viewcode-block" id="MarketDataCollector.__repr__">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector.__repr__">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.MarketDataCollector.__repr__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of this collector.</span>
 
@@ -149,7 +149,7 @@
 
 
 <div class="viewcode-block" id="MarketDataCollector.collect_cds_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_cds_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.MarketDataCollector.collect_cds_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_cds_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -173,7 +173,7 @@
 
 
 <div class="viewcode-block" id="MarketDataCollector.collect_srisk_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_srisk_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.MarketDataCollector.collect_srisk_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_srisk_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -197,7 +197,7 @@
 
 
 <div class="viewcode-block" id="MarketDataCollector.collect_equity_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_equity_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.MarketDataCollector.collect_equity_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_equity_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -221,7 +221,7 @@
 
 
 <div class="viewcode-block" id="MarketDataCollector.collect_funding_stress_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_funding_stress_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.MarketDataCollector.collect_funding_stress_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_funding_stress_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -241,7 +241,7 @@
 
 
 <div class="viewcode-block" id="MarketDataCollector.collect_bis_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector.collect_bis_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.MarketDataCollector.collect_bis_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_bis_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">indicator</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>

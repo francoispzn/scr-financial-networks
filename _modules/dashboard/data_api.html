@@ -41,7 +41,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -129,19 +129,17 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># ── Bank universe ────────────────────────────────────────────────────────────</span>
+<span class="c1"># Configurable via scr_financial.config.loader; defaults to eu_10.</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.config.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_universe</span>
+
+<span class="n">_default_universe</span> <span class="o">=</span> <span class="n">load_universe</span><span class="p">(</span><span class="s2">&quot;eu_10&quot;</span><span class="p">)</span>
+
+<span class="c1"># {bank_id: yahoo_ticker} — built from the config universe</span>
 <span class="n">BANK_TICKERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;DE_DBK&quot;</span><span class="p">:</span>  <span class="s2">&quot;DBK.DE&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;FR_BNP&quot;</span><span class="p">:</span>  <span class="s2">&quot;BNP.PA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ES_SAN&quot;</span><span class="p">:</span>  <span class="s2">&quot;SAN.MC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;IT_UCG&quot;</span><span class="p">:</span>  <span class="s2">&quot;UCG.MI&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;NL_ING&quot;</span><span class="p">:</span>  <span class="s2">&quot;INGA.AS&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SE_NDA&quot;</span><span class="p">:</span>  <span class="s2">&quot;NDA-FI.HE&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CH_UBS&quot;</span><span class="p">:</span>  <span class="s2">&quot;UBSG.SW&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;UK_BARC&quot;</span><span class="p">:</span> <span class="s2">&quot;BARC.L&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;UK_HSBC&quot;</span><span class="p">:</span> <span class="s2">&quot;HSBA.L&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;FR_ACA&quot;</span><span class="p">:</span>  <span class="s2">&quot;ACA.PA&quot;</span><span class="p">,</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">ticker</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">_default_universe</span><span class="o">.</span><span class="n">banks</span>
 <span class="p">}</span>
+<span class="n">ALL_BANKS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">_default_universe</span><span class="o">.</span><span class="n">ids</span>
 
 <span class="c1"># Sovereign yield ECB series (10Y) per country code</span>
 <span class="n">_ECB_YIELD_SERIES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
@@ -219,7 +217,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    dict  {source_id: {target_id: weight}}  — upper-triangular correlation weights</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
     <span class="n">ids</span> <span class="o">=</span> <span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
 
     <span class="n">prices</span> <span class="o">=</span> <span class="n">_fetch_prices</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">window_days</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">50</span><span class="si">}</span><span class="s2">d&quot;</span><span class="p">)</span>
@@ -274,7 +271,6 @@
 <span class="sd">      shares_outstanding, latest_price, 1y_return, volatility_30d</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
     <span class="n">ids</span> <span class="o">=</span> <span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_one</span><span class="p">(</span><span class="n">bid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
@@ -402,7 +398,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Aggregate bank stock volatility as funding stress proxy.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
+            <span class="c1"># ALL_BANKS available at module level</span>
             <span class="n">prices</span> <span class="o">=</span> <span class="n">_fetch_prices</span><span class="p">(</span><span class="n">ALL_BANKS</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="s2">&quot;90d&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">prices</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s2">&quot;bank_vol&quot;</span><span class="p">,</span> <span class="kc">None</span>
@@ -464,7 +460,6 @@
 <span class="sd">      prices         : pd.DataFrame  (daily close prices)</span>
 <span class="sd">      timestamp      : str  (UTC ISO)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
     <span class="n">ids</span> <span class="o">=</span> <span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
 
     <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -512,7 +507,7 @@
     <span class="n">sys</span>   <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
 
     <span class="n">bank_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
+    <span class="c1"># ALL_BANKS available at module level</span>
     <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="p">(</span><span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">feats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="p">{})</span>
         <span class="n">total_assets</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total_assets&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">1e12</span>
@@ -569,6 +564,8 @@
     <span class="n">min_corr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
     <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">progress_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">universe</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rmt_denoise</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build daily graph snapshots from historical market data for GNN training.</span>
@@ -591,6 +588,12 @@
 <span class="sd">        Step between consecutive snapshots (1 = every day, 5 = weekly).</span>
 <span class="sd">    progress_callback : callable(current, total)</span>
 <span class="sd">        For UI progress updates.</span>
+<span class="sd">    universe : str, optional</span>
+<span class="sd">        Name of a bank universe from config (e.g. &#39;eu_10&#39;, &#39;eu_50&#39;).</span>
+<span class="sd">        Overrides bank_ids when provided.</span>
+<span class="sd">    rmt_denoise : bool</span>
+<span class="sd">        If True, apply Marchenko-Pastur denoising to the correlation matrix</span>
+<span class="sd">        before thresholding (uses constant method from scr_financial.network.rmt).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -600,9 +603,18 @@
         <span class="n">compute_laplacian</span><span class="p">,</span> <span class="n">eigendecomposition</span><span class="p">,</span> <span class="n">find_spectral_gap</span><span class="p">,</span>
         <span class="n">analyze_spectral_properties</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALL_BANKS</span>
 
-    <span class="n">ids</span> <span class="o">=</span> <span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
+    <span class="c1"># Resolve bank universe ------------------------------------------------</span>
+    <span class="k">if</span> <span class="n">universe</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">univ</span> <span class="o">=</span> <span class="n">load_universe</span><span class="p">(</span><span class="n">universe</span><span class="p">)</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">univ</span><span class="o">.</span><span class="n">ids</span>
+        <span class="c1"># Temporarily patch BANK_TICKERS so _fetch_prices can resolve them</span>
+        <span class="n">_extra_tickers</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">ticker</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">univ</span><span class="o">.</span><span class="n">banks</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_extra_tickers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">BANK_TICKERS</span><span class="p">:</span>
+                <span class="n">BANK_TICKERS</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">bank_ids</span> <span class="ow">or</span> <span class="n">ALL_BANKS</span>
     <span class="n">n_banks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
 
     <span class="c1"># Fetch full price history in one call</span>
@@ -627,6 +639,16 @@
 
         <span class="c1"># Correlation adjacency</span>
         <span class="n">corr</span> <span class="o">=</span> <span class="n">ret_window</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+
+        <span class="c1"># Optional RMT denoising (Marchenko-Pastur)</span>
+        <span class="k">if</span> <span class="n">rmt_denoise</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.network.rmt</span><span class="w"> </span><span class="kn">import</span> <span class="n">denoise_correlation</span>
+            <span class="n">corr_vals</span> <span class="o">=</span> <span class="n">corr</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">ids</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">corr_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">corr_vals</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">corr_vals</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">corr_vals</span> <span class="o">=</span> <span class="n">denoise_correlation</span><span class="p">(</span><span class="n">corr_vals</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ret_window</span><span class="p">))</span>
+            <span class="n">corr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">corr_vals</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">ids</span><span class="p">)</span>
+
         <span class="n">n</span> <span class="o">=</span> <span class="n">n_banks</span>
         <span class="n">adj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">src</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>

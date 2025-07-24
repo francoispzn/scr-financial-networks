@@ -41,7 +41,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -105,7 +105,7 @@
 
 
 <div class="viewcode-block" id="ECBCollector">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.ecb_collector.ECBCollector">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.ECBCollector">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ECBCollector</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collector for European Central Bank (ECB) data.</span>
@@ -115,7 +115,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ECBCollector.__init__">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.ecb_collector.ECBCollector.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.ECBCollector.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the ECB data collector.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sdw_base_url</span> <span class="o">=</span> <span class="s2">&quot;https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=&quot;</span>
@@ -126,7 +126,7 @@
 
 
 <div class="viewcode-block" id="ECBCollector.__repr__">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.ecb_collector.ECBCollector.__repr__">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.ECBCollector.__repr__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of this collector.</span>
 
@@ -137,7 +137,7 @@
 
 
 <div class="viewcode-block" id="ECBCollector.collect_target2_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_target2_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.ECBCollector.collect_target2_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_target2_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -161,7 +161,7 @@
 
 
 <div class="viewcode-block" id="ECBCollector.collect_ciss_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_ciss_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.ECBCollector.collect_ciss_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_ciss_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Collect ECB Composite Indicator of Systemic Stress (CISS) data.</span>
 
@@ -179,7 +179,7 @@
 
 
 <div class="viewcode-block" id="ECBCollector.collect_gsib_data">
-<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.collectors.ecb_collector.ECBCollector.collect_gsib_data">[docs]</a>
+<a class="viewcode-back" href="../../../../api/data.html#scr_financial.data.ECBCollector.collect_gsib_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_gsib_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>

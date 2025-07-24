@@ -41,7 +41,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -111,7 +111,7 @@
 
 
 <div class="viewcode-block" id="DataPreprocessor">
-<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.preprocessor.DataPreprocessor">[docs]</a>
+<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.DataPreprocessor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataPreprocessor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles loading, cleaning, and normalizing financial data from various sources.</span>
@@ -132,7 +132,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DataPreprocessor.__init__">
-<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.preprocessor.DataPreprocessor.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.DataPreprocessor.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -180,7 +180,7 @@
 
 
 <div class="viewcode-block" id="DataPreprocessor.load_bank_node_data">
-<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.preprocessor.DataPreprocessor.load_bank_node_data">[docs]</a>
+<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.DataPreprocessor.load_bank_node_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_bank_node_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">data_sources</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
@@ -217,7 +217,7 @@
 
 
 <div class="viewcode-block" id="DataPreprocessor.load_interbank_exposures">
-<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.preprocessor.DataPreprocessor.load_interbank_exposures">[docs]</a>
+<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.DataPreprocessor.load_interbank_exposures">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_interbank_exposures</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ECB_TARGET2&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
@@ -247,7 +247,7 @@
 
 
 <div class="viewcode-block" id="DataPreprocessor.load_system_indicators">
-<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.preprocessor.DataPreprocessor.load_system_indicators">[docs]</a>
+<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.DataPreprocessor.load_system_indicators">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_system_indicators</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load system-wide financial indicators.</span>
 
@@ -278,7 +278,7 @@
 
 
 <div class="viewcode-block" id="DataPreprocessor.normalize_edge_weights">
-<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.preprocessor.DataPreprocessor.normalize_edge_weights">[docs]</a>
+<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.DataPreprocessor.normalize_edge_weights">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize_edge_weights</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;degree&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
@@ -349,7 +349,7 @@
 
 
 <div class="viewcode-block" id="DataPreprocessor.filter_network">
-<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.preprocessor.DataPreprocessor.filter_network">[docs]</a>
+<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.DataPreprocessor.filter_network">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter_network</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;threshold&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
@@ -377,7 +377,7 @@
 
 
 <div class="viewcode-block" id="DataPreprocessor.align_timescales">
-<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.preprocessor.DataPreprocessor.align_timescales">[docs]</a>
+<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.DataPreprocessor.align_timescales">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">align_timescales</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Align data with different frequencies to a common timeline.&quot;&quot;&quot;</span>
         <span class="c1"># Determine common dates across all datasets</span>
@@ -446,7 +446,7 @@
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">prev_dates</span><span class="p">)</span> <span class="k">if</span> <span class="n">prev_dates</span> <span class="k">else</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DataPreprocessor.get_data_for_timepoint">
-<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.preprocessor.DataPreprocessor.get_data_for_timepoint">[docs]</a>
+<a class="viewcode-back" href="../../../api/data.html#scr_financial.data.DataPreprocessor.get_data_for_timepoint">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_data_for_timepoint</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">time_point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>

@@ -41,7 +41,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -267,8 +267,9 @@
 <a class="viewcode-back" href="../../../api/network.html#scr_financial.network.builder.FinancialNetworkBuilder.find_spectral_gap">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_spectral_gap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Identify the spectral gap for coarse-graining.</span>
-<span class="sd">        </span>
+<span class="sd">        Identify the spectral gap for coarse-graining using the</span>
+<span class="sd">        Erdos-Renyi null model test (Schmidt et al. 2025).</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        tuple</span>
@@ -276,15 +277,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Spectral analysis not performed. Call spectral_analysis first.&quot;</span><span class="p">)</span>
-        
-        <span class="c1"># Compute differences between consecutive eigenvalues</span>
-        <span class="n">gaps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">)</span>
-        
-        <span class="c1"># Find the largest gap after the first few eigenvalues</span>
-        <span class="c1"># Skip the first eigenvalue (which is 0 for connected graphs)</span>
-        <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">gaps</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">+</span> <span class="mi">1</span>
-        
-        <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="n">k</span><span class="p">]</span></div>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_spectral_gap</span> <span class="k">as</span> <span class="n">_find_gap</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">_find_gap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">adjacency_matrix</span><span class="o">=</span><span class="n">adj</span><span class="p">)</span></div>
 
     
 <div class="viewcode-block" id="FinancialNetworkBuilder.get_node_attribute_matrix">

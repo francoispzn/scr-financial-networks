@@ -46,7 +46,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -60,7 +60,15 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Theory</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Spectral Coarse-Graining Theory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#graph-laplacian">Graph Laplacian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spectral-decomposition">Spectral Decomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scg-risk-score">SCG Risk Score</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#coarse-graining-procedure">Coarse-Graining Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reconstruction-accuracy">Reconstruction Accuracy</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="gnn_architecture.html">GNN Architecture</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
@@ -95,20 +103,52 @@
              
   <section id="spectral-coarse-graining-theory">
 <h1>Spectral Coarse-Graining Theory<a class="headerlink" href="#spectral-coarse-graining-theory" title="Link to this heading">¶</a></h1>
-<p>Spectral Coarse-Graining (SCG) reduces a complex network while preserving diffusion dynamics.</p>
-<p>Given adjacency matrix <span class="math notranslate nohighlight">\(A\)</span>, the normalized Laplacian is:</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>Spectral Coarse-Graining (SCG) reduces a complex financial network to a smaller representative graph while preserving its essential diffusion dynamics. The method operates on the eigenspectrum of the graph Laplacian.</p>
+</section>
+<section id="graph-laplacian">
+<h2>Graph Laplacian<a class="headerlink" href="#graph-laplacian" title="Link to this heading">¶</a></h2>
+<p>Given an adjacency matrix <span class="math notranslate nohighlight">\(A\)</span> of an interbank network, the normalized Laplacian is:</p>
 <div class="math notranslate nohighlight">
-\[L = D^{-1/2}(D - A)D^{-1/2}\]</div>
-<p>Key spectral properties:</p>
+\[L = I - D^{-1/2} A D^{-1/2}\]</div>
+<p>where <span class="math notranslate nohighlight">\(D\)</span> is the degree matrix.</p>
+</section>
+<section id="spectral-decomposition">
+<h2>Spectral Decomposition<a class="headerlink" href="#spectral-decomposition" title="Link to this heading">¶</a></h2>
+<p>The eigendecomposition <span class="math notranslate nohighlight">\(L = V \Lambda V^T\)</span> reveals the network’s characteristic scales:</p>
 <ul class="simple">
-<li><p><strong>Algebraic connectivity</strong> <span class="math notranslate nohighlight">\(\lambda_2\)</span>: network robustness</p></li>
-<li><p><strong>Spectral gap</strong> <span class="math notranslate nohighlight">\(\Delta = \lambda_{k+1} - \lambda_k\)</span>: cluster boundary</p></li>
-<li><p><strong>Spectral radius</strong> <span class="math notranslate nohighlight">\(\rho\)</span>: contagion speed</p></li>
+<li><p><strong>Algebraic connectivity</strong> <span class="math notranslate nohighlight">\(\lambda_2\)</span>: measures how well-connected the network is</p></li>
+<li><p><strong>Spectral gap</strong>: the largest jump between consecutive eigenvalues identifies the natural coarse-graining scale</p></li>
+<li><p><strong>Spectral radius</strong> <span class="math notranslate nohighlight">\(\rho\)</span>: the largest eigenvalue</p></li>
 </ul>
-<p>SCG risk score:</p>
+</section>
+<section id="scg-risk-score">
+<h2>SCG Risk Score<a class="headerlink" href="#scg-risk-score" title="Link to this heading">¶</a></h2>
+<p>The SCG-based systemic risk indicator is defined as:</p>
 <div class="math notranslate nohighlight">
-\[\text{SCG Risk} = 1 - \frac{\lambda_2}{\rho}\]</div>
-<p>Ranges from 0 (robust) to 1 (fragile).</p>
+\[\text{risk} = 1 - \frac{\lambda_2}{\rho}\]</div>
+<p>This captures both connectivity weakness (low <span class="math notranslate nohighlight">\(\lambda_2\)</span>) and structural heterogeneity (high <span class="math notranslate nohighlight">\(\rho\)</span>). The score approaches 1 as the network becomes more fragile.</p>
+</section>
+<section id="coarse-graining-procedure">
+<h2>Coarse-Graining Procedure<a class="headerlink" href="#coarse-graining-procedure" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Compute the Laplacian eigenspectrum</p></li>
+<li><p>Identify the spectral gap at index <span class="math notranslate nohighlight">\(k\)</span></p></li>
+<li><p>Group nodes by their dominant eigenvector components (first <span class="math notranslate nohighlight">\(k\)</span> eigenvectors)</p></li>
+<li><p>Contract grouped nodes into super-nodes</p></li>
+<li><p>Rescale edge weights to preserve diffusion dynamics</p></li>
+</ol>
+</section>
+<section id="reconstruction-accuracy">
+<h2>Reconstruction Accuracy<a class="headerlink" href="#reconstruction-accuracy" title="Link to this heading">¶</a></h2>
+<p>The quality of coarse-graining is measured by comparing diffusion on the original and reduced networks:</p>
+<ul class="simple">
+<li><p><strong>R²</strong>: coefficient of determination between original and reconstructed diffusion</p></li>
+<li><p><strong>RMSE</strong>: root mean square error over time steps</p></li>
+</ul>
+<p>High R² (&gt; 0.9) indicates the coarse-grained network faithfully preserves the contagion dynamics of the full interbank system.</p>
+</section>
 </section>
 
 

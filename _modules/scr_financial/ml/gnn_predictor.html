@@ -41,7 +41,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -92,11 +92,14 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Temporal Graph Neural Network predictor for spectral metric evolution.</span>
 
-<span class="sd">Replaces the flat LSTM with a GCN encoder that operates on the actual</span>
+<span class="sd">Uses a GAT (Graph Attention Network) encoder that operates on the actual</span>
 <span class="sd">interbank graph at each timestep, producing graph-level embeddings that</span>
 <span class="sd">feed into a temporal LSTM for spectral metric forecasting.</span>
 
-<span class="sd">Architecture: GCNConv layers → global_mean_pool → LSTM → FC → [λ₂, gap, ρ]</span>
+<span class="sd">Architecture: GATConv layers → global_mean_pool → LSTM → FC → [λ₂, gap, ρ]</span>
+
+<span class="sd">The attention mechanism learns which inter-bank relationships matter most</span>
+<span class="sd">for predicting spectral risk indicators, providing interpretability.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -107,7 +110,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCNConv</span><span class="p">,</span> <span class="n">global_mean_pool</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">GATConv</span><span class="p">,</span> <span class="n">global_mean_pool</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -121,20 +124,29 @@
 <div class="viewcode-block" id="GNNEncoder">
 <a class="viewcode-back" href="../../../api/ml.html#scr_financial.ml.gnn_predictor.GNNEncoder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GNNEncoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multi-layer GCN that produces a graph-level embedding.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multi-layer GAT that produces a graph-level embedding.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_gcn_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-                 <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
+<span class="sd">    Uses multi-head attention to learn which inter-bank relationships</span>
+<span class="sd">    are most informative for predicting spectral risk indicators.</span>
+<span class="sd">    Attention weights are stored for interpretability analysis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                 <span class="n">heads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">convs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bns</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">convs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">GCNConv</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_gcn_layers</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">convs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">GCNConv</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heads</span> <span class="o">=</span> <span class="n">heads</span>
+        <span class="c1"># First layer: in_channels → hidden_channels (each head outputs hidden_channels // heads)</span>
+        <span class="n">head_dim</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">hidden_channels</span> <span class="o">//</span> <span class="n">heads</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">GATConv</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">head_dim</span><span class="p">,</span> <span class="n">heads</span><span class="o">=</span><span class="n">heads</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span> <span class="n">concat</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">head_dim</span> <span class="o">*</span> <span class="n">heads</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layers</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">GATConv</span><span class="p">(</span><span class="n">head_dim</span> <span class="o">*</span> <span class="n">heads</span><span class="p">,</span> <span class="n">head_dim</span><span class="p">,</span> <span class="n">heads</span><span class="o">=</span><span class="n">heads</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span> <span class="n">concat</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">head_dim</span> <span class="o">*</span> <span class="n">heads</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ELU</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_attention_weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="GNNEncoder.forward">
 <a class="viewcode-back" href="../../../api/ml.html#scr_financial.ml.gnn_predictor.GNNEncoder.forward">[docs]</a>
@@ -142,7 +154,9 @@
                 <span class="n">edge_weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">batch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">conv</span><span class="p">,</span> <span class="n">bn</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">convs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bns</span><span class="p">)):</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">conv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">edge_weight</span><span class="p">)</span>
+            <span class="n">h</span><span class="p">,</span> <span class="p">(</span><span class="n">edge_idx</span><span class="p">,</span> <span class="n">attn_w</span><span class="p">)</span> <span class="o">=</span> <span class="n">conv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">return_attention_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">convs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_last_attention_weights</span> <span class="o">=</span> <span class="n">attn_w</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
             <span class="n">h</span> <span class="o">=</span> <span class="n">bn</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
             <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">convs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
@@ -151,6 +165,13 @@
         <span class="k">if</span> <span class="n">batch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">global_mean_pool</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>  <span class="c1"># [num_graphs, hidden]</span></div>
+
+
+<div class="viewcode-block" id="GNNEncoder.get_attention_weights">
+<a class="viewcode-back" href="../../../api/ml.html#scr_financial.ml.gnn_predictor.GNNEncoder.get_attention_weights">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_attention_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return attention weights from the last forward pass (last layer).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_attention_weights</span></div>
 </div>
 
 
@@ -161,10 +182,16 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;GNN encoder + LSTM for temporal graph sequences → spectral predictions.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-                 <span class="n">output_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">num_gcn_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-                 <span class="n">num_lstm_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
+                 <span class="n">output_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">num_gat_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                 <span class="n">num_lstm_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">heads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">encoder_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gat&quot;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gnn</span> <span class="o">=</span> <span class="n">GNNEncoder</span><span class="p">(</span><span class="n">node_features</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">num_gcn_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">encoder_type</span> <span class="o">==</span> <span class="s2">&quot;gat&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gnn</span> <span class="o">=</span> <span class="n">GNNEncoder</span><span class="p">(</span><span class="n">node_features</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">num_gat_layers</span><span class="p">,</span> <span class="n">heads</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">scr_financial.ml.gnn_variants</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_encoder</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gnn</span> <span class="o">=</span> <span class="n">create_encoder</span><span class="p">(</span><span class="n">encoder_type</span><span class="p">,</span> <span class="n">node_features</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span>
+                                       <span class="n">num_layers</span><span class="o">=</span><span class="n">num_gat_layers</span><span class="p">,</span> <span class="n">heads</span><span class="o">=</span><span class="n">heads</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">num_lstm_layers</span><span class="p">,</span>
                             <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span> <span class="k">if</span> <span class="n">num_lstm_layers</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
@@ -215,13 +242,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-                 <span class="n">num_gcn_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">num_lstm_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-                 <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
+                 <span class="n">num_gat_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">num_lstm_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                 <span class="n">heads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">encoder_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gat&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">num_gcn_layers</span> <span class="o">=</span> <span class="n">num_gcn_layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_gat_layers</span> <span class="o">=</span> <span class="n">num_gat_layers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_lstm_layers</span> <span class="o">=</span> <span class="n">num_lstm_layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heads</span> <span class="o">=</span> <span class="n">heads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder_type</span> <span class="o">=</span> <span class="n">encoder_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TemporalGNN</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trained</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -350,12 +380,16 @@
         <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3e-3</span><span class="p">,</span>
         <span class="n">test_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">patience</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">progress_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the temporal GNN. Returns final train loss.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the temporal GNN with early stopping. Returns final train loss.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        patience : int</span>
+<span class="sd">            Early stopping patience — stop if test loss doesn&#39;t improve for</span>
+<span class="sd">            this many epochs. Set to 0 to disable early stopping.</span>
 <span class="sd">        progress_callback : callable(epoch, total_epochs, train_loss, test_loss_or_None)</span>
 <span class="sd">            Called every 5 epochs for UI progress updates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -390,13 +424,22 @@
         <span class="n">n_feat</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">NODE_FEATURE_NAMES</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">TemporalGNN</span><span class="p">(</span>
             <span class="n">n_feat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">TARGET_NAMES</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">num_gcn_layers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_lstm_layers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_gat_layers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_lstm_layers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+            <span class="n">encoder_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder_type</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">n_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">count_parameters</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;TemporalGNN: </span><span class="si">%d</span><span class="s2"> params, </span><span class="si">%d</span><span class="s2"> GCN layers, </span><span class="si">%d</span><span class="s2"> LSTM layers, hidden=</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">n_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_gcn_layers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_lstm_layers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;TemporalGNN: </span><span class="si">%d</span><span class="s2"> params, </span><span class="si">%d</span><span class="s2"> GAT layers (</span><span class="si">%d</span><span class="s2"> heads), </span><span class="si">%d</span><span class="s2"> LSTM layers, hidden=</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">n_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_gat_layers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_lstm_layers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span>
 
-        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+        <span class="c1"># Warn if severely overparameterized</span>
+        <span class="k">if</span> <span class="n">n_params</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_seqs</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Model has </span><span class="si">%d</span><span class="s2"> params for </span><span class="si">%d</span><span class="s2"> training samples (ratio </span><span class="si">%.0f</span><span class="s2">:1). &quot;</span>
+                <span class="s2">&quot;Consider reducing hidden_dim or heads to prevent overfitting.&quot;</span><span class="p">,</span>
+                <span class="n">n_params</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_seqs</span><span class="p">),</span> <span class="n">n_params</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_seqs</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
         <span class="n">scheduler</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">CosineAnnealingLR</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="n">epochs</span><span class="p">)</span>
         <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
 
@@ -404,6 +447,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">training_history</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">final_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Early stopping state</span>
+        <span class="n">best_test_loss</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="n">best_state_dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">epochs_without_improvement</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
             <span class="n">perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train_graph_seqs</span><span class="p">))</span>
@@ -438,6 +486,15 @@
                         <span class="n">test_loss</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">test_pred_s</span> <span class="o">-</span> <span class="n">y_test_s</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 
+                    <span class="c1"># Early stopping check</span>
+                    <span class="k">if</span> <span class="n">patience</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">test_loss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">test_loss</span> <span class="o">&lt;</span> <span class="n">best_test_loss</span> <span class="o">-</span> <span class="mf">1e-6</span><span class="p">:</span>
+                            <span class="n">best_test_loss</span> <span class="o">=</span> <span class="n">test_loss</span>
+                            <span class="n">best_state_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                            <span class="n">epochs_without_improvement</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">epochs_without_improvement</span> <span class="o">+=</span> <span class="mi">5</span>  <span class="c1"># We check every 5 epochs</span>
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">training_history</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
                     <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="s2">&quot;train_loss&quot;</span><span class="p">:</span> <span class="n">final_loss</span><span class="p">,</span>
@@ -447,6 +504,17 @@
 
                 <span class="k">if</span> <span class="n">progress_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">progress_callback</span><span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">final_loss</span><span class="p">,</span> <span class="n">test_loss</span><span class="p">)</span>
+
+                <span class="c1"># Early stopping trigger</span>
+                <span class="k">if</span> <span class="n">patience</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">epochs_without_improvement</span> <span class="o">&gt;=</span> <span class="n">patience</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Early stopping at epoch </span><span class="si">%d</span><span class="s2"> (no improvement for </span><span class="si">%d</span><span class="s2"> epochs)&quot;</span><span class="p">,</span>
+                                <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">patience</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># Restore best model if early stopping was used</span>
+        <span class="k">if</span> <span class="n">best_state_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">best_state_dict</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Restored best model (test_loss=</span><span class="si">%.6f</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">best_test_loss</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_trained</span> <span class="o">=</span> <span class="kc">True</span>
 

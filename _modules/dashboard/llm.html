@@ -1,0 +1,704 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dashboard.llm &mdash; SCR-Financial-Networks 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SCR-Financial-Networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/abm.html">Agent-Based Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/network.html">Network Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/spectral.html">Spectral Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/ml.html">Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/risk.html">Risk Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/data.html">Data Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/dashboard.html">Dashboard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/gnn_architecture.html">GNN Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/black_week_simulation.html">Black Week Simulation Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/network_visualization.html">Network Visualization Example</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SCR-Financial-Networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dashboard.llm</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dashboard.llm</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">LLM-powered financial analyst using Cerebras API with web search tool.</span>
+
+<span class="sd">Uses the Cerebras API (OpenAI-compatible function calling) to generate</span>
+<span class="sd">narrative analysis of the current simulation state.  The LLM has access</span>
+<span class="sd">to a ``web_search`` tool backed by the DuckDuckGo Instant Answer API</span>
+<span class="sd">(no extra API key required) so it can fetch live market data or news.</span>
+
+<span class="sd">Set CEREBRAS_API_KEY in your environment before starting the dashboard.</span>
+
+<span class="sd">Usage::</span>
+
+<span class="sd">    from dashboard.llm import analyze_system_state</span>
+<span class="sd">    narrative = analyze_system_state(state_snapshot)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">_CEREBRAS_BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;https://api.cerebras.ai/v1&quot;</span>
+<span class="n">_DEFAULT_MODEL</span> <span class="o">=</span> <span class="s2">&quot;qwen-3-235b-a22b-instruct-2507&quot;</span>
+<span class="n">_MAX_TOOL_ROUNDS</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># prevent infinite loops</span>
+
+<span class="n">_SYSTEM_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert financial stability analyst specialising in</span>
+<span class="s2">European interbank networks and systemic risk. You interpret quantitative outputs</span>
+<span class="s2">from a spectral coarse-graining (SCR) model and an agent-based model (ABM) of the</span>
+<span class="s2">interbank market. Your audience is a senior risk officer or researcher who wants</span>
+<span class="s2">concise, actionable insights — not generic disclaimers.</span>
+
+<span class="s2">You have access to a web_search tool. Use it when you need current market data,</span>
+<span class="s2">recent regulatory news, or up-to-date sovereign spread information to contextualise</span>
+<span class="s2">the simulation results. Search selectively — only when real-world context genuinely</span>
+<span class="s2">adds value.</span>
+
+<span class="s2">When given a snapshot of the banking system, you will:</span>
+<span class="s2">1. Summarise the current health of the system (2-3 sentences).</span>
+<span class="s2">2. Identify the top 2-3 vulnerabilities or risk concentrations.</span>
+<span class="s2">3. Flag any banks that are close to regulatory thresholds (CET1 &lt; 8 %, LCR &lt; 100 %).</span>
+<span class="s2">4. Comment on network topology (density, key hubs) and what it implies for contagion.</span>
+<span class="s2">5. Give a brief forward-looking assessment enriched by any relevant real-world context.</span>
+
+<span class="s2">Be direct and quantitative. Use the numbers provided. Do not hedge excessively.&quot;&quot;&quot;</span>
+
+<span class="c1"># ── Tool definitions ─────────────────────────────────────────────────────────</span>
+
+<span class="n">_TOOLS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;web_search&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;Search the web for current financial news, market data, or regulatory &quot;</span>
+                <span class="s2">&quot;updates. Returns a brief summary of the most relevant results. &quot;</span>
+                <span class="s2">&quot;Use for: live spreads, recent ECB/EBA announcements, bank headlines.&quot;</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The search query (English, concise).&quot;</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">],</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+
+
+<span class="c1"># ── Web search implementation (DuckDuckGo Instant Answer API) ────────────────</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_web_search</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_results</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Query the DuckDuckGo Instant Answer API and return a short text summary.</span>
+<span class="sd">    Falls back to a descriptive error string on failure (never raises).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;https://api.duckduckgo.com/&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;no_redirect&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;no_html&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">},</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;scr-financial-networks-dashboard/0.1&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="n">parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">abstract</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AbstractText&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">abstract</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RelatedTopics&quot;</span><span class="p">,</span> <span class="p">[])[:</span><span class="n">max_results</span><span class="p">]:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">topic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Text&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;• </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;No instant-answer results found for: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;web_search failed for query </span><span class="si">%r</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Search unavailable: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="c1"># ── Tool dispatcher ──────────────────────────────────────────────────────────</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_dispatch_tool</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">arguments</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute a tool call and return the string result.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Error: could not parse tool arguments.&quot;</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;web_search&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_web_search</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Unknown tool: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="c1"># ── Prompt builder ───────────────────────────────────────────────────────────</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_user_message</span><span class="p">(</span><span class="n">snapshot</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a simulation snapshot into a user message for the LLM.&quot;&quot;&quot;</span>
+    <span class="n">banks</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;banks&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">system</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system_metrics&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">spectral</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spectral&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;## System snapshot — simulation step </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span>
+
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;### System-level indicators&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- CISS (systemic stress): </span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CISS&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Funding stress: </span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;funding_stress&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Average CET1 ratio: </span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;avg_CET1_ratio&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Average LCR: </span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;avg_LCR&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Network density: </span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;network_density&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;### Individual bank metrics&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;| Bank | CET1 (%) | LCR (%) | Total Assets (€bn) | Solvent | Liquid |&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;|------|----------|---------|-------------------|---------|--------|&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">bdata</span> <span class="ow">in</span> <span class="n">banks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">ta</span> <span class="o">=</span> <span class="n">bdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total_assets&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e9</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">bid</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">bdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CET1_ratio&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">bdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LCR&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">ta</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39;✓&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">bdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;solvent&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">True</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;✗&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39;✓&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">bdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;liquid&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">True</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;✗&#39;</span><span class="si">}</span><span class="s2"> |&quot;</span>
+        <span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">spectral</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;### Spectral properties&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;- Algebraic connectivity (Fiedler value): &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">spectral</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;algebraic_connectivity&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;- Spectral gap: </span><span class="si">{</span><span class="n">spectral</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gap_size&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(at index </span><span class="si">{</span><span class="n">spectral</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gap_index&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;- Spectral radius: </span><span class="si">{</span><span class="n">spectral</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spectral_radius&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+
+<span class="c1"># ── Main entry point ─────────────────────────────────────────────────────────</span>
+
+<div class="viewcode-block" id="analyze_system_state">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.llm.analyze_system_state">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">analyze_system_state</span><span class="p">(</span>
+    <span class="n">snapshot</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a narrative analysis of the current simulation state.</span>
+
+<span class="sd">    The LLM may call ``web_search`` autonomously to fetch live context.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    snapshot : dict</span>
+<span class="sd">        Combined simulation state (banks, system metrics, spectral data).</span>
+<span class="sd">    model : str, optional</span>
+<span class="sd">        Cerebras model ID. Defaults to ``llama-4-scout-17b-16e-instruct``.</span>
+<span class="sd">    api_key : str, optional</span>
+<span class="sd">        Cerebras API key. Falls back to ``CEREBRAS_API_KEY`` env var.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Markdown-formatted narrative analysis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CEREBRAS_API_KEY&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;**Cerebras API key not configured.**</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Set the `CEREBRAS_API_KEY` environment variable and restart the dashboard.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>  <span class="c1"># openai &gt;= 1.0 required</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;**`openai` package not installed.**</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Run `pip install openai&gt;=1.0` to enable LLM analysis.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">_CEREBRAS_BASE_URL</span><span class="p">)</span>
+    <span class="n">chosen_model</span> <span class="o">=</span> <span class="n">model</span> <span class="ow">or</span> <span class="n">_DEFAULT_MODEL</span>
+
+    <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">_SYSTEM_PROMPT</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">_build_user_message</span><span class="p">(</span><span class="n">snapshot</span><span class="p">)},</span>
+    <span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">_round</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_MAX_TOOL_ROUNDS</span><span class="p">):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">chosen_model</span><span class="p">,</span>
+                <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                <span class="n">tools</span><span class="o">=</span><span class="n">_TOOLS</span><span class="p">,</span>
+                <span class="n">tool_choice</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+                <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span>
+
+            <span class="c1"># No tool calls — we have the final answer</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="n">content</span> <span class="ow">or</span> <span class="s2">&quot;No response from model.&quot;</span>
+
+            <span class="c1"># Append assistant&#39;s message (with tool calls)</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+            <span class="c1"># Execute each tool call and append results</span>
+            <span class="k">for</span> <span class="n">tc</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">_dispatch_tool</span><span class="p">(</span><span class="n">tc</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">tc</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">arguments</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Tool call: </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) → </span><span class="si">%s</span><span class="s2">…&quot;</span><span class="p">,</span>
+                    <span class="n">tc</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">tc</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">arguments</span><span class="p">[:</span><span class="mi">80</span><span class="p">],</span>
+                    <span class="n">result</span><span class="p">[:</span><span class="mi">120</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;tool&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;tool_call_id&quot;</span><span class="p">:</span> <span class="n">tc</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">,</span>
+                <span class="p">})</span>
+
+        <span class="c1"># If we exhausted rounds, ask for a final summary without tools</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Please provide your final analysis now.&quot;</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">chosen_model</span><span class="p">,</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">final</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span> <span class="ow">or</span> <span class="s2">&quot;No final response.&quot;</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;LLM analysis failed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;**LLM analysis failed:** </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<span class="c1"># ── Real data fetcher ────────────────────────────────────────────────────────</span>
+
+<span class="n">_FETCH_SYSTEM</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are a financial data extraction agent. You have access to web_search.</span>
+<span class="s2">Search for the most recent publicly available regulatory data for each requested bank.</span>
+<span class="s2">Focus on official sources: annual reports, EBA transparency exercise, investor presentations,</span>
+<span class="s2">Q4 or H1 results press releases. Return ONLY valid JSON — no prose, no code fences.&quot;&quot;&quot;</span>
+
+<span class="n">_FETCH_PROMPT_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Search for the most recent CET1 ratio (%), LCR (%), NSFR (%), and total assets (EUR)</span>
+<span class="s2">for each of the following banks:</span>
+
+<span class="si">{bank_list}</span>
+
+<span class="s2">Use web_search for each bank to find their latest reported figures.</span>
+<span class="s2">Return a single JSON object — keys are the bank IDs below, values are dicts with keys:</span>
+<span class="s2">  CET1_ratio  (float, percent)</span>
+<span class="s2">  LCR         (float, percent)</span>
+<span class="s2">  NSFR        (float, percent, use null if unavailable)</span>
+<span class="s2">  total_assets (float, EUR value — e.g. 1.32e12 for €1.32 trillion)</span>
+
+<span class="s2">Bank IDs and names:</span>
+<span class="si">{id_name_map}</span>
+
+<span class="s2">Example output (do NOT include this, find real values):</span>
+<span class="s2">{{&quot;DE_DBK&quot;: {{&quot;CET1_ratio&quot;: 13.7, &quot;LCR&quot;: 148, &quot;NSFR&quot;: 119, &quot;total_assets&quot;: 1.32e12}}}}</span>
+
+<span class="s2">Return ONLY the JSON object. No explanation, no markdown fences.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># ── GNN feature fetcher ──────────────────────────────────────────────────────</span>
+
+<span class="n">_GNN_FETCH_SYSTEM</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are a financial data extraction agent specialising in</span>
+<span class="s2">European banking regulatory and market data. You have web_search access.</span>
+<span class="s2">Search official sources: EBA transparency exercises, annual reports, Pillar 3 disclosures,</span>
+<span class="s2">investor presentations, Q4/H1 press releases, ECB banking supervision data.</span>
+<span class="s2">Return ONLY valid JSON — no prose, no markdown fences.&quot;&quot;&quot;</span>
+
+<span class="n">_GNN_FETCH_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">For each bank listed below, search and return the MOST RECENT available values for ALL</span>
+<span class="s2">of the following fields. Use web_search for each bank. If a field is genuinely unavailable</span>
+<span class="s2">after searching, use null.</span>
+
+<span class="s2">Fields required (all numeric):</span>
+<span class="s2">  CET1_ratio        – CET1 capital ratio (%, e.g. 13.7)</span>
+<span class="s2">  tier1_ratio       – Tier 1 capital ratio (%)</span>
+<span class="s2">  total_capital_ratio – Total capital ratio (%)</span>
+<span class="s2">  LCR               – Liquidity Coverage Ratio (%)</span>
+<span class="s2">  NSFR              – Net Stable Funding Ratio (%)</span>
+<span class="s2">  leverage_ratio    – Basel III leverage ratio (%)</span>
+<span class="s2">  npl_ratio         – Non-performing loan ratio (%)</span>
+<span class="s2">  roe               – Return on equity (%)</span>
+<span class="s2">  roa               – Return on assets (%)</span>
+<span class="s2">  cost_income_ratio – Cost-to-income ratio (%)</span>
+<span class="s2">  total_assets      – Total assets (EUR, e.g. 1.32e12)</span>
+<span class="s2">  tier1_capital     – Tier 1 capital amount (EUR)</span>
+<span class="s2">  rwa               – Risk-weighted assets (EUR)</span>
+<span class="s2">  net_income        – Net income (EUR, last annual)</span>
+<span class="s2">  deposits          – Total customer deposits (EUR)</span>
+
+<span class="s2">Bank IDs and names:</span>
+<span class="si">{id_name_map}</span>
+
+<span class="s2">Return a single JSON object. Keys are the bank IDs above, values are dicts with the</span>
+<span class="s2">fields listed. Example structure (use REAL values, not these):</span>
+<span class="s2">{{&quot;DE_DBK&quot;: {{&quot;CET1_ratio&quot;: 13.7, &quot;tier1_ratio&quot;: 14.9, &quot;total_capital_ratio&quot;: 17.2,</span>
+<span class="s2">  &quot;LCR&quot;: 148, &quot;NSFR&quot;: 119, &quot;leverage_ratio&quot;: 4.6, &quot;npl_ratio&quot;: 1.8,</span>
+<span class="s2">  &quot;roe&quot;: 9.1, &quot;roa&quot;: 0.4, &quot;cost_income_ratio&quot;: 62, &quot;total_assets&quot;: 1.32e12,</span>
+<span class="s2">  &quot;tier1_capital&quot;: 5.2e10, &quot;rwa&quot;: 3.5e11, &quot;net_income&quot;: 4.2e9,</span>
+<span class="s2">  &quot;deposits&quot;: 6.1e11}}}}</span>
+
+<span class="s2">Return ONLY the JSON object.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># Numeric fields we accept from the GNN fetch (in this order → feature vector)</span>
+<span class="n">GNN_NODE_FEATURES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;tier1_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;total_capital_ratio&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="s2">&quot;NSFR&quot;</span><span class="p">,</span> <span class="s2">&quot;leverage_ratio&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;npl_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;roe&quot;</span><span class="p">,</span> <span class="s2">&quot;roa&quot;</span><span class="p">,</span> <span class="s2">&quot;cost_income_ratio&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;total_assets&quot;</span><span class="p">,</span> <span class="s2">&quot;tier1_capital&quot;</span><span class="p">,</span> <span class="s2">&quot;rwa&quot;</span><span class="p">,</span> <span class="s2">&quot;net_income&quot;</span><span class="p">,</span> <span class="s2">&quot;deposits&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="fetch_bank_features_for_gnn">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.llm.fetch_bank_features_for_gnn">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_bank_features_for_gnn</span><span class="p">(</span>
+    <span class="n">bank_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use Cerebras LLM + web_search to fetch a rich feature set for GNN training.</span>
+
+<span class="sd">    Returns ``{bank_id: {feature: value, ...}}`` for all GNN_NODE_FEATURES,</span>
+<span class="sd">    or ``{&quot;error&quot;: &quot;...&quot;}`` on failure.  Missing fields are set to ``None``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">BANK_LABELS</span>  <span class="c1"># avoid circular at module level</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CEREBRAS_API_KEY&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;CEREBRAS_API_KEY not set.&quot;</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;`openai` package not installed.&quot;</span><span class="p">}</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">_CEREBRAS_BASE_URL</span><span class="p">)</span>
+    <span class="n">chosen_model</span> <span class="o">=</span> <span class="n">model</span> <span class="ow">or</span> <span class="n">_DEFAULT_MODEL</span>
+
+    <span class="n">id_name_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">bid</span><span class="p">:</span> <span class="n">BANK_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="n">bid</span><span class="p">)</span> <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">}</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">_GNN_FETCH_PROMPT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">id_name_map</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">id_name_map</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">_GNN_FETCH_SYSTEM</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>   <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+    <span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">_round</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_MAX_TOOL_ROUNDS</span> <span class="o">*</span> <span class="mi">3</span><span class="p">):</span>  <span class="c1"># more rounds for more banks/features</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">chosen_model</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                <span class="n">tools</span><span class="o">=</span><span class="n">_TOOLS</span><span class="p">,</span> <span class="n">tool_choice</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+                <span class="n">max_tokens</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">content</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">):</span>
+                    <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;json&quot;</span><span class="p">):</span>
+                        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">raw</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                    <span class="n">result</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">:</span>
+                        <span class="n">fields</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="p">{})</span>
+                        <span class="n">node</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">GNN_NODE_FEATURES</span><span class="p">:</span>
+                            <span class="n">v</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="k">try</span><span class="p">:</span>
+                                    <span class="n">node</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                                <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                                    <span class="n">node</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">node</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;GNN fetch: </span><span class="si">%d</span><span class="s2"> banks, features: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">GNN_NODE_FEATURES</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">result</span>
+                <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;GNN JSON parse failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Could not parse LLM response: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+
+            <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">tc</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">:</span>
+                <span class="n">result_str</span> <span class="o">=</span> <span class="n">_dispatch_tool</span><span class="p">(</span><span class="n">tc</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">tc</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">arguments</span><span class="p">)</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;tool&quot;</span><span class="p">,</span> <span class="s2">&quot;tool_call_id&quot;</span><span class="p">:</span> <span class="n">tc</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">result_str</span><span class="p">,</span>
+                <span class="p">})</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;LLM exhausted tool rounds without returning GNN data.&quot;</span><span class="p">}</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;fetch_bank_features_for_gnn failed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)}</span></div>
+
+
+
+<div class="viewcode-block" id="fetch_bank_data_via_llm">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.llm.fetch_bank_data_via_llm">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_bank_data_via_llm</span><span class="p">(</span>
+    <span class="n">bank_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use Cerebras LLM + web_search to fetch real bank regulatory data.</span>
+
+<span class="sd">    Returns a dict of {bank_id: {CET1_ratio, LCR, NSFR, total_assets}}</span>
+<span class="sd">    or {&quot;error&quot;: &quot;...&quot;} on failure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dashboard.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">BANK_LABELS</span>  <span class="c1"># avoid circular at module level</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CEREBRAS_API_KEY&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;CEREBRAS_API_KEY not set.&quot;</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;`openai` package not installed.&quot;</span><span class="p">}</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">_CEREBRAS_BASE_URL</span><span class="p">)</span>
+    <span class="n">chosen_model</span> <span class="o">=</span> <span class="n">model</span> <span class="ow">or</span> <span class="n">_DEFAULT_MODEL</span>
+
+    <span class="n">id_name_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">bid</span><span class="p">:</span> <span class="n">BANK_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="n">bid</span><span class="p">)</span> <span class="k">for</span> <span class="n">bid</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">}</span>
+    <span class="n">bank_list_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">BANK_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">)</span>
+
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">_FETCH_PROMPT_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">bank_list</span><span class="o">=</span><span class="n">bank_list_str</span><span class="p">,</span>
+        <span class="n">id_name_map</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">id_name_map</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">_FETCH_SYSTEM</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>   <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+    <span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">_round</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_MAX_TOOL_ROUNDS</span><span class="p">):</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">chosen_model</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                <span class="n">tools</span><span class="o">=</span><span class="n">_TOOLS</span><span class="p">,</span> <span class="n">tool_choice</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+                <span class="n">max_tokens</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">:</span>
+                <span class="c1"># Parse JSON from the final response</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">content</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="c1"># Strip accidental markdown fences</span>
+                <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">):</span>
+                    <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;json&quot;</span><span class="p">):</span>
+                        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                    <span class="c1"># Sanitise: keep only numeric fields we expect</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">for</span> <span class="n">bid</span><span class="p">,</span> <span class="n">fields</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">bid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bank_ids</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">clean</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="s2">&quot;NSFR&quot;</span><span class="p">,</span> <span class="s2">&quot;total_assets&quot;</span><span class="p">):</span>
+                            <span class="n">v</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="k">try</span><span class="p">:</span>
+                                    <span class="n">clean</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                                <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                                    <span class="k">pass</span>
+                        <span class="k">if</span> <span class="n">clean</span><span class="p">:</span>
+                            <span class="n">result</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;LLM fetched data for </span><span class="si">%d</span><span class="s2"> banks&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">result</span>
+                <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;JSON parse failed: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Content: </span><span class="si">%.200s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Could not parse LLM JSON response: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+
+            <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">tc</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">:</span>
+                <span class="n">result_str</span> <span class="o">=</span> <span class="n">_dispatch_tool</span><span class="p">(</span><span class="n">tc</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">tc</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">arguments</span><span class="p">)</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;tool&quot;</span><span class="p">,</span> <span class="s2">&quot;tool_call_id&quot;</span><span class="p">:</span> <span class="n">tc</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">result_str</span><span class="p">,</span>
+                <span class="p">})</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;LLM exhausted tool rounds without returning data.&quot;</span><span class="p">}</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;fetch_bank_data_via_llm failed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)}</span></div>
+
+
+
+<span class="c1"># ── Snapshot builder ─────────────────────────────────────────────────────────</span>
+
+<div class="viewcode-block" id="build_snapshot">
+<a class="viewcode-back" href="../../api/dashboard.html#dashboard.llm.build_snapshot">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_snapshot</span><span class="p">(</span>
+    <span class="n">sim_state</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">system_metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">spectral_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Combine raw simulation data into a snapshot dict.&quot;&quot;&quot;</span>
+    <span class="n">banks_snapshot</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">sim_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nodes&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="n">bid</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="n">banks_snapshot</span><span class="p">[</span><span class="n">bid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;CET1_ratio&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CET1_ratio&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;LCR&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LCR&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;total_assets&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total_assets&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;solvent&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solvent&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="s2">&quot;liquid&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;liquid&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">system_metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="s2">&quot;banks&quot;</span><span class="p">:</span> <span class="n">banks_snapshot</span><span class="p">,</span>
+        <span class="s2">&quot;system_metrics&quot;</span><span class="p">:</span> <span class="n">system_metrics</span><span class="p">,</span>
+        <span class="s2">&quot;spectral&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">:</span> <span class="n">spectral_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;gap_size&quot;</span><span class="p">:</span> <span class="n">spectral_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gap_size&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;gap_index&quot;</span><span class="p">:</span> <span class="n">spectral_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gap_index&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;spectral_radius&quot;</span><span class="p">:</span> <span class="n">spectral_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spectral_radius&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">}</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025-2026, Francois Petizon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

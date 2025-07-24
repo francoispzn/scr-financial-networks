@@ -45,7 +45,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -110,8 +110,19 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#using-conda-recommended">Using Conda (recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#using-pip">Using pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#core-dependencies">Core Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#launch-the-dashboard">Launch the Dashboard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#train-a-gnn-from-the-ui">Train a GNN from the UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#programmatic-usage">Programmatic Usage</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -125,7 +136,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/network.html">Network Construction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/network.html#scr_financial.network.builder.FinancialNetworkBuilder"><code class="docutils literal notranslate"><span class="pre">FinancialNetworkBuilder</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/network.html#scr_financial.network.coarse_graining.SpectralCoarseGraining"><code class="docutils literal notranslate"><span class="pre">SpectralCoarseGraining</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/spectral.html">Spectral Analysis</a><ul>
@@ -136,6 +146,7 @@
 <li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.analyze_spectral_properties"><code class="docutils literal notranslate"><span class="pre">analyze_spectral_properties()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.compute_spectral_embedding"><code class="docutils literal notranslate"><span class="pre">compute_spectral_embedding()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/spectral.html#scr_financial.network.spectral.compute_diffusion_distance"><code class="docutils literal notranslate"><span class="pre">compute_diffusion_distance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/spectral.html#module-scr_financial.network.coarse_graining">Coarse-Graining</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/ml.html">Machine Learning</a><ul>
@@ -152,23 +163,23 @@
 <li class="toctree-l2"><a class="reference internal" href="api/risk.html#scr_financial.risk.metrics.compute_mes"><code class="docutils literal notranslate"><span class="pre">compute_mes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/risk.html#scr_financial.risk.metrics.compute_srisk"><code class="docutils literal notranslate"><span class="pre">compute_srisk()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/risk.html#scr_financial.risk.metrics.compute_system_risk_metrics"><code class="docutils literal notranslate"><span class="pre">compute_system_risk_metrics()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/risk.html#module-scr_financial.backtesting.engine">Backtesting Engine</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/data.html">Data Collection</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.collectors.eba_collector.EBACollector"><code class="docutils literal notranslate"><span class="pre">EBACollector</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.collectors.ecb_collector.ECBCollector"><code class="docutils literal notranslate"><span class="pre">ECBCollector</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.collectors.market_collector.MarketDataCollector"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.preprocessor.DataPreprocessor"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.DataPreprocessor"><code class="docutils literal notranslate"><span class="pre">DataPreprocessor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.EBACollector"><code class="docutils literal notranslate"><span class="pre">EBACollector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.ECBCollector"><code class="docutils literal notranslate"><span class="pre">ECBCollector</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#scr_financial.data.MarketDataCollector"><code class="docutils literal notranslate"><span class="pre">MarketDataCollector</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/dashboard.html">Dashboard</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.data_loader">Data Loader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.app">Main Application</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.data_api">Data API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.data_loader">Data Loader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.prediction">Prediction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.gnn_export">GNN Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.llm">LLM Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.simulation_state">Simulation State</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html#module-dashboard.api">REST API</a></li>
 </ul>
 </li>
 </ul>
@@ -176,8 +187,25 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Theory</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory/gnn_architecture.html">GNN Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="theory/spectral_coarse_graining.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/spectral_coarse_graining.html#graph-laplacian">Graph Laplacian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/spectral_coarse_graining.html#spectral-decomposition">Spectral Decomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/spectral_coarse_graining.html#scg-risk-score">SCG Risk Score</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/spectral_coarse_graining.html#coarse-graining-procedure">Coarse-Graining Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/spectral_coarse_graining.html#reconstruction-accuracy">Reconstruction Accuracy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="theory/gnn_architecture.html">GNN Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="theory/gnn_architecture.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/gnn_architecture.html#architecture">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/gnn_architecture.html#components">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/gnn_architecture.html#default-configuration">Default Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/gnn_architecture.html#node-features">Node Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/gnn_architecture.html#edge-construction">Edge Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/gnn_architecture.html#training-data">Training Data</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">

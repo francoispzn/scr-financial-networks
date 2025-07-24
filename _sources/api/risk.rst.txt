@@ -5,11 +5,3 @@ Risk Metrics
    :members:
    :undoc-members:
    :show-inheritance:
-
-Backtesting Engine
-------------------
-
-.. automodule:: scr_financial.backtesting.engine
-   :members:
-   :undoc-members:
-   :show-inheritance:

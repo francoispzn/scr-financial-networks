@@ -44,7 +44,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -59,7 +59,16 @@
 <p class="caption" role="heading"><span class="caption-text">Theory</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="spectral_coarse_graining.html">Spectral Coarse-Graining Theory</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">GNN Architecture</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GNN Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#architecture">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#components">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#default-configuration">Default Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#node-features">Node Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#edge-construction">Edge Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#training-data">Training Data</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
@@ -93,19 +102,90 @@
              
   <section id="gnn-architecture">
 <h1>GNN Architecture<a class="headerlink" href="#gnn-architecture" title="Link to this heading">¶</a></h1>
-<p>The temporal GNN predicts spectral properties from sequences of graph snapshots.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[GCNConv -&gt; BatchNorm -&gt; ReLU -&gt; Dropout] x L layers
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The temporal Graph Neural Network predicts spectral properties of the interbank network from sequences of daily graph snapshots.</p>
+</section>
+<section id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Input: sequence of T daily graph snapshots (10 banks, 5 node features)
     |
-global_mean_pool -&gt; graph embedding (per snapshot)
+[GATConv (multi-head) -&gt; BatchNorm -&gt; ELU -&gt; Dropout] x L layers
     |
-Stack T embeddings -&gt; LSTM (M layers)
+global_mean_pool -&gt; graph-level embedding per snapshot
+    |
+LSTM (M layers) over T time steps
     |
 FC -&gt; [lambda_2, spectral_gap, spectral_radius]
 </pre></div>
 </div>
-<p>Node features (per bank): volatility 30d, mean return 30d, log price, beta proxy, momentum 20d.</p>
-<p>Edge weights: Pearson correlation of daily returns (threshold 0.3).</p>
-<p>Training: MSE loss, Adam + cosine annealing, gradient clipping, chronological 80/20 split.</p>
+</section>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading">¶</a></h2>
+<p><strong>GAT Encoder</strong> (per snapshot):</p>
+<ul class="simple">
+<li><p>Multi-layer Graph Attention Network (GATConv, multi-head)</p></li>
+<li><p>Each layer: GATConv -&gt; BatchNorm -&gt; ELU -&gt; Dropout</p></li>
+<li><p>Aggregates neighbor features through actual network edges</p></li>
+<li><p>Output: node embeddings [N, hidden_dim]</p></li>
+</ul>
+<p><strong>Graph Readout</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">global_mean_pool</span></code>: averages node embeddings to produce a single graph-level vector</p></li>
+<li><p>Output: [1, hidden_dim] per snapshot</p></li>
+</ul>
+<p><strong>Temporal Module</strong>:</p>
+<ul class="simple">
+<li><p>LSTM processes the sequence of graph embeddings</p></li>
+<li><p>Captures how the network structure evolves over time</p></li>
+<li><p>Output: final hidden state</p></li>
+</ul>
+<p><strong>Prediction Head</strong>:</p>
+<ul class="simple">
+<li><p>Fully connected layer maps LSTM output to 3 spectral targets</p></li>
+<li><p>Targets: algebraic connectivity (lambda_2), spectral gap, spectral radius</p></li>
+</ul>
+</section>
+<section id="default-configuration">
+<h2>Default Configuration<a class="headerlink" href="#default-configuration" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hidden_dim</span></code>: 64</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_gcn_layers</span></code>: 3</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_lstm_layers</span></code>: 2</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dropout</span></code>: 0.1</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seq_len</span></code>: 10 (number of graph snapshots per sequence)</p></li>
+<li><p>Learning rate: 3e-3 with cosine annealing</p></li>
+<li><p>Gradient clipping: max norm 1.0</p></li>
+</ul>
+</section>
+<section id="node-features">
+<h2>Node Features<a class="headerlink" href="#node-features" title="Link to this heading">¶</a></h2>
+<p>Each bank node has 5 features computed from daily market data:</p>
+<ol class="arabic simple">
+<li><p><strong>Volatility</strong>: rolling standard deviation of returns</p></li>
+<li><p><strong>Mean return</strong>: rolling average daily return</p></li>
+<li><p><strong>Log price</strong>: log-transformed stock price</p></li>
+<li><p><strong>Beta proxy</strong>: rolling covariance with market / market variance</p></li>
+<li><p><strong>Momentum</strong>: cumulative return over lookback window</p></li>
+</ol>
+</section>
+<section id="edge-construction">
+<h2>Edge Construction<a class="headerlink" href="#edge-construction" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Rolling Pearson correlation of daily returns between bank pairs</p></li>
+<li><p>Threshold: edges created where correlation &gt; 0.3</p></li>
+<li><p>Edge weights: correlation values (stronger correlation = stronger link)</p></li>
+</ul>
+</section>
+<section id="training-data">
+<h2>Training Data<a class="headerlink" href="#training-data" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Source: 10 European bank stocks via yfinance (3 years of daily data)</p></li>
+<li><p>~1000+ daily graph snapshots</p></li>
+<li><p>80/20 train/test split</p></li>
+<li><p>Batched graph encoding via PyTorch Geometric <code class="docutils literal notranslate"><span class="pre">Batch.from_data_list()</span></code></p></li>
+</ul>
+</section>
 </section>
 
 

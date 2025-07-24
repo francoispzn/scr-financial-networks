@@ -44,7 +44,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">
@@ -59,16 +59,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#scr_financial.risk.metrics.compute_mes"><code class="docutils literal notranslate"><span class="pre">compute_mes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scr_financial.risk.metrics.compute_srisk"><code class="docutils literal notranslate"><span class="pre">compute_srisk()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scr_financial.risk.metrics.compute_system_risk_metrics"><code class="docutils literal notranslate"><span class="pre">compute_system_risk_metrics()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-scr_financial.backtesting.engine">Backtesting Engine</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine"><code class="docutils literal notranslate"><span class="pre">BacktestEngine</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine.load_snapshots"><code class="docutils literal notranslate"><span class="pre">BacktestEngine.load_snapshots()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine.run_rolling"><code class="docutils literal notranslate"><span class="pre">BacktestEngine.run_rolling()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine.evaluate"><code class="docutils literal notranslate"><span class="pre">BacktestEngine.evaluate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#scr_financial.backtesting.engine.BacktestEngine.to_dataframe"><code class="docutils literal notranslate"><span class="pre">BacktestEngine.to_dataframe()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data.html">Data Collection</a></li>
@@ -126,7 +116,7 @@ the Spectral Coarse-Graining (SCG) risk indicator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>)</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
 </ul>
 </dd>
@@ -145,8 +135,8 @@ where system return &lt;= system VaR, then take the alpha-quantile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
-<li><p><strong>system_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>bank_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>system_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>)</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
 </ul>
 </dd>
@@ -165,8 +155,8 @@ is stressed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
-<li><p><strong>system_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>bank_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>system_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>)</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
 </ul>
 </dd>
@@ -184,8 +174,8 @@ is stressed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bank_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
-<li><p><strong>system_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>bank_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>system_returns</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>)</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
 </ul>
 </dd>
@@ -199,8 +189,23 @@ is stressed.</p>
 <dt class="sig sig-object py" id="scr_financial.risk.metrics.compute_srisk">
 <span class="sig-prename descclassname"><span class="pre">scr_financial.risk.metrics.</span></span><span class="sig-name descname"><span class="pre">compute_srisk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">liabilities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/risk/metrics.html#compute_srisk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.risk.metrics.compute_srisk" title="Link to this definition">¶</a></dt>
 <dd><p>SRISK: expected capital shortfall of a bank in a systemic crisis.</p>
-<p>SRISK = max(0, k*(equity + liabilities) - equity*(1 + MES))
-where k is the prudential capital ratio (default 8%).</p>
+<dl class="simple">
+<dt>Following Brownlees &amp; Engle (2017):</dt><dd><p>SRISK = max(0, k*D - (1-k)*W*(1 - LRMES))</p>
+</dd>
+</dl>
+<p>where D = liabilities (book value of debt), W = equity (market cap),
+k = prudential capital ratio (default 8%), and LRMES is the long-run
+marginal expected shortfall. Since MES is typically negative for losses,
+we use (1 + MES) as the equity decline factor, giving:</p>
+<blockquote>
+<div><p>SRISK = max(0, k*D - (1-k)*W*(1 + MES))</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Reference:</dt><dd><p>Brownlees, C. &amp; Engle, R. (2017). SRISK: A Conditional Capital
+Shortfall Measure of Systemic Risk. Review of Financial Studies,
+30(1), 48-79.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -233,84 +238,6 @@ where k is the prudential capital ratio (default 8%).</p>
 </dl>
 </dd></dl>
 
-<section id="module-scr_financial.backtesting.engine">
-<span id="backtesting-engine"></span><h2>Backtesting Engine<a class="headerlink" href="#module-scr_financial.backtesting.engine" title="Link to this heading">¶</a></h2>
-<p>Rolling backtesting engine for SCG vs traditional risk metrics.</p>
-<p>Loads historical EBA snapshots, builds networks per quarter,
-computes SCG metrics alongside CoVaR/MES/Basel, and evaluates
-which model best predicts future bank distress.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scr_financial.backtesting.engine.</span></span><span class="sig-name descname"><span class="pre">BacktestEngine</span></span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Rolling backtest comparing SCG, CoVaR, MES, and Basel risk indicators.</p>
-<dl class="field-list simple">
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine.load_snapshots">
-<span class="sig-name descname"><span class="pre">load_snapshots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine.load_snapshots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine.load_snapshots" title="Link to this definition">¶</a></dt>
-<dd><p>Load quarterly EBA snapshots via the data loader.</p>
-<p>Returns the number of snapshots loaded.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>start_year</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
-<li><p><strong>end_year</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine.run_rolling">
-<span class="sig-name descname"><span class="pre">run_rolling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_quarters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine.run_rolling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine.run_rolling" title="Link to this definition">¶</a></dt>
-<dd><p>Run a rolling backtest across loaded snapshots.</p>
-<p>For each window, computes risk metrics at time t and checks
-whether stress materialised at t+step.</p>
-<p>Returns a DataFrame with per-quarter metrics.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>window_quarters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
-<li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>DataFrame</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine.evaluate" title="Link to this definition">¶</a></dt>
-<dd><p>Evaluate predictive accuracy of each risk model.</p>
-<p>Returns a dict per model with correlation to future stress,
-and hit rate (did high risk precede stress increase?).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="scr_financial.backtesting.engine.BacktestEngine.to_dataframe">
-<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scr_financial/backtesting/engine.html#BacktestEngine.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scr_financial.backtesting.engine.BacktestEngine.to_dataframe" title="Link to this definition">¶</a></dt>
-<dd><p>Export results as a DataFrame.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>DataFrame</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
 </section>
 
 

@@ -41,7 +41,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -193,10 +193,21 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SRISK: expected capital shortfall of a bank in a systemic crisis.</span>
 
-<span class="sd">    SRISK = max(0, k*(equity + liabilities) - equity*(1 + MES))</span>
-<span class="sd">    where k is the prudential capital ratio (default 8%).</span>
+<span class="sd">    Following Brownlees &amp; Engle (2017):</span>
+<span class="sd">        SRISK = max(0, k*D - (1-k)*W*(1 - LRMES))</span>
+
+<span class="sd">    where D = liabilities (book value of debt), W = equity (market cap),</span>
+<span class="sd">    k = prudential capital ratio (default 8%), and LRMES is the long-run</span>
+<span class="sd">    marginal expected shortfall. Since MES is typically negative for losses,</span>
+<span class="sd">    we use (1 + MES) as the equity decline factor, giving:</span>
+<span class="sd">        SRISK = max(0, k*D - (1-k)*W*(1 + MES))</span>
+
+<span class="sd">    Reference:</span>
+<span class="sd">        Brownlees, C. &amp; Engle, R. (2017). SRISK: A Conditional Capital</span>
+<span class="sd">        Shortfall Measure of Systemic Risk. Review of Financial Studies,</span>
+<span class="sd">        30(1), 48-79.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">equity</span> <span class="o">+</span> <span class="n">liabilities</span><span class="p">)</span> <span class="o">-</span> <span class="n">equity</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">mes</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">k</span> <span class="o">*</span> <span class="n">liabilities</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">equity</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">mes</span><span class="p">))</span></div>
 
 
 
