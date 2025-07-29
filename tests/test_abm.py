@@ -77,7 +77,7 @@ class TestBankAgent(unittest.TestCase):
     
     def test_assess_liquidity(self):
         """Test assessing liquidity."""
-        # Bank should be liquid with initial state
+        # Bank is liquid with initial state
         self.assertTrue(self.bank.assess_liquidity())
         
         # Update state to make bank illiquid
