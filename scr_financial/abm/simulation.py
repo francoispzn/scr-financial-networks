@@ -5,12 +5,15 @@ This module provides the BankingSystemSimulation class for simulating
 interbank lending and contagion dynamics.
 """
 
+import logging
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Optional, Union, Any, Tuple
-import networkx as nx
 
 from .bank_agent import BankAgent
+
+logger = logging.getLogger(__name__)
 
 
 class BankingSystemSimulation:
@@ -45,16 +48,25 @@ class BankingSystemSimulation:
         system_indicators: Dict[str, Any]
     ):
         """Initialize the simulation with bank data, network data, and system indicators."""
-        self.banks = {}
+        if not bank_data:
+            raise ValueError("bank_data must not be empty.")
+        self._initial_bank_data: Dict[str, Dict[str, Any]] = {
+            bank_id: data.copy() for bank_id, data in bank_data.items()
+        }
+        self._initial_network_data: Dict[str, Dict[str, float]] = {
+            bank_id: connections.copy()
+            for bank_id, connections in network_data.items()
+        }
+        self.banks: Dict[str, BankAgent] = {}
         self.network = network_data.copy()
         self.system_indicators = system_indicators.copy()
         self.time = 0
-        self.history = []
-        
+        self.history: List[Dict[str, Any]] = []
+
         # Initialize bank agents
         for bank_id, data in bank_data.items():
             self.banks[bank_id] = BankAgent(bank_id, data)
-            
+
         # Initialize connections
         for bank_id, connections in network_data.items():
             if bank_id in self.banks:
@@ -176,7 +188,11 @@ class BankingSystemSimulation:
                         
                         # Determine actual amount (minimum of offer and request)
                         actual_amount = min(amount, max_borrow)
-                        
+
+                        # Cap to available cash so lender cash never goes below zero
+                        available_cash = self.banks[lender_id].state.get("cash", float("inf"))
+                        actual_amount = min(actual_amount, available_cash)
+
                         if actual_amount > 0:
                             # Update lender's state
                             self.banks[lender_id].state["interbank_assets"] = self.banks[lender_id].state.get("interbank_assets", 0) + actual_amount
@@ -212,19 +228,30 @@ class BankingSystemSimulation:
         list
             History of system states
         """
+        if steps <= 0:
+            raise ValueError(f"steps must be a positive integer, got {steps}.")
+        logger.info(
+            "run_simulation starting: %d steps, %d banks.",
+            steps,
+            len(self.banks),
+        )
         for step in range(steps):
             self.time += 1
-            
+
             # Apply any scheduled shocks
             if shocks and self.time in shocks:
+                logger.debug(
+                    "Applying shock at time step %d: %s", self.time, shocks[self.time]
+                )
                 self.apply_external_shock(shocks[self.time])
-            
+
             # Run interbank lending simulation
             self.simulate_interbank_lending()
-            
+
             # Record system state
             self.record_state()
-            
+
+        logger.info("run_simulation finished at time %d.", self.time)
         return self.history
     
     def record_state(self) -> None:
@@ -240,6 +267,34 @@ class BankingSystemSimulation:
         
         self.history.append(state)
     
+    def reset(self) -> None:
+        """
+        Reset the simulation to its initial state.
+
+        Clears ``history``, resets ``time`` to 0, and re-initialises every
+        bank's state from the ``bank_data`` passed at construction.
+        Network connections are also restored from the original
+        ``network_data``.
+        """
+        self.history = []
+        self.time = 0
+        for bank_id, data in self._initial_bank_data.items():
+            if bank_id in self.banks:
+                self.banks[bank_id].state = data.copy()
+                self.banks[bank_id].memory = []
+                self.banks[bank_id].connections = {}
+        # Restore network connections from the original network snapshot
+        self.network = {
+            bank_id: connections.copy()
+            for bank_id, connections in self._initial_network_data.items()
+        }
+        for bank_id, connections in self._initial_network_data.items():
+            if bank_id in self.banks:
+                for target_id, strength in connections.items():
+                    if target_id in self.banks:
+                        self.banks[bank_id].connections[target_id] = strength
+        logger.info("Simulation reset to initial state.")
+
     def get_adjacency_matrix(self) -> np.ndarray:
         """
         Get the adjacency matrix of the current network.
@@ -296,12 +351,12 @@ class BankingSystemSimulation:
         # Add derived metrics
         
         # Average CET1 ratio
-        cet1_values = [bank.state.get('CET1_ratio', 0) for bank in self.banks.values()]
-        metrics['avg_CET1_ratio'] = sum(cet1_values) / len(cet1_values) if cet1_values else 0
-        
+        cet1_values = [bank.state.get("CET1_ratio", 0) for bank in self.banks.values()]
+        metrics["avg_CET1_ratio"] = float(np.mean(cet1_values)) if cet1_values else 0.0
+
         # Average LCR
-        lcr_values = [bank.state.get('LCR', 0) for bank in self.banks.values()]
-        metrics['avg_LCR'] = sum(lcr_values) / len(lcr_values) if lcr_values else 0
+        lcr_values = [bank.state.get("LCR", 0) for bank in self.banks.values()]
+        metrics["avg_LCR"] = float(np.mean(lcr_values)) if lcr_values else 0.0
         
         # Network density
         adj_matrix = self.get_adjacency_matrix()
