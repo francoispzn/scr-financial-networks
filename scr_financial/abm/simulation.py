@@ -42,10 +42,12 @@ class BankingSystemSimulation:
     """
     
     def __init__(
-        self, 
-        bank_data: Dict[str, Dict[str, Any]], 
-        network_data: Dict[str, Dict[str, float]], 
-        system_indicators: Dict[str, Any]
+        self,
+        bank_data: Dict[str, Dict[str, Any]],
+        network_data: Dict[str, Dict[str, float]],
+        system_indicators: Dict[str, Any],
+        stochastic: bool = True,
+        seed: Optional[int] = None,
     ):
         """Initialize the simulation with bank data, network data, and system indicators."""
         if not bank_data:
@@ -57,6 +59,9 @@ class BankingSystemSimulation:
             bank_id: connections.copy()
             for bank_id, connections in network_data.items()
         }
+        self.stochastic = stochastic
+        self._seed = seed
+        self.rng = np.random.default_rng(seed)
         self.banks: Dict[str, BankAgent] = {}
         self.network = network_data.copy()
         self.system_indicators = system_indicators.copy()
@@ -65,7 +70,7 @@ class BankingSystemSimulation:
 
         # Initialize bank agents
         for bank_id, data in bank_data.items():
-            self.banks[bank_id] = BankAgent(bank_id, data)
+            self.banks[bank_id] = BankAgent(bank_id, data, stochastic=stochastic)
 
         # Initialize connections
         for bank_id, connections in network_data.items():
@@ -212,6 +217,49 @@ class BankingSystemSimulation:
         for bank_id, bank in self.banks.items():
             self.network[bank_id] = bank.connections
     
+    # ── Stochastic dynamics ────────────────────────────────────────────────
+
+    def _evolve_bank_ratios(self) -> None:
+        """Apply one OU step to every bank's ratios + small CISS noise."""
+        for bank in self.banks.values():
+            bank.evolve_ratios(self.rng)
+        # Small mean-reverting noise on CISS (σ=0.01)
+        ciss = self.system_indicators.get("CISS", 0.5)
+        ciss_mu = self.system_indicators.get("_ciss_mu", ciss)
+        if "_ciss_mu" not in self.system_indicators:
+            self.system_indicators["_ciss_mu"] = ciss
+        dciss = 0.03 * (ciss_mu - ciss) + 0.01 * self.rng.standard_normal()
+        self.system_indicators["CISS"] = float(np.clip(ciss + dciss, 0.0, 1.0))
+
+    def _propagate_defaults(self) -> None:
+        """Iterative contagion cascade: defaulted banks impose losses on counterparties."""
+        newly_defaulted = {
+            bid for bid, bank in self.banks.items()
+            if bank.is_defaulted() and not bank._defaulted
+        }
+        if not newly_defaulted:
+            return
+
+        while newly_defaulted:
+            # Freeze all newly-defaulted banks
+            for bid in newly_defaulted:
+                self.banks[bid].freeze()
+                logger.warning("Bank %s defaulted at t=%d", bid, self.time)
+
+            next_round: set = set()
+            for bid in newly_defaulted:
+                # Find counterparties that have interbank exposure to this bank
+                for other_id, other_bank in self.banks.items():
+                    if other_bank._defaulted or other_id == bid:
+                        continue
+                    exposure = other_bank.connections.get(bid, 0.0)
+                    if exposure > 0:
+                        loss = exposure * BankAgent._LGD
+                        other_bank.apply_counterparty_loss(loss)
+                        if other_bank.is_defaulted():
+                            next_round.add(other_id)
+            newly_defaulted = next_round
+
     def run_simulation(self, steps: int, shocks: Optional[Dict[int, Dict[str, Any]]] = None) -> List[Dict[str, Any]]:
         """
         Run the simulation for a specified number of steps.
@@ -245,8 +293,15 @@ class BankingSystemSimulation:
                 )
                 self.apply_external_shock(shocks[self.time])
 
+            # Evolve stochastic ratios
+            if self.stochastic:
+                self._evolve_bank_ratios()
+
             # Run interbank lending simulation
             self.simulate_interbank_lending()
+
+            # Propagate any defaults through the network
+            self._propagate_defaults()
 
             # Record system state
             self.record_state()
@@ -278,11 +333,17 @@ class BankingSystemSimulation:
         """
         self.history = []
         self.time = 0
+        self.rng = np.random.default_rng(self._seed)
         for bank_id, data in self._initial_bank_data.items():
             if bank_id in self.banks:
                 self.banks[bank_id].state = data.copy()
                 self.banks[bank_id].memory = []
                 self.banks[bank_id].connections = {}
+                self.banks[bank_id]._defaulted = False
+                # Restore OU long-run means
+                for key in BankAgent._OU_PARAMS:
+                    if key in data:
+                        self.banks[bank_id]._ou_mu[key] = float(data[key])
         # Restore network connections from the original network snapshot
         self.network = {
             bank_id: connections.copy()
