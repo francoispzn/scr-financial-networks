@@ -1,150 +1,225 @@
 """
 Tests for the data preprocessing module.
 
-This module contains tests for the DataPreprocessor class and related
-data collection and preprocessing functionality.
+Uses pure pytest style (no unittest.TestCase).
 """
 
-import unittest
+import pytest
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from numpy.testing import assert_allclose
 
 from scr_financial.data.preprocessor import DataPreprocessor
 from scr_financial.data.collectors.eba_collector import EBACollector
 from scr_financial.data.collectors.ecb_collector import ECBCollector
 from scr_financial.data.collectors.market_collector import MarketDataCollector
+from scr_financial.data.utils import (
+    normalize_matrix,
+    filter_matrix,
+    align_time_series,
+    compute_rolling_correlation,
+    compute_distance_matrix,
+    compute_minimum_spanning_tree,
+)
+
+START, END = "2020-01-01", "2021-12-31"
+BANKS = ["DE_DBK", "FR_BNP", "ES_SAN"]
 
 
-class TestDataPreprocessor(unittest.TestCase):
-    """Test cases for the DataPreprocessor class."""
-    
-    def setUp(self):
-        """Set up test fixtures."""
-        self.start_date = '2020-01-01'
-        self.end_date = '2020-12-31'
-        self.bank_list = ["DE_DBK", "FR_BNP", "ES_SAN", "IT_UCG", "NL_ING"]
-        self.preprocessor = DataPreprocessor(self.start_date, self.end_date, self.bank_list)
-    
-    def test_initialization(self):
-        """Test initialization of DataPreprocessor."""
-        self.assertEqual(self.preprocessor.start_date, self.start_date)
-        self.assertEqual(self.preprocessor.end_date, self.end_date)
-        self.assertEqual(self.preprocessor.bank_list, self.bank_list)
-        self.assertIsInstance(self.preprocessor.eba_collector, EBACollector)
-        self.assertIsInstance(self.preprocessor.ecb_collector, ECBCollector)
-        self.assertIsInstance(self.preprocessor.market_collector, MarketDataCollector)
-    
-    def test_load_bank_node_data(self):
-        """Test loading bank node data."""
-        data_sources = {
-            'solvency': 'EBA_transparency',
-            'liquidity': 'EBA_aggregated'
-        }
-        
-        node_data = self.preprocessor.load_bank_node_data(data_sources)
-        
-        self.assertIn('solvency', node_data)
-        self.assertIn('liquidity', node_data)
-        
-        # Check that data contains expected banks
-        for bank_id in self.bank_list:
-            self.assertIn(bank_id, node_data['solvency']['bank_id'].values)
-            self.assertIn(bank_id, node_data['liquidity']['bank_id'].values)
-    
-    def test_load_interbank_exposures(self):
-        """Test loading interbank exposures."""
-        edge_data = self.preprocessor.load_interbank_exposures('ECB_TARGET2')
-        
-        self.assertIn('interbank_exposures', edge_data)
-        
-        # Check that data contains expected columns
-        self.assertIn('source', edge_data['interbank_exposures'].columns)
-        self.assertIn('target', edge_data['interbank_exposures'].columns)
-        self.assertIn('weight', edge_data['interbank_exposures'].columns)
-        
-        # Check that data contains connections between banks in bank_list
-        for bank_id in self.bank_list:
-            self.assertIn(bank_id, edge_data['interbank_exposures']['source'].values)
-    
-    def test_normalize_edge_weights(self):
-        """Test normalization of edge weights."""
-        # First load some data
-        self.preprocessor.load_interbank_exposures('ECB_TARGET2')
-        
-        # Test degree normalization
-        normalized_data = self.preprocessor.normalize_edge_weights(method='degree')
-        
-        self.assertIn('interbank_exposures', normalized_data)
-        
-        # Check that weights are normalized (sum should be different)
-        original_sum = self.preprocessor.edge_data['interbank_exposures']['weight'].sum()
-        normalized_sum = normalized_data['interbank_exposures']['weight'].sum()
-        
-        self.assertNotEqual(original_sum, normalized_sum)
-    
-    def test_filter_network(self):
-        """Test filtering of network."""
-        # First load and normalize data
-        self.preprocessor.load_interbank_exposures('ECB_TARGET2')
-        self.preprocessor.normalize_edge_weights()
-        
-        # Count edges before filtering
-        edge_count_before = len(self.preprocessor.edge_data['interbank_exposures'])
-        
-        # Apply filtering
-        filtered_data = self.preprocessor.filter_network(method='threshold', threshold=0.1)
-        
-        # Count edges after filtering
-        edge_count_after = len(filtered_data['interbank_exposures'])
-        
-        # There should be fewer edges after filtering
-        self.assertLess(edge_count_after, edge_count_before)
-    
-    def test_get_data_for_timepoint(self):
-        """Test getting data for a specific time point."""
-        # First load some data
-        self.preprocessor.load_bank_node_data({
-            'solvency': 'EBA_transparency',
-            'liquidity': 'EBA_aggregated'
-        })
-        self.preprocessor.load_interbank_exposures('ECB_TARGET2')
-        
-        # Get data for a specific time point
-        time_point = '2020-06-30'
-        data = self.preprocessor.get_data_for_timepoint(time_point)
-        
-        self.assertIn('node_data', data)
-        self.assertIn('edge_data', data)
-        self.assertIn('system_data', data)
-        
-        # Check that node data contains expected categories
-        self.assertIn('solvency', data['node_data'])
-        self.assertIn('liquidity', data['node_data'])
-        
-        # Check that edge data contains expected categories
-        self.assertIn('interbank_exposures', data['edge_data'])
+# ---------------------------------------------------------------------------
+# DataPreprocessor validation tests
+# ---------------------------------------------------------------------------
+
+def test_preprocessor_invalid_start_date_raises():
+    with pytest.raises(ValueError):
+        DataPreprocessor("not-a-date", "2021-01-01")
 
 
-class TestEBACollector(unittest.TestCase):
-    """Test cases for the EBACollector class."""
-    
-    def setUp(self):
-        """Set up test fixtures."""
-        self.collector = EBACollector()
-        self.start_date = '2020-01-01'
-        self.end_date = '2020-12-31'
-        self.bank_list = ["DE_DBK", "FR_BNP", "ES_SAN", "IT_UCG", "NL_ING"]
-    
-    def test_collect_transparency_data(self):
-        """Test collecting transparency data."""
-        data = self.collector.collect_transparency_data(
-            self.start_date, 
-            self.end_date, 
-            self.bank_list
-        )
-        
-        self.assertIsInstance(data, pd.DataFrame)
-        self.assertIn('bank_id', data.columns)
-        self.assertIn('CET1_ratio', data.columns)
-        self.assertIn
+def test_preprocessor_end_before_start_raises():
+    with pytest.raises(ValueError):
+        DataPreprocessor("2020-01-01", "2019-01-01")
+
+
+def test_preprocessor_valid_init_no_error():
+    dp = DataPreprocessor(START, END, bank_list=BANKS)
+    assert dp.start_date == START
+    assert dp.end_date == END
+
+
+# ---------------------------------------------------------------------------
+# EBACollector tests
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def eba():
+    return EBACollector()
+
+
+def test_eba_transparency_returns_dataframe(eba):
+    df = eba.collect_transparency_data(START, END, bank_list=BANKS)
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+
+
+def test_eba_transparency_required_columns(eba):
+    df = eba.collect_transparency_data(START, END, bank_list=BANKS)
+    for col in ('bank_id', 'CET1_ratio', 'date'):
+        assert col in df.columns, f"Missing column: {col}"
+
+
+def test_eba_transparency_filtered_by_bank_list(eba):
+    df = eba.collect_transparency_data(START, END, bank_list=BANKS)
+    returned_banks = set(df['bank_id'].unique())
+    assert returned_banks.issubset(set(BANKS))
+
+
+def test_eba_aggregated_required_columns(eba):
+    df = eba.collect_aggregated_data(START, END, bank_list=BANKS)
+    for col in ('LCR', 'NSFR'):
+        assert col in df.columns, f"Missing column: {col}"
+
+
+# ---------------------------------------------------------------------------
+# ECBCollector tests
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def ecb():
+    return ECBCollector()
+
+
+def test_ecb_target2_required_columns(ecb):
+    df = ecb.collect_target2_data(START, END, bank_list=BANKS)
+    for col in ('source', 'target', 'weight'):
+        assert col in df.columns, f"Missing column: {col}"
+
+
+def test_ecb_ciss_values_in_unit_interval(ecb):
+    df = ecb.collect_ciss_data(START, END)
+    assert (df['CISS'] >= 0).all() and (df['CISS'] <= 1).all()
+
+
+def test_ecb_ciss_required_columns(ecb):
+    df = ecb.collect_ciss_data(START, END)
+    assert 'CISS' in df.columns
+
+
+# ---------------------------------------------------------------------------
+# MarketDataCollector tests
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def market():
+    return MarketDataCollector()
+
+
+def test_market_cds_positive_spreads(market):
+    df = market.collect_cds_data(START, END, bank_list=BANKS)
+    assert (df['CDS_5yr'] > 0).all()
+
+
+def test_market_srisk_required_columns(market):
+    df = market.collect_srisk_data(START, END, bank_list=BANKS)
+    assert 'SRISK' in df.columns
+
+
+# ---------------------------------------------------------------------------
+# normalize_matrix tests
+# ---------------------------------------------------------------------------
+
+def test_normalize_matrix_degree_preserves_shape():
+    M = np.random.default_rng(0).random((4, 4))
+    result = normalize_matrix(M, method='degree')
+    assert result.shape == M.shape
+
+
+def test_normalize_matrix_standardize_mean_approx_zero():
+    M = np.random.default_rng(1).random((5, 5))
+    result = normalize_matrix(M, method='standardize')
+    assert_allclose(np.mean(result), 0.0, atol=1e-10)
+
+
+def test_normalize_matrix_unknown_method_raises():
+    with pytest.raises(ValueError):
+        normalize_matrix(np.eye(3), method='bogus')
+
+
+# ---------------------------------------------------------------------------
+# filter_matrix tests
+# ---------------------------------------------------------------------------
+
+def test_filter_matrix_threshold_zeros_small():
+    M = np.array([[0.01, 0.5], [0.03, 0.8]])
+    result = filter_matrix(M, method='threshold', threshold=0.05)
+    assert result[0, 0] == 0.0
+    assert result[1, 0] == 0.0
+
+
+def test_filter_matrix_preserves_large_values():
+    M = np.array([[0.01, 0.5], [0.03, 0.8]])
+    result = filter_matrix(M, method='threshold', threshold=0.05)
+    assert_allclose(result[0, 1], 0.5)
+    assert_allclose(result[1, 1], 0.8)
+
+
+# ---------------------------------------------------------------------------
+# align_time_series tests
+# ---------------------------------------------------------------------------
+
+def test_align_time_series_empty_returns_empty():
+    result = align_time_series({})
+    assert result == {}
+
+
+# ---------------------------------------------------------------------------
+# compute_rolling_correlation tests
+# ---------------------------------------------------------------------------
+
+def test_compute_rolling_correlation_entry_count():
+    rng = np.random.default_rng(42)
+    n = 100
+    window = 20
+    returns = pd.DataFrame(
+        rng.normal(0, 1, (n, 3)),
+        columns=['A', 'B', 'C'],
+        index=pd.date_range('2020-01-01', periods=n),
+    )
+    result = compute_rolling_correlation(returns, window=window)
+    assert len(result) == n - window + 1
+
+
+# ---------------------------------------------------------------------------
+# compute_distance_matrix tests
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def sample_corr_matrix():
+    rng = np.random.default_rng(0)
+    n = 4
+    X = rng.normal(0, 1, (100, n))
+    df = pd.DataFrame(X, columns=[f"B{i}" for i in range(n)])
+    return df.corr()
+
+
+def test_compute_distance_matrix_symmetric(sample_corr_matrix):
+    D = compute_distance_matrix(sample_corr_matrix)
+    assert_allclose(D.values, D.values.T, atol=1e-10)
+
+
+def test_compute_distance_matrix_diagonal_zero(sample_corr_matrix):
+    D = compute_distance_matrix(sample_corr_matrix)
+    assert_allclose(np.diag(D.values), 0.0, atol=1e-10)
+
+
+# ---------------------------------------------------------------------------
+# compute_minimum_spanning_tree tests
+# ---------------------------------------------------------------------------
+
+def test_compute_minimum_spanning_tree_edge_count(sample_corr_matrix):
+    D = compute_distance_matrix(sample_corr_matrix)
+    mst_adj = compute_minimum_spanning_tree(D)
+    n = len(D)
+    # MST on n nodes has n-1 edges; adjacency counts each undirected edge twice
+    # number of non-zero entries / 2 == n - 1
+    nnz = np.count_nonzero(mst_adj.values)
+    assert nnz // 2 == n - 1

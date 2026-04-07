@@ -8,7 +8,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Francois Petizon",
     author_email="francois.petizon@kcl.ac.uk",
-    url="https://github.com/username/scr-financial-networks",
+    url="https://github.com/francoispzn/scr-financial-networks",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -33,9 +33,11 @@ setup(
     extras_require={
         "dev": [
             "pytest>=7.3.0",
+            "pytest-cov>=4.1.0",
             "black>=23.3.0",
-            "flake8>=6.0.0",
             "isort>=5.12.0",
+            "mypy>=1.3.0",
+            "flake8>=6.0.0",
             "sphinx>=6.2.0",
             "sphinx_rtd_theme>=1.2.0",
             "nbsphinx>=0.9.0",

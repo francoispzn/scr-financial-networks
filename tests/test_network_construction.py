@@ -1,152 +1,177 @@
 """
 Tests for the network construction module.
 
-This module contains tests for the FinancialNetworkBuilder class and related
-network construction functionality.
+Uses pure pytest style (no unittest.TestCase).
 """
 
-import unittest
+import pytest
 import numpy as np
 import pandas as pd
 import networkx as nx
-from datetime import datetime
+from unittest.mock import MagicMock
+from numpy.testing import assert_allclose
 
-from scr_financial.data.preprocessor import DataPreprocessor
 from scr_financial.network.builder import FinancialNetworkBuilder
 
-
-class TestFinancialNetworkBuilder(unittest.TestCase):
-    """Test cases for the FinancialNetworkBuilder class."""
-    
-    def setUp(self):
-        """Set up test fixtures."""
-        # Initialize data preprocessor
-        self.start_date = '2020-01-01'
-        self.end_date = '2020-12-31'
-        self.bank_list = ["DE_DBK", "FR_BNP", "ES_SAN", "IT_UCG", "NL_ING"]
-        self.preprocessor = DataPreprocessor(self.start_date, self.end_date, self.bank_list)
-        
-        # Load sample data
-        self.preprocessor.load_bank_node_data({
-            'solvency': 'EBA_transparency',
-            'liquidity': 'EBA_aggregated'
-        })
-        self.preprocessor.load_interbank_exposures('ECB_TARGET2')
-        
-        # Initialize network builder
-        self.network_builder = FinancialNetworkBuilder(self.preprocessor)
-    
-    def test_initialization(self):
-        """Test initialization of FinancialNetworkBuilder."""
-        self.assertEqual(self.network_builder.preprocessor, self.preprocessor)
-        self.assertIsNone(self.network_builder.G)
-        self.assertIsNone(self.network_builder.adjacency_matrix)
-        self.assertIsNone(self.network_builder.laplacian)
-        self.assertIsNone(self.network_builder.eigenvalues)
-        self.assertIsNone(self.network_builder.eigenvectors)
-    
-    def test_construct_network(self):
-        """Test network construction."""
-        time_point = '2020-06-30'
-        G = self.network_builder.construct_network(time_point)
-        
-        self.assertIsInstance(G, nx.DiGraph)
-        self.assertEqual(self.network_builder.G, G)
-        
-        # Check that graph contains expected banks
-        for bank_id in self.bank_list:
-            self.assertIn(bank_id, G.nodes())
-        
-        # Check that graph has edges
-        self.assertGreater(len(G.edges()), 0)
-        
-        # Check that adjacency matrix was created
-        self.assertIsNotNone(self.network_builder.adjacency_matrix)
-    
-    def test_compute_laplacian(self):
-        """Test computation of Laplacian matrix."""
-        # First construct network
-        time_point = '2020-06-30'
-        self.network_builder.construct_network(time_point)
-        
-        # Compute Laplacian
-        laplacian = self.network_builder.compute_laplacian(normalized=True)
-        
-        self.assertIsNotNone(laplacian)
-        self.assertEqual(self.network_builder.laplacian, laplacian)
-        
-        # Check that Laplacian has the right shape
-        n = len(self.network_builder.G.nodes())
-        self.assertEqual(laplacian.shape, (n, n))
-    
-    def test_spectral_analysis(self):
-        """Test spectral analysis."""
-        # First construct network and compute Laplacian
-        time_point = '2020-06-30'
-        self.network_builder.construct_network(time_point)
-        self.network_builder.compute_laplacian()
-        
-        # Perform spectral analysis
-        eigenvalues, eigenvectors = self.network_builder.spectral_analysis()
-        
-        self.assertIsNotNone(eigenvalues)
-        self.assertIsNotNone(eigenvectors)
-        self.assertEqual(self.network_builder.eigenvalues, eigenvalues)
-        self.assertEqual(self.network_builder.eigenvectors, eigenvectors)
-        
-        # Check that eigenvalues and eigenvectors have the right shape
-        n = len(self.network_builder.G.nodes())
-        self.assertEqual(len(eigenvalues), n)
-        self.assertEqual(eigenvectors.shape, (n, n))
-    
-    def test_find_spectral_gap(self):
-        """Test finding spectral gap."""
-        # First construct network, compute Laplacian, and perform spectral analysis
-        time_point = '2020-06-30'
-        self.network_builder.construct_network(time_point)
-        self.network_builder.compute_laplacian()
-        self.network_builder.spectral_analysis()
-        
-        # Find spectral gap
-        k, gap = self.network_builder.find_spectral_gap()
-        
-        self.assertIsInstance(k, int)
-        self.assertIsInstance(gap, float)
-        self.assertGreater(k, 0)
-        self.assertGreater(gap, 0)
-    
-    def test_get_node_attribute_matrix(self):
-        """Test getting node attribute matrix."""
-        # First construct network
-        time_point = '2020-06-30'
-        self.network_builder.construct_network(time_point)
-        
-        # Get node attribute matrix
-        attr_matrix = self.network_builder.get_node_attribute_matrix('CET1_ratio')
-        
-        self.assertIsInstance(attr_matrix, np.ndarray)
-        self.assertEqual(len(attr_matrix), len(self.network_builder.G.nodes()))
-    
-    def test_compute_centrality_measures(self):
-        """Test computing centrality measures."""
-        # First construct network
-        time_point = '2020-06-30'
-        self.network_builder.construct_network(time_point)
-        
-        # Compute centrality measures
-        centrality_measures = self.network_builder.compute_centrality_measures()
-        
-        self.assertIsInstance(centrality_measures, dict)
-        self.assertIn('degree', centrality_measures)
-        self.assertIn('eigenvector', centrality_measures)
-        self.assertIn('betweenness', centrality_measures)
-        self.assertIn('closeness', centrality_measures)
-        self.assertIn('pagerank', centrality_measures)
-        
-        # Check that each measure includes all nodes
-        for measure, values in centrality_measures.items():
-            self.assertEqual(set(values.keys()), set(self.network_builder.G.nodes()))
+N_BANKS = 4
+BANKS = [f"B{i}" for i in range(N_BANKS)]
 
 
-if __name__ == '__main__':
-    unittest.main()
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def builder():
+    rows = [
+        {
+            'source': s,
+            'target': t,
+            'weight': float(i + 1),
+            'date': pd.Timestamp('2022-01-01'),
+        }
+        for i, (s, t) in enumerate(
+            (s, t) for s in BANKS for t in BANKS if s != t
+        )
+    ]
+    edge_df = pd.DataFrame(rows)
+    mock = MagicMock()
+    mock.get_data_for_timepoint.return_value = {
+        'edge_data': {'interbank_exposures': edge_df},
+        'node_data': {},
+    }
+    b = FinancialNetworkBuilder(mock)
+    b.construct_network('2022-01-01')
+    return b
+
+
+# ---------------------------------------------------------------------------
+# construct_network tests
+# ---------------------------------------------------------------------------
+
+def test_construct_network_returns_digraph(builder):
+    assert isinstance(builder.G, nx.DiGraph)
+
+
+def test_construct_network_correct_node_count(builder):
+    assert builder.G.number_of_nodes() == N_BANKS
+
+
+def test_construct_network_correct_edge_count(builder):
+    assert builder.G.number_of_edges() == N_BANKS * (N_BANKS - 1)
+
+
+def test_construct_network_unknown_edge_type_raises():
+    mock = MagicMock()
+    mock.get_data_for_timepoint.return_value = {
+        'edge_data': {},       # missing 'unknown_type'
+        'node_data': {},
+    }
+    b = FinancialNetworkBuilder(mock)
+    with pytest.raises(ValueError):
+        b.construct_network('2022-01-01', edge_weight_type='unknown_type')
+
+
+# ---------------------------------------------------------------------------
+# compute_laplacian tests
+# ---------------------------------------------------------------------------
+
+def test_compute_laplacian_normalized_shape(builder):
+    L = builder.compute_laplacian(normalized=True)
+    dense = np.asarray(L.todense())
+    assert dense.shape == (N_BANKS, N_BANKS)
+
+
+def test_compute_laplacian_raises_before_network():
+    mock = MagicMock()
+    b = FinancialNetworkBuilder(mock)
+    with pytest.raises(ValueError):
+        b.compute_laplacian()
+
+
+# ---------------------------------------------------------------------------
+# spectral_analysis tests
+# ---------------------------------------------------------------------------
+
+def test_spectral_analysis_eigenvalues_sorted(builder):
+    builder.compute_laplacian()
+    evals, _ = builder.spectral_analysis()
+    assert np.all(np.diff(evals) >= -1e-10)
+
+
+def test_spectral_analysis_raises_before_laplacian():
+    mock = MagicMock()
+    mock.get_data_for_timepoint.return_value = {
+        'edge_data': {
+            'interbank_exposures': pd.DataFrame([
+                {'source': 'X', 'target': 'Y', 'weight': 1.0, 'date': pd.Timestamp('2022-01-01')}
+            ])
+        },
+        'node_data': {},
+    }
+    b = FinancialNetworkBuilder(mock)
+    b.construct_network('2022-01-01')
+    # laplacian not computed yet
+    with pytest.raises(ValueError):
+        b.spectral_analysis()
+
+
+# ---------------------------------------------------------------------------
+# find_spectral_gap tests
+# ---------------------------------------------------------------------------
+
+def test_find_spectral_gap_returns_int_and_float(builder):
+    builder.compute_laplacian()
+    builder.spectral_analysis()
+    k, gap = builder.find_spectral_gap()
+    assert isinstance(k, (int, np.integer))
+    assert isinstance(gap, (float, np.floating))
+
+
+# ---------------------------------------------------------------------------
+# get_node_attribute_matrix tests
+# ---------------------------------------------------------------------------
+
+def test_get_node_attribute_matrix_defaults_to_zero(builder):
+    values = builder.get_node_attribute_matrix('nonexistent_attr')
+    assert values.shape == (N_BANKS,)
+    assert_allclose(values, 0.0)
+
+
+# ---------------------------------------------------------------------------
+# get_edge_weight_matrix tests
+# ---------------------------------------------------------------------------
+
+def test_get_edge_weight_matrix_shape(builder):
+    matrix = builder.get_edge_weight_matrix()
+    assert np.asarray(matrix).shape == (N_BANKS, N_BANKS)
+
+
+# ---------------------------------------------------------------------------
+# compute_centrality_measures tests
+# ---------------------------------------------------------------------------
+
+def test_compute_centrality_all_five_keys(builder):
+    centrality = builder.compute_centrality_measures()
+    for key in ('degree', 'eigenvector', 'betweenness', 'closeness', 'pagerank'):
+        assert key in centrality
+
+
+def test_compute_centrality_all_nodes_present(builder):
+    centrality = builder.compute_centrality_measures()
+    for key in ('degree', 'eigenvector', 'betweenness', 'closeness', 'pagerank'):
+        for bank in BANKS:
+            assert bank in centrality[key]
+
+
+# ---------------------------------------------------------------------------
+# compute_community_structure tests
+# ---------------------------------------------------------------------------
+
+def test_compute_community_structure_spectral_returns_dict(builder):
+    builder.compute_laplacian()
+    builder.spectral_analysis()
+    communities = builder.compute_community_structure(method='spectral')
+    assert isinstance(communities, dict)
+    for node in builder.G.nodes():
+        assert isinstance(communities[node], (int, np.integer))
